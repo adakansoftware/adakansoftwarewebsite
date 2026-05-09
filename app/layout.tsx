@@ -18,8 +18,8 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  title: 'Adakan Software | Stratejik Web, Marka ve Ürün Tasarımı',
-  description: 'Adakan Software; büyümek isteyen markalar için web siteleri, marka kimlikleri ve satış odaklı dijital ürünler tasarlar.',
+  title: 'Adakan Software | Strategic Web, Brand and Product Design',
+  description: 'Adakan Software designs websites, brand identities and conversion-focused digital products for ambitious brands.',
   generator: 'v0.app',
   icons: {
     icon: [

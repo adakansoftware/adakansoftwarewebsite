@@ -2,11 +2,34 @@
 
 import { useRef, useState } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
-import { projects } from "@/lib/site-data"
+import { getLocaleFromPathname, withLocale, type Locale } from "@/lib/i18n"
+import { getProjects } from "@/lib/site-data"
+
+type Project = ReturnType<typeof getProjects>[number]
+
+const copy = {
+  tr: {
+    eyebrow: "Seçilmiş Projeler",
+    title: "Görünür sonuç",
+    gradient: "üreten işler",
+    all: "Tüm Projeleri Gör",
+  },
+  en: {
+    eyebrow: "Selected Projects",
+    title: "Work that creates",
+    gradient: "visible results",
+    all: "View All Projects",
+  },
+} satisfies Record<Locale, { eyebrow: string; title: string; gradient: string; all: string }>
 
 export function ProjectsSection() {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const projects = getProjects(locale)
+  const sectionCopy = copy[locale]
   const containerRef = useRef<HTMLDivElement>(null)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const prefersReducedMotion = useReducedMotion()
@@ -39,7 +62,7 @@ export function ProjectsSection() {
               transition={{ duration: 0.6 }}
               className="text-primary text-sm font-medium tracking-widest uppercase mb-6 block"
             >
-              Seçilmiş Projeler
+              {sectionCopy.eyebrow}
             </motion.span>
             
             <motion.h2
@@ -49,9 +72,9 @@ export function ProjectsSection() {
               transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
               className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight"
             >
-              Görünür sonuç
+              {sectionCopy.title}
               <br />
-              <span className="text-gradient">üreten işler</span>
+              <span className="text-gradient">{sectionCopy.gradient}</span>
             </motion.h2>
           </div>
           
@@ -62,10 +85,10 @@ export function ProjectsSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <Link
-              href="/projects"
+              href={withLocale("/projects", locale)}
               className="group inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             >
-              <span className="text-sm">Tüm Projeleri Gör</span>
+              <span className="text-sm">{sectionCopy.all}</span>
               <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
             </Link>
           </motion.div>
@@ -98,7 +121,7 @@ function ProjectCard({
   onLeave,
   prefersReducedMotion,
 }: {
-  project: typeof projects[0]
+  project: Project
   index: number
   isHovered: boolean
   onHover: () => void

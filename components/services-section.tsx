@@ -2,11 +2,34 @@
 
 import { useRef } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
-import { services } from "@/lib/site-data"
+import { getLocaleFromPathname, type Locale } from "@/lib/i18n"
+import { getServices } from "@/lib/site-data"
+
+type Service = ReturnType<typeof getServices>[number]
+
+const copy = {
+  tr: {
+    eyebrow: "Hizmetlerimiz",
+    title: "Net hedef,",
+    gradient: "ölçülebilir etki",
+    description: "Güzel görünen işler yapmanın ötesine geçiyoruz: konumlandırma, deneyim ve teknik uygulama aynı hedefe bağlanıyor.",
+  },
+  en: {
+    eyebrow: "Services",
+    title: "Clear goals,",
+    gradient: "measurable impact",
+    description: "We go beyond good-looking work: positioning, experience, and technical execution all connect to the same business goal.",
+  },
+} satisfies Record<Locale, { eyebrow: string; title: string; gradient: string; description: string }>
 
 export function ServicesSection() {
+  const pathname = usePathname()
+  const locale = getLocaleFromPathname(pathname)
+  const services = getServices(locale)
+  const sectionCopy = copy[locale]
   const containerRef = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion()
   
@@ -36,7 +59,7 @@ export function ServicesSection() {
               transition={{ duration: 0.6 }}
               className="text-primary text-sm font-medium tracking-widest uppercase mb-6 block"
             >
-              Hizmetlerimiz
+              {sectionCopy.eyebrow}
             </motion.span>
             
             <motion.h2
@@ -46,9 +69,9 @@ export function ServicesSection() {
               transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
               className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight"
             >
-              Net hedef,
+              {sectionCopy.title}
               <br />
-              <span className="text-gradient">ölçülebilir etki</span>
+              <span className="text-gradient">{sectionCopy.gradient}</span>
             </motion.h2>
           </div>
           
@@ -59,7 +82,7 @@ export function ServicesSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-muted-foreground text-lg max-w-md leading-relaxed"
           >
-            Güzel görünen işler yapmanın ötesine geçiyoruz: konumlandırma, deneyim ve teknik uygulama aynı hedefe bağlanıyor.
+            {sectionCopy.description}
           </motion.p>
         </div>
 
@@ -74,7 +97,7 @@ export function ServicesSection() {
   )
 }
 
-function ServiceCard({ service, index, prefersReducedMotion }: { service: typeof services[0]; index: number; prefersReducedMotion: boolean | null }) {
+function ServiceCard({ service, index, prefersReducedMotion }: { service: Service; index: number; prefersReducedMotion: boolean | null }) {
   return (
     <motion.div
       initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
