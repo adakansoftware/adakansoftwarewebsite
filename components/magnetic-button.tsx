@@ -1,7 +1,7 @@
 "use client"
 
-import { useRef, useState, type ReactNode, type MouseEvent } from "react"
-import { motion, useReducedMotion } from "framer-motion"
+import { useRef, type ReactNode, type MouseEvent } from "react"
+import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion"
 
 interface MagneticButtonProps {
   children: ReactNode
@@ -11,23 +11,23 @@ interface MagneticButtonProps {
 
 export function MagneticButton({ children, className = "", strength = 0.3 }: MagneticButtonProps) {
   const ref = useRef<HTMLDivElement>(null)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
   const prefersReducedMotion = useReducedMotion()
+  const x = useSpring(useMotionValue(0), { stiffness: 220, damping: 22, mass: 0.12 })
+  const y = useSpring(useMotionValue(0), { stiffness: 220, damping: 22, mass: 0.12 })
 
   const handleMouse = (e: MouseEvent<HTMLDivElement>) => {
-    if (prefersReducedMotion) return
+    if (prefersReducedMotion || !ref.current) return
     const { clientX, clientY } = e
-    const { left, top, width, height } = ref.current!.getBoundingClientRect()
-    const x = (clientX - left - width / 2) * strength
-    const y = (clientY - top - height / 2) * strength
-    setPosition({ x, y })
+    const { left, top, width, height } = ref.current.getBoundingClientRect()
+    x.set((clientX - left - width / 2) * strength)
+    y.set((clientY - top - height / 2) * strength)
   }
 
   const reset = () => {
-    setPosition({ x: 0, y: 0 })
+    x.set(0)
+    y.set(0)
   }
 
-  // Skip magnetic effect on reduced motion
   if (prefersReducedMotion) {
     return <div className={className}>{children}</div>
   }
@@ -37,8 +37,7 @@ export function MagneticButton({ children, className = "", strength = 0.3 }: Mag
       ref={ref}
       onMouseMove={handleMouse}
       onMouseLeave={reset}
-      animate={{ x: position.x, y: position.y }}
-      transition={{ type: "spring", stiffness: 200, damping: 20, mass: 0.1 }}
+      style={{ x, y }}
       className={`${className} will-change-transform`}
     >
       {children}

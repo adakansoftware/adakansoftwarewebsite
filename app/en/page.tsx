@@ -10,8 +10,8 @@ export default function EnglishHomePage() {
     <>
       <HeroSection />
       <ServicesSection />
-      <ProjectsSection />
       <PhilosophySection />
+      <ProjectsSection />
       <TestimonialsSection />
       <CTASection />
     </>

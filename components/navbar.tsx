@@ -5,10 +5,11 @@ import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
-import { ArrowUpRight, Menu, X } from "lucide-react"
+import { ArrowUpRight, Menu, MessageCircle, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { MagneticButton } from "@/components/magnetic-button"
+import { getWhatsAppHref, whatsAppCopy } from "@/lib/contact-links"
 import { getLocaleFromPathname, switchLocalePath, withLocale, type Locale } from "@/lib/i18n"
 
 const navLabels = {
@@ -48,6 +49,7 @@ export function Navbar() {
   const pathname = usePathname()
   const locale = getLocaleFromPathname(pathname)
   const labels = navLabels[locale]
+  const whatsApp = whatsAppCopy[locale]
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const prefersReducedMotion = useReducedMotion()
@@ -60,8 +62,19 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  useEffect(() => {
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : ""
+    return () => {
+      document.body.style.overflow = ""
+    }
+  }, [isMobileMenuOpen])
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false)
+  }, [pathname])
+
   const localizedHref = (href: string) => withLocale(href, locale)
-  const activeHref = (href: string) => localizedHref(href)
+  const isActive = (href: string) => pathname === localizedHref(href)
 
   return (
     <>
@@ -98,14 +111,15 @@ export function Navbar() {
                 <MagneticButton strength={0.1}>
                   <Link
                     href={localizedHref(link.href)}
+                    aria-current={isActive(link.href) ? "page" : undefined}
                     className={`text-sm transition-colors relative group py-2 ${
-                      pathname === activeHref(link.href) ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                      isActive(link.href) ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     {link.name}
                     <span
                       className={`absolute bottom-0 left-0 h-px bg-primary transition-all duration-300 ${
-                        pathname === activeHref(link.href) ? "w-full" : "w-0 group-hover:w-full"
+                        isActive(link.href) ? "w-full" : "w-0 group-hover:w-full"
                       }`}
                     />
                   </Link>
@@ -115,8 +129,21 @@ export function Navbar() {
           </div>
 
           <div className="hidden lg:flex items-center gap-3">
+            <MagneticButton strength={0.16}>
+              <a
+                href={getWhatsAppHref(locale)}
+                aria-label={whatsApp.label}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex h-9 items-center gap-2 rounded-full border border-primary/25 bg-primary/5 px-4 text-xs font-medium text-primary backdrop-blur-md transition-all duration-300 hover:border-primary/60 hover:bg-primary hover:text-background hover:shadow-[0_0_28px_rgba(45,212,191,0.22)]"
+              >
+                <MessageCircle className="h-4 w-4" />
+                {whatsApp.short}
+              </a>
+            </MagneticButton>
             <Link
               href={switchLocalePath(pathname, "tr")}
+              aria-current={locale === "tr" ? "true" : undefined}
               className={`rounded-full px-3 py-1 text-xs transition-colors ${
                 locale === "tr" ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
               }`}
@@ -125,6 +152,7 @@ export function Navbar() {
             </Link>
             <Link
               href={switchLocalePath(pathname, "en")}
+              aria-current={locale === "en" ? "true" : undefined}
               className={`rounded-full px-3 py-1 text-xs transition-colors ${
                 locale === "en" ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
               }`}
@@ -185,13 +213,24 @@ export function Navbar() {
                   </motion.div>
                 ))}
                 <div className="flex gap-3">
-                  <Link href={switchLocalePath(pathname, "tr")} className="rounded-full border border-border/50 px-4 py-2 text-sm">
+                  <Link href={switchLocalePath(pathname, "tr")} onClick={() => setIsMobileMenuOpen(false)} className="rounded-full border border-border/50 px-4 py-2 text-sm">
                     TR
                   </Link>
-                  <Link href={switchLocalePath(pathname, "en")} className="rounded-full border border-border/50 px-4 py-2 text-sm">
+                  <Link href={switchLocalePath(pathname, "en")} onClick={() => setIsMobileMenuOpen(false)} className="rounded-full border border-border/50 px-4 py-2 text-sm">
                     EN
                   </Link>
                 </div>
+                <a
+                  href={getWhatsAppHref(locale)}
+                  aria-label={whatsApp.label}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-3 rounded-full border border-primary/35 bg-primary/10 px-5 py-3 text-primary"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  {whatsApp.short}
+                </a>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}

@@ -107,11 +107,19 @@ export function TestimonialsSection() {
   }
 
   useEffect(() => {
-    intervalRef.current = setInterval(next, 8000)
+    if (prefersReducedMotion) return
+
+    intervalRef.current = setInterval(() => {
+      if (!document.hidden) {
+        setDirection(1)
+        setCurrent((prev) => (prev + 1) % testimonials.length)
+      }
+    }, 8000)
+
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
-  }, [testimonials.length])
+  }, [prefersReducedMotion, testimonials.length])
 
   const variants = prefersReducedMotion
     ? { enter: { opacity: 1 }, center: { opacity: 1 }, exit: { opacity: 1 } }

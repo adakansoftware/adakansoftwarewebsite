@@ -8,12 +8,6 @@ const nextConfig = {
   turbopack: {
     root: projectRoot,
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  images: {
-    unoptimized: true,
-  },
 }
 
 export default nextConfig

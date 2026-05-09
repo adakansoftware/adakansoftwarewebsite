@@ -9,23 +9,36 @@ export function AnimatedBackground() {
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    setIsMobile(window.innerWidth < 768)
-    
-    // Skip heavy animations on mobile or reduced motion
-    if (prefersReducedMotion || window.innerWidth < 768) return
+    const media = window.matchMedia("(max-width: 767px)")
+    const updateMode = () => setIsMobile(media.matches)
+    updateMode()
+    media.addEventListener("change", updateMode)
+
+    if (prefersReducedMotion || media.matches) {
+      return () => media.removeEventListener("change", updateMode)
+    }
 
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas) {
+      return () => media.removeEventListener("change", updateMode)
+    }
 
     const ctx = canvas.getContext("2d")
-    if (!ctx) return
+    if (!ctx) {
+      return () => media.removeEventListener("change", updateMode)
+    }
 
     let animationFrameId: number
     let particles: Particle[] = []
+    let resizeTimeout: number | null = null
 
     const resize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5)
+      canvas.width = Math.floor(window.innerWidth * pixelRatio)
+      canvas.height = Math.floor(window.innerHeight * pixelRatio)
+      canvas.style.width = `${window.innerWidth}px`
+      canvas.style.height = `${window.innerHeight}px`
+      ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
       initParticles()
     }
 
@@ -39,8 +52,8 @@ export function AnimatedBackground() {
       color: string
 
       constructor() {
-        this.x = Math.random() * canvas!.width
-        this.y = Math.random() * canvas!.height
+        this.x = Math.random() * window.innerWidth
+        this.y = Math.random() * window.innerHeight
         this.size = Math.random() * 1.5 + 0.5
         this.speedX = (Math.random() - 0.5) * 0.2
         this.speedY = (Math.random() - 0.5) * 0.2
@@ -52,10 +65,10 @@ export function AnimatedBackground() {
         this.x += this.speedX
         this.y += this.speedY
 
-        if (this.x < 0) this.x = canvas!.width
-        if (this.x > canvas!.width) this.x = 0
-        if (this.y < 0) this.y = canvas!.height
-        if (this.y > canvas!.height) this.y = 0
+        if (this.x < 0) this.x = window.innerWidth
+        if (this.x > window.innerWidth) this.x = 0
+        if (this.y < 0) this.y = window.innerHeight
+        if (this.y > window.innerHeight) this.y = 0
       }
 
       draw() {
@@ -69,9 +82,8 @@ export function AnimatedBackground() {
 
     const initParticles = () => {
       particles = []
-      // Reduced particle count for better performance
-      const particleCount = Math.floor((canvas!.width * canvas!.height) / 25000)
-      for (let i = 0; i < Math.min(particleCount, 40); i++) {
+      const particleCount = Math.floor((window.innerWidth * window.innerHeight) / 28000)
+      for (let i = 0; i < Math.min(particleCount, 34); i++) {
         particles.push(new Particle())
       }
     }
@@ -99,7 +111,12 @@ export function AnimatedBackground() {
 
     const animate = () => {
       if (!ctx) return
-      ctx.clearRect(0, 0, canvas!.width, canvas!.height)
+      if (document.hidden) {
+        animationFrameId = requestAnimationFrame(animate)
+        return
+      }
+
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
 
       particles.forEach((particle) => {
         particle.update()
@@ -110,12 +127,19 @@ export function AnimatedBackground() {
       animationFrameId = requestAnimationFrame(animate)
     }
 
-    window.addEventListener("resize", resize)
+    const handleResize = () => {
+      if (resizeTimeout) window.clearTimeout(resizeTimeout)
+      resizeTimeout = window.setTimeout(resize, 120)
+    }
+
+    window.addEventListener("resize", handleResize, { passive: true })
     resize()
     animate()
 
     return () => {
-      window.removeEventListener("resize", resize)
+      media.removeEventListener("change", updateMode)
+      window.removeEventListener("resize", handleResize)
+      if (resizeTimeout) window.clearTimeout(resizeTimeout)
       cancelAnimationFrame(animationFrameId)
     }
   }, [prefersReducedMotion])

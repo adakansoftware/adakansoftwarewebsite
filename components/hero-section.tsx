@@ -59,7 +59,7 @@ export function HeroSection() {
   const animationTransition = { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const }
 
   return (
-    <section ref={containerRef} className="relative min-h-[100svh] flex items-center justify-center overflow-hidden">
+    <section ref={containerRef} className="relative isolate min-h-[100svh] flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0">
         <div
           className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full opacity-50"
@@ -89,7 +89,7 @@ export function HeroSection() {
                 initial={prefersReducedMotion ? {} : { y: "100%" }}
                 animate={{ y: 0 }}
                 transition={{ duration: 1, delay: 0.2 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className={`text-[clamp(2.5rem,12vw,10rem)] font-bold tracking-tighter leading-[0.9] ${
+                className={`mx-auto max-w-full text-[clamp(2.75rem,10.5vw,8.75rem)] font-bold tracking-tighter leading-[0.9] sm:text-[clamp(3.5rem,10vw,9rem)] ${
                   index === 1 ? "text-gradient" : "text-foreground"
                 }`}
               >

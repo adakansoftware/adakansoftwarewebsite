@@ -1,43 +1,39 @@
 "use client"
 
-import { useEffect, useRef, createContext, useContext, type ReactNode } from "react"
+import { useEffect, useRef, type ReactNode } from "react"
 import Lenis from "@studio-freight/lenis"
-
-interface SmoothScrollContextType {
-  lenis: Lenis | null
-}
-
-const SmoothScrollContext = createContext<SmoothScrollContextType>({ lenis: null })
-
-export const useSmoothScroll = () => useContext(SmoothScrollContext)
 
 export function SmoothScrollProvider({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null)
+  const rafRef = useRef<number | null>(null)
 
   useEffect(() => {
-    // Respect reduced motion preference
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    if (prefersReducedMotion) return
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const coarsePointerQuery = window.matchMedia("(pointer: coarse)")
+
+    if (motionQuery.matches || coarsePointerQuery.matches || window.innerWidth < 768) {
+      return
+    }
 
     const lenis = new Lenis({
-      duration: 1.0,
+      duration: 0.9,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
-      touchMultiplier: 1.5,
+      touchMultiplier: 1,
+      wheelMultiplier: 0.85,
     })
 
     lenisRef.current = lenis
 
     function raf(time: number) {
       lenis.raf(time)
-      requestAnimationFrame(raf)
+      rafRef.current = requestAnimationFrame(raf)
     }
 
-    requestAnimationFrame(raf)
+    rafRef.current = requestAnimationFrame(raf)
 
-    // Handle anchor links
     const handleAnchorClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement
       const anchor = target.closest('a[href^="#"]')
@@ -56,14 +52,14 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     document.addEventListener("click", handleAnchorClick)
 
     return () => {
-      lenis.destroy()
       document.removeEventListener("click", handleAnchorClick)
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current)
+      }
+      lenis.destroy()
+      lenisRef.current = null
     }
   }, [])
 
-  return (
-    <SmoothScrollContext.Provider value={{ lenis: lenisRef.current }}>
-      {children}
-    </SmoothScrollContext.Provider>
-  )
+  return children
 }

@@ -109,7 +109,7 @@ export function CTASection() {
             </MagneticButton>
 
             <MagneticButton strength={0.2}>
-              <a href="mailto:merhaba@adakan.com.tr" className="text-muted-foreground hover:text-foreground transition-colors text-lg font-medium">
+              <a href={`mailto:merhaba@adakan.com.tr?subject=${locale === "tr" ? "Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi" : "New%20project%20inquiry"}`} className="text-muted-foreground hover:text-foreground transition-colors text-lg font-medium">
                 merhaba@adakan.com.tr
               </a>
             </MagneticButton>

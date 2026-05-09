@@ -1,14 +1,15 @@
 import Link from "next/link"
-import { ArrowRight, Mail, MapPin } from "lucide-react"
+import { ArrowRight, Mail, MapPin, MessageCircle } from "lucide-react"
 
 import { PageHeader } from "@/components/page-header"
 import { Button } from "@/components/ui/button"
+import { getWhatsAppHref } from "@/lib/contact-links"
 
 const contactOptions = [
   {
     title: "E-posta",
     value: "merhaba@adakan.com.tr",
-    href: "mailto:merhaba@adakan.com.tr",
+    href: "mailto:merhaba@adakan.com.tr?subject=Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi",
     icon: Mail,
   },
   {
@@ -27,7 +28,7 @@ export default function ContactPage() {
         title="Projeni"
         gradientText="birlikte netleştirelim"
         description="Yeni web siteniz, marka kimliğiniz veya dijital ürününüz için hedefleri, kapsamı ve ilk teslim planını birlikte çıkaralım."
-        primaryHref="mailto:merhaba@adakan.com.tr"
+        primaryHref="mailto:merhaba@adakan.com.tr?subject=Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi"
         primaryLabel="E-posta Gönder"
         secondaryHref="/services"
         secondaryLabel="Hizmetleri Gör"
@@ -47,12 +48,25 @@ export default function ContactPage() {
                 </span>
               ))}
             </div>
-            <Button asChild size="lg" className="mt-8 rounded-full bg-foreground px-8 py-7 text-background hover:bg-foreground/90">
-              <a href="mailto:merhaba@adakan.com.tr">
-                merhaba@adakan.com.tr
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </a>
-            </Button>
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+              <Button asChild size="lg" className="rounded-full bg-foreground px-8 py-7 text-background hover:bg-foreground/90">
+                <a href="mailto:merhaba@adakan.com.tr?subject=Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi">
+                  merhaba@adakan.com.tr
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </a>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="rounded-full border-primary/35 bg-primary/5 px-8 py-7 text-primary hover:border-primary/60 hover:bg-primary hover:text-background"
+              >
+                <a href={getWhatsAppHref("tr")} target="_blank" rel="noreferrer">
+                  WhatsApp
+                  <MessageCircle className="ml-2 h-5 w-5" />
+                </a>
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-4">
