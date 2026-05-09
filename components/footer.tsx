@@ -1,6 +1,7 @@
 "use client"
 
 import { motion, useReducedMotion } from "framer-motion"
+import Image from "next/image"
 import { Github, Twitter, Linkedin, Instagram, ArrowUpRight } from "lucide-react"
 import { MagneticButton } from "@/components/magnetic-button"
 
@@ -36,9 +37,14 @@ export function Footer() {
         <div className="grid lg:grid-cols-12 gap-12 mb-16">
           {/* Brand Section */}
           <div className="lg:col-span-5">
-            <a href="#" className="text-3xl font-bold tracking-tight inline-block mb-6">
-              <span className="text-foreground">Adakan</span>
-              <span className="text-primary">.</span>
+            <a href="#" className="mb-6 inline-flex items-center" aria-label="Adakan Software ana sayfa">
+              <Image
+                src="/adakan-logo.png"
+                alt="Adakan Software"
+                width={180}
+                height={118}
+                className="h-16 w-auto drop-shadow-[0_0_24px_rgba(45,212,191,0.18)]"
+              />
             </a>
             <p className="text-muted-foreground max-w-sm mb-8 leading-relaxed">
               Büyümek isteyen markalar için stratejik web siteleri, marka kimlikleri ve dijital ürün arayüzleri üreten tasarım ve yazılım stüdyosu.

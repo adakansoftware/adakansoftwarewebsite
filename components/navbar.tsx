@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Menu, X, ArrowUpRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -41,9 +42,15 @@ export function Navbar() {
         <div className="container mx-auto px-6 flex items-center justify-between">
           {/* Logo */}
           <MagneticButton strength={0.15}>
-            <a href="#" className="text-2xl font-bold tracking-tight">
-              <span className="text-foreground">Adakan</span>
-              <span className="text-primary">.</span>
+            <a href="#" className="flex items-center" aria-label="Adakan Software ana sayfa">
+              <Image
+                src="/adakan-logo.png"
+                alt="Adakan Software"
+                width={128}
+                height={84}
+                priority
+                className="h-9 w-auto drop-shadow-[0_0_18px_rgba(45,212,191,0.22)] md:h-10"
+              />
             </a>
           </MagneticButton>
 
