@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef } from "react"
+import Link from "next/link"
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -80,11 +81,14 @@ export function CTASection() {
           >
             <MagneticButton strength={0.2}>
               <Button
+                asChild
                 size="lg"
                 className="bg-foreground text-background hover:bg-foreground/90 group px-10 py-8 text-lg font-medium rounded-full transition-colors duration-300 hover:shadow-xl hover:shadow-foreground/10"
               >
-                Görüşmeye Başla
-                <ArrowRight className="ml-3 w-5 h-5 transition-transform duration-300 group-hover:translate-x-2" />
+                <Link href="/contact">
+                  Görüşmeye Başla
+                  <ArrowRight className="ml-3 w-5 h-5 transition-transform duration-300 group-hover:translate-x-2" />
+                </Link>
               </Button>
             </MagneticButton>
             

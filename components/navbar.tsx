@@ -2,19 +2,22 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
 import { Menu, X, ArrowUpRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { MagneticButton } from "@/components/magnetic-button"
 
 const navLinks = [
-  { name: "Hizmetler", href: "#services" },
-  { name: "Projeler", href: "#projects" },
-  { name: "Yaklaşımımız", href: "#philosophy" },
-  { name: "Yorumlar", href: "#testimonials" },
+  { name: "Hizmetler", href: "/services" },
+  { name: "Projeler", href: "/projects" },
+  { name: "Yaklaşımımız", href: "/approach" },
+  { name: "Yorumlar", href: "/testimonials" },
 ]
 
 export function Navbar() {
+  const pathname = usePathname()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const prefersReducedMotion = useReducedMotion()
@@ -42,7 +45,7 @@ export function Navbar() {
         <div className="container mx-auto px-6 flex items-center justify-between">
           {/* Logo */}
           <MagneticButton strength={0.15}>
-            <a href="#" className="flex items-center" aria-label="Adakan Software ana sayfa">
+            <Link href="/" className="flex items-center" aria-label="Adakan Software ana sayfa">
               <Image
                 src="/adakan-logo.png"
                 alt="Adakan Software"
@@ -51,7 +54,7 @@ export function Navbar() {
                 priority
                 className="h-9 w-auto drop-shadow-[0_0_18px_rgba(45,212,191,0.22)] md:h-10"
               />
-            </a>
+            </Link>
           </MagneticButton>
 
           {/* Desktop Navigation */}
@@ -64,13 +67,19 @@ export function Navbar() {
                 transition={{ delay: 0.4 + index * 0.1 }}
               >
                 <MagneticButton strength={0.1}>
-                  <a
+                  <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors relative group py-2"
+                    className={`text-sm transition-colors relative group py-2 ${
+                      pathname === link.href ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                    }`}
                   >
                     {link.name}
-                    <span className="absolute bottom-0 left-0 w-0 h-px bg-primary transition-all duration-300 group-hover:w-full" />
-                  </a>
+                    <span
+                      className={`absolute bottom-0 left-0 h-px bg-primary transition-all duration-300 ${
+                        pathname === link.href ? "w-full" : "w-0 group-hover:w-full"
+                      }`}
+                    />
+                  </Link>
                 </MagneticButton>
               </motion.div>
             ))}
@@ -84,9 +93,11 @@ export function Navbar() {
               transition={{ delay: 0.8 }}
             >
               <MagneticButton strength={0.2}>
-                <Button className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-6 transition-colors duration-300">
-                  Projeye Başla
-                  <ArrowUpRight className="ml-2 w-4 h-4" />
+                <Button asChild className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-6 transition-colors duration-300">
+                  <Link href="/contact">
+                    Projeye Başla
+                    <ArrowUpRight className="ml-2 w-4 h-4" />
+                  </Link>
                 </Button>
               </MagneticButton>
             </motion.div>
@@ -122,17 +133,20 @@ export function Navbar() {
                 className="flex flex-col gap-8"
               >
                 {navLinks.map((link, index) => (
-                  <motion.a
+                  <motion.div
                     key={link.name}
-                    href={link.href}
-                    className="text-4xl font-bold text-foreground"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + index * 0.05 }}
-                    onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    {link.name}
-                  </motion.a>
+                    <Link
+                      href={link.href}
+                      className="text-4xl font-bold text-foreground"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {link.name}
+                    </Link>
+                  </motion.div>
                 ))}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -141,11 +155,13 @@ export function Navbar() {
                   className="mt-8"
                 >
                   <Button
+                    asChild
                     className="w-full bg-foreground text-background rounded-full py-6 text-lg"
-                    onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Projeye Başla
-                    <ArrowUpRight className="ml-2 w-5 h-5" />
+                    <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)}>
+                      Projeye Başla
+                      <ArrowUpRight className="ml-2 w-5 h-5" />
+                    </Link>
                   </Button>
                 </motion.div>
               </motion.div>

@@ -1,31 +1,10 @@
 "use client"
 
 import { useRef } from "react"
+import Link from "next/link"
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
-
-const services = [
-  {
-    title: "Web Tasarım",
-    description: "Markanın değerini ilk ekranda hissettiren, hızlı, erişilebilir ve dönüşüm odaklı web siteleri tasarlarız.",
-    tags: ["Kurumsal site", "Landing page", "E-ticaret"],
-  },
-  {
-    title: "Marka Kimliği",
-    description: "Logo, renk, tipografi ve görsel dilin tek bir sistem gibi çalıştığı güçlü marka kimlikleri kurarız.",
-    tags: ["Logo", "Görsel sistem", "Marka rehberi"],
-  },
-  {
-    title: "UI/UX Tasarım",
-    description: "Karmaşık akışları sadeleştirir, kullanıcıların ürünü anlamasını ve tekrar kullanmasını kolaylaştırırız.",
-    tags: ["SaaS", "Panel", "Mobil uygulama"],
-  },
-  {
-    title: "Frontend Geliştirme",
-    description: "Tasarımları performanslı, responsive ve sürdürülebilir Next.js arayüzlerine dönüştürürüz.",
-    tags: ["Next.js", "Animasyon", "Performans"],
-  },
-]
+import { services } from "@/lib/site-data"
 
 export function ServicesSection() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -102,9 +81,9 @@ function ServiceCard({ service, index, prefersReducedMotion }: { service: typeof
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      className="group cursor-pointer"
+      className="group"
     >
-      <div className="relative py-8 border-t border-border/50 hover:border-primary/50 transition-colors duration-300">
+      <Link href={service.href} className="relative block py-8 border-t border-border/50 hover:border-primary/50 transition-colors duration-300">
         {/* Hover Background */}
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
@@ -148,7 +127,7 @@ function ServiceCard({ service, index, prefersReducedMotion }: { service: typeof
             </div>
           </div>
         </div>
-      </div>
+      </Link>
     </motion.div>
   )
 }

@@ -2,29 +2,30 @@
 
 import { motion, useReducedMotion } from "framer-motion"
 import Image from "next/image"
+import Link from "next/link"
 import { Github, Twitter, Linkedin, Instagram, ArrowUpRight } from "lucide-react"
 import { MagneticButton } from "@/components/magnetic-button"
 
 const footerLinks = {
   company: [
-    { name: "Hakkımızda", href: "#" },
-    { name: "Kariyer", href: "#" },
-    { name: "Blog", href: "#" },
-    { name: "İletişim", href: "#" },
+    { name: "Hakkımızda", href: "/about" },
+    { name: "Kariyer", href: "/careers" },
+    { name: "Blog", href: "/blog" },
+    { name: "İletişim", href: "/contact" },
   ],
   services: [
-    { name: "Web Tasarım", href: "#" },
-    { name: "Marka Kimliği", href: "#" },
-    { name: "UI/UX Tasarım", href: "#" },
-    { name: "Frontend Geliştirme", href: "#" },
+    { name: "Web Tasarım", href: "/services#web-design" },
+    { name: "Marka Kimliği", href: "/services#brand-identity" },
+    { name: "UI/UX Tasarım", href: "/services#ui-ux" },
+    { name: "Frontend Geliştirme", href: "/services#frontend" },
   ],
 }
 
 const socialLinks = [
-  { icon: Github, href: "#", label: "GitHub" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Instagram, href: "#", label: "Instagram" },
+  { icon: Github, href: "https://github.com/adakansoftware", label: "GitHub" },
+  { icon: Twitter, href: "https://x.com/adakansoftware", label: "X" },
+  { icon: Linkedin, href: "https://www.linkedin.com/company/adakansoftware", label: "LinkedIn" },
+  { icon: Instagram, href: "https://www.instagram.com/adakansoftware", label: "Instagram" },
 ]
 
 export function Footer() {
@@ -37,7 +38,7 @@ export function Footer() {
         <div className="grid lg:grid-cols-12 gap-12 mb-16">
           {/* Brand Section */}
           <div className="lg:col-span-5">
-            <a href="#" className="mb-6 inline-flex items-center" aria-label="Adakan Software ana sayfa">
+            <Link href="/" className="mb-6 inline-flex items-center" aria-label="Adakan Software ana sayfa">
               <Image
                 src="/adakan-logo.png"
                 alt="Adakan Software"
@@ -45,7 +46,7 @@ export function Footer() {
                 height={118}
                 className="h-16 w-auto drop-shadow-[0_0_24px_rgba(45,212,191,0.18)]"
               />
-            </a>
+            </Link>
             <p className="text-muted-foreground max-w-sm mb-8 leading-relaxed">
               Büyümek isteyen markalar için stratejik web siteleri, marka kimlikleri ve dijital ürün arayüzleri üreten tasarım ve yazılım stüdyosu.
             </p>
@@ -72,13 +73,13 @@ export function Footer() {
             <ul className="space-y-4">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1 group"
                   >
                     {link.name}
                     <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -89,13 +90,13 @@ export function Footer() {
             <ul className="space-y-4">
               {footerLinks.services.map((link) => (
                 <li key={link.name}>
-                  <a
+                  <Link
                     href={link.href}
                     className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1 group"
                   >
                     {link.name}
                     <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -109,12 +110,12 @@ export function Footer() {
           </p>
           
           <div className="flex items-center gap-8">
-            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Gizlilik
-            </a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            </Link>
+            <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Kullanım Şartları
-            </a>
+            </Link>
             <span className="text-sm text-muted-foreground">
               İstanbul, Türkiye
             </span>

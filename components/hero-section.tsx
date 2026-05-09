@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef } from "react"
+import Link from "next/link"
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion"
 import { ArrowRight, ArrowDownRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -112,21 +113,25 @@ export function HeroSection() {
           <div className="flex items-center gap-6">
             <MagneticButton strength={0.3}>
               <Button
+                asChild
                 size="lg"
                 className="bg-foreground text-background hover:bg-foreground/90 group px-8 py-7 text-base font-medium rounded-full transition-colors duration-300 hover:shadow-xl hover:shadow-foreground/10"
               >
-                Projeye Başla
-                <ArrowRight className="ml-2 w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+                <Link href="/contact">
+                  Projeye Başla
+                  <ArrowRight className="ml-2 w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
               </Button>
             </MagneticButton>
             
             <MagneticButton strength={0.3}>
               <Button
+                asChild
                 size="lg"
                 variant="ghost"
                 className="text-muted-foreground hover:text-foreground px-8 py-7 text-base font-medium rounded-full"
               >
-                Projeleri Gör
+                <Link href="/projects">Projeleri Gör</Link>
               </Button>
             </MagneticButton>
           </div>

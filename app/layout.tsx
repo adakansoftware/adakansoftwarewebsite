@@ -1,6 +1,10 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, Space_Grotesk } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { AnimatedBackground } from '@/components/animated-background'
+import { Footer } from '@/components/footer'
+import { Navbar } from '@/components/navbar'
+import { SmoothScrollProvider } from '@/components/smooth-scroll-provider'
 import './globals.css'
 
 const inter = Inter({ 
@@ -50,7 +54,14 @@ export default function RootLayout({
   return (
     <html lang="tr" className="bg-background">
       <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
-        {children}
+        <SmoothScrollProvider>
+          <AnimatedBackground />
+          <Navbar />
+          <main className="relative">
+            {children}
+          </main>
+          <Footer />
+        </SmoothScrollProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

@@ -1,39 +1,10 @@
 "use client"
 
 import { useRef, useState } from "react"
+import Link from "next/link"
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
-
-const projects = [
-  {
-    title: "Nova Finans",
-    category: "Fintech web deneyimi",
-    year: "2025",
-    description: "Güven veren kurumsal dil, sade ürün anlatımı ve başvuru odaklı landing page sistemi.",
-    color: "#14b8a6",
-  },
-  {
-    title: "Vita Klinik",
-    category: "Sağlık marka kimliği",
-    year: "2025",
-    description: "Hasta güvenini artıran yeni görsel kimlik, randevu akışı ve mobil öncelikli web sitesi.",
-    color: "#84cc16",
-  },
-  {
-    title: "Atlas Studio",
-    category: "Yaratıcı portfolyo",
-    year: "2024",
-    description: "İşleri öne çıkaran hızlı portfolyo mimarisi, etkileşimli proje sayfaları ve rafine animasyon dili.",
-    color: "#f59e0b",
-  },
-  {
-    title: "Mira Market",
-    category: "E-ticaret",
-    year: "2024",
-    description: "Kategori keşfini sadeleştiren, sepet terkini azaltmaya odaklanan modern alışveriş deneyimi.",
-    color: "#22c55e",
-  },
-]
+import { projects } from "@/lib/site-data"
 
 export function ProjectsSection() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -84,17 +55,20 @@ export function ProjectsSection() {
             </motion.h2>
           </div>
           
-          <motion.a
-            href="#"
+          <motion.div
             initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="group inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
-            <span className="text-sm">Tüm Projeleri Gör</span>
-            <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-          </motion.a>
+            <Link
+              href="/projects"
+              className="group inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <span className="text-sm">Tüm Projeleri Gör</span>
+              <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+            </Link>
+          </motion.div>
         </div>
 
         {/* Projects Grid */}
@@ -137,10 +111,11 @@ function ProjectCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      className="group cursor-pointer"
+      className="group"
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
     >
+      <Link href={project.href} className="block">
       <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-6 premium-border">
         {/* Background Gradient */}
         <div
@@ -217,6 +192,7 @@ function ProjectCard({
         <div className="h-px flex-1 mx-4 bg-border/50" />
         <span className="text-muted-foreground text-sm">{project.category}</span>
       </div>
+      </Link>
     </motion.div>
   )
 }
