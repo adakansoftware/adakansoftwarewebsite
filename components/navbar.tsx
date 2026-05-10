@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState, type TouchEvent } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -52,6 +52,7 @@ export function Navbar() {
   const whatsApp = whatsAppCopy[locale]
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const lastTouchRef = useRef(0)
   const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
@@ -75,6 +76,27 @@ export function Navbar() {
 
   const localizedHref = (href: string) => withLocale(href, locale)
   const isActive = (href: string) => pathname === localizedHref(href)
+  const closeMobileMenu = () => setIsMobileMenuOpen(false)
+  const toggleMobileMenu = () => setIsMobileMenuOpen((open) => !open)
+  const handleMobileMenuClick = () => {
+    if (Date.now() - lastTouchRef.current < 700) {
+      return
+    }
+
+    toggleMobileMenu()
+  }
+
+  const handleMobileMenuTouchEnd = (event: TouchEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    lastTouchRef.current = Date.now()
+    toggleMobileMenu()
+  }
+
+  const handleCloseTouchEnd = (event: TouchEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    lastTouchRef.current = Date.now()
+    closeMobileMenu()
+  }
 
   return (
     <>
@@ -85,6 +107,7 @@ export function Navbar() {
         className={`fixed top-0 left-0 right-0 z-[70] transition-all duration-500 ${
           isScrolled ? "py-4 backdrop-blur-xl bg-background/78 border-b border-border/20" : "py-6"
         }`}
+        style={{ zIndex: 1000 }}
       >
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 sm:px-6">
           <MagneticButton strength={0.15}>
@@ -171,8 +194,9 @@ export function Navbar() {
 
           <button
             type="button"
-            className="relative z-[80] p-2 text-foreground lg:hidden"
-            onClick={() => setIsMobileMenuOpen((open) => !open)}
+            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-background/70 text-foreground backdrop-blur-xl lg:hidden"
+            onClick={handleMobileMenuClick}
+            onTouchEnd={handleMobileMenuTouchEnd}
             aria-label={isMobileMenuOpen ? labels.closeMenu : labels.openMenu}
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-navigation"
@@ -182,63 +206,75 @@ export function Navbar() {
         </div>
       </motion.nav>
 
-      <div
-        id="mobile-navigation"
-        aria-hidden={!isMobileMenuOpen}
-        className={`fixed inset-0 z-[90] bg-background transition-[opacity,visibility] duration-200 lg:hidden ${
-          isMobileMenuOpen ? "visible opacity-100 pointer-events-auto" : "invisible opacity-0 pointer-events-none"
-        }`}
-      >
-        <button
-          type="button"
-          className="absolute right-5 top-6 z-[100] p-2 text-foreground"
-          onClick={() => setIsMobileMenuOpen(false)}
-          aria-label={labels.closeMenu}
+      {isMobileMenuOpen ? (
+        <div
+          id="mobile-navigation"
+          className="fixed inset-0 bg-background lg:hidden"
+          style={{ zIndex: 2147483647 }}
+          role="dialog"
+          aria-modal="true"
         >
-          <X size={28} />
-        </button>
-        <div className="absolute inset-0 overflow-y-auto px-6 pb-10 pt-28">
-          <div className={`flex flex-col gap-8 transition-transform duration-200 ${isMobileMenuOpen ? "translate-y-0" : "translate-y-4"}`}>
-            {labels.links.map((link) => (
-              <Link
-                key={link.name}
-                href={localizedHref(link.href)}
-                className="text-4xl font-bold text-foreground"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {link.name}
-              </Link>
-            ))}
-            <div className="flex gap-3">
-              <Link href={switchLocalePath(pathname, "tr")} onClick={() => setIsMobileMenuOpen(false)} className="rounded-full border border-border/50 px-4 py-2 text-sm">
-                TR
-              </Link>
-              <Link href={switchLocalePath(pathname, "en")} onClick={() => setIsMobileMenuOpen(false)} className="rounded-full border border-border/50 px-4 py-2 text-sm">
-                EN
-              </Link>
-            </div>
-            <a
-              href={getWhatsAppHref(locale)}
-              aria-label={whatsApp.label}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center justify-center gap-3 rounded-full border border-primary/35 bg-primary/10 px-5 py-3 text-primary"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <MessageCircle className="h-5 w-5" />
-              {whatsApp.short}
-            </a>
-            <div className="mt-8">
-              <Button asChild className="w-full bg-foreground text-background rounded-full py-6 text-lg">
-                <Link href={localizedHref("/contact")} onClick={() => setIsMobileMenuOpen(false)}>
-                  {labels.cta}
-                  <ArrowUpRight className="ml-2 w-5 h-5" />
+          <div className="absolute inset-0 grid-pattern opacity-10" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,oklch(0.76_0.13_174_/_0.16),transparent_34%),radial-gradient(circle_at_80%_15%,oklch(0.78_0.14_74_/_0.12),transparent_32%)]" />
+          <button
+            type="button"
+            className="absolute right-5 top-6 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-foreground backdrop-blur-xl"
+            onClick={closeMobileMenu}
+            onTouchEnd={handleCloseTouchEnd}
+            aria-label={labels.closeMenu}
+          >
+            <X size={28} />
+          </button>
+          <div className="relative h-full overflow-y-auto px-6 pb-10 pt-28">
+            <div className="flex flex-col gap-8">
+              {labels.links.map((link) => (
+                <Link
+                  key={link.name}
+                  href={localizedHref(link.href)}
+                  className="text-4xl font-bold leading-tight text-foreground"
+                  onClick={closeMobileMenu}
+                >
+                  {link.name}
                 </Link>
-              </Button>
+              ))}
+              <div className="flex gap-3">
+                <Link href={switchLocalePath(pathname, "tr")} onClick={closeMobileMenu} className="rounded-full border border-border/50 px-4 py-2 text-sm">
+                  TR
+                </Link>
+                <Link href={switchLocalePath(pathname, "en")} onClick={closeMobileMenu} className="rounded-full border border-border/50 px-4 py-2 text-sm">
+                  EN
+                </Link>
+              </div>
+              <a
+                href={getWhatsAppHref(locale)}
+                aria-label={whatsApp.label}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-3 rounded-full border border-primary/35 bg-primary/10 px-5 py-3 text-primary"
+                onClick={closeMobileMenu}
+              >
+                <MessageCircle className="h-5 w-5" />
+                {whatsApp.short}
+              </a>
+              <div className="mt-8">
+                <Button asChild className="w-full bg-foreground text-background rounded-full py-6 text-lg">
+                  <Link href={localizedHref("/contact")} onClick={closeMobileMenu}>
+                    {labels.cta}
+                    <ArrowUpRight className="ml-2 w-5 h-5" />
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div
+          id="mobile-navigation"
+          hidden
+          aria-hidden="true"
+        >
+        </div>
+      )}
     </>
   )
 }
