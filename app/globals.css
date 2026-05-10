@@ -116,12 +116,38 @@
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
+  body:has(.mobile-menu-native[open]) {
+    overflow: hidden;
+  }
   a:focus-visible,
   button:focus-visible,
   input:focus-visible,
   textarea:focus-visible {
     @apply outline-2 outline-offset-4 outline-primary/70;
   }
+}
+
+.mobile-menu-native > summary {
+  cursor: pointer;
+  list-style: none;
+  position: relative;
+  z-index: 2147483647;
+}
+
+.mobile-menu-native > summary::-webkit-details-marker {
+  display: none;
+}
+
+.mobile-menu-native .mobile-menu-close-icon {
+  display: none;
+}
+
+.mobile-menu-native[open] .mobile-menu-open-icon {
+  display: none;
+}
+
+.mobile-menu-native[open] .mobile-menu-close-icon {
+  display: block;
 }
 
 /* Custom utility classes */
