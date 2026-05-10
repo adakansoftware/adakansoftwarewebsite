@@ -2,7 +2,7 @@
 
 import { useRef } from "react"
 import { usePathname } from "next/navigation"
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 
 import { getLocaleFromPathname, type Locale } from "@/lib/i18n"
 
@@ -69,7 +69,6 @@ export function PhilosophySection() {
   const locale = getLocaleFromPathname(pathname)
   const sectionCopy = copy[locale]
   const containerRef = useRef<HTMLDivElement>(null)
-  const prefersReducedMotion = useReducedMotion()
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -77,11 +76,12 @@ export function PhilosophySection() {
   })
 
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"])
+  const contentY = useTransform(scrollYProgress, [0, 1], [64, -22])
 
   return (
     <section ref={containerRef} id="philosophy" className="relative overflow-hidden py-20 md:py-32">
       <motion.div
-        style={prefersReducedMotion ? {} : { y: backgroundY }}
+        style={{ y: backgroundY }}
         className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
       >
         <span className="text-[15vw] font-bold text-border/[0.02] tracking-tighter whitespace-nowrap">
@@ -89,7 +89,7 @@ export function PhilosophySection() {
         </span>
       </motion.div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <motion.div style={{ y: contentY }} className="container mx-auto px-6 relative z-10">
         <div className="mb-14 max-w-4xl md:mb-24">
           <motion.span
             initial={false}
@@ -120,7 +120,7 @@ export function PhilosophySection() {
             <PhilosophyItem key={item.number} item={item} />
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   )
 }

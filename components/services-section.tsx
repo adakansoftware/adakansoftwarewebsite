@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
 import { getLocaleFromPathname, type Locale } from "@/lib/i18n"
 import { getServices } from "@/lib/site-data"
@@ -31,7 +31,6 @@ export function ServicesSection() {
   const services = getServices(locale)
   const sectionCopy = copy[locale]
   const containerRef = useRef<HTMLDivElement>(null)
-  const prefersReducedMotion = useReducedMotion()
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -39,16 +38,17 @@ export function ServicesSection() {
   })
 
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "10%"])
+  const contentY = useTransform(scrollYProgress, [0, 1], [56, -18])
 
   return (
     <section ref={containerRef} id="services" className="relative py-20 md:py-32">
       {/* Subtle Background Grid */}
       <motion.div
-        style={prefersReducedMotion ? {} : { y: backgroundY }}
+        style={{ y: backgroundY }}
         className="absolute inset-0 grid-pattern opacity-20"
       />
 
-      <div className="container mx-auto px-6 relative z-10">
+      <motion.div style={{ y: contentY }} className="container mx-auto px-6 relative z-10">
         {/* Section Header */}
         <div className="mb-12 flex flex-col gap-8 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
@@ -83,7 +83,7 @@ export function ServicesSection() {
             <ServiceCard key={service.title} service={service} index={index} />
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   )
 }

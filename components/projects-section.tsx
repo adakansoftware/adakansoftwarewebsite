@@ -3,7 +3,7 @@
 import { useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
 import { getLocaleFromPathname, withLocale, type Locale } from "@/lib/i18n"
 import { getProjects } from "@/lib/site-data"
@@ -32,7 +32,6 @@ export function ProjectsSection() {
   const sectionCopy = copy[locale]
   const containerRef = useRef<HTMLDivElement>(null)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const prefersReducedMotion = useReducedMotion()
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -40,18 +39,19 @@ export function ProjectsSection() {
   })
 
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"])
+  const contentY = useTransform(scrollYProgress, [0, 1], [60, -20])
 
   return (
     <section ref={containerRef} id="projects" className="relative overflow-hidden py-20 md:py-32">
       {/* Background Element */}
       <motion.div
-        style={prefersReducedMotion ? {} : { y: backgroundY }}
+        style={{ y: backgroundY }}
         className="absolute right-0 top-1/4 w-1/2 h-1/2 opacity-20 pointer-events-none"
       >
         <div className="absolute inset-0 bg-gradient-to-l from-primary/10 to-transparent" />
       </motion.div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <motion.div style={{ y: contentY }} className="container mx-auto px-6 relative z-10">
         {/* Section Header */}
         <div className="mb-12 flex flex-col gap-8 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
@@ -97,7 +97,7 @@ export function ProjectsSection() {
             />
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   )
 }
