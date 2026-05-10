@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import { ArrowDownRight, ArrowRight } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -44,7 +44,6 @@ export function HeroSection() {
   const locale = getLocaleFromPathname(pathname)
   const copy = heroCopy[locale]
   const containerRef = useRef<HTMLDivElement>(null)
-  const prefersReducedMotion = useReducedMotion()
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -53,9 +52,7 @@ export function HeroSection() {
 
   const y = useTransform(scrollYProgress, [0, 1], [0, 200])
   const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0])
-  const animationProps = prefersReducedMotion
-    ? { initial: false, animate: { opacity: 1 } }
-    : { initial: { opacity: 1, y: 0 }, animate: { opacity: 1, y: 0 } }
+  const animationProps = { initial: { opacity: 1, y: 0 }, animate: { opacity: 1, y: 0 } }
   const animationTransition = { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const }
 
   return (
@@ -71,7 +68,7 @@ export function HeroSection() {
         />
       </div>
 
-      <motion.div style={prefersReducedMotion ? {} : { y, opacity }} className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-6">
+      <motion.div style={{ y, opacity }} className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-6">
         <motion.div {...animationProps} transition={{ ...animationTransition, delay: 0.3 }} className="mb-8 flex justify-center md:mb-12">
           <div className="inline-flex w-full max-w-[22rem] items-center justify-center gap-3 rounded-full border border-border/50 bg-card/30 px-4 py-2.5 backdrop-blur-sm sm:w-auto sm:max-w-full sm:px-5">
             <span className="relative flex h-2 w-2">

@@ -8,12 +8,6 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
   const rafRef = useRef<number | null>(null)
 
   useEffect(() => {
-    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
-
-    if (motionQuery.matches) {
-      return
-    }
-
     const lenis = new Lenis({
       duration: 0.9,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),

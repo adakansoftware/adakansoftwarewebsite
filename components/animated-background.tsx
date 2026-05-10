@@ -1,17 +1,12 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { motion, useReducedMotion } from "framer-motion"
+import { motion } from "framer-motion"
 
 export function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
-    if (prefersReducedMotion) {
-      return
-    }
-
     const canvas = canvasRef.current
     if (!canvas) {
       return
@@ -137,16 +132,7 @@ export function AnimatedBackground() {
       if (resizeTimeout) window.clearTimeout(resizeTimeout)
       cancelAnimationFrame(animationFrameId)
     }
-  }, [prefersReducedMotion])
-
-  if (prefersReducedMotion) {
-    return (
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
-        <div className="absolute inset-0 noise opacity-[0.015]" />
-      </div>
-    )
-  }
+  }, [])
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0">
