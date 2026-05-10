@@ -1,31 +1,25 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 
 export function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const prefersReducedMotion = useReducedMotion()
-  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    const media = window.matchMedia("(max-width: 767px)")
-    const updateMode = () => setIsMobile(media.matches)
-    updateMode()
-    media.addEventListener("change", updateMode)
-
-    if (prefersReducedMotion || media.matches) {
-      return () => media.removeEventListener("change", updateMode)
+    if (prefersReducedMotion) {
+      return
     }
 
     const canvas = canvasRef.current
     if (!canvas) {
-      return () => media.removeEventListener("change", updateMode)
+      return
     }
 
     const ctx = canvas.getContext("2d")
     if (!ctx) {
-      return () => media.removeEventListener("change", updateMode)
+      return
     }
 
     let animationFrameId: number
@@ -82,8 +76,10 @@ export function AnimatedBackground() {
 
     const initParticles = () => {
       particles = []
-      const particleCount = Math.floor((window.innerWidth * window.innerHeight) / 28000)
-      for (let i = 0; i < Math.min(particleCount, 34); i++) {
+      const surface = window.innerWidth * window.innerHeight
+      const particleCount = Math.floor(surface / 32000)
+      const maxParticles = window.innerWidth < 768 ? 18 : 34
+      for (let i = 0; i < Math.min(Math.max(particleCount, 8), maxParticles); i++) {
         particles.push(new Particle())
       }
     }
@@ -137,7 +133,6 @@ export function AnimatedBackground() {
     animate()
 
     return () => {
-      media.removeEventListener("change", updateMode)
       window.removeEventListener("resize", handleResize)
       if (resizeTimeout) window.clearTimeout(resizeTimeout)
       cancelAnimationFrame(animationFrameId)
@@ -153,97 +148,36 @@ export function AnimatedBackground() {
     )
   }
 
-  // Lightweight animated fallback for mobile
-  if (isMobile) {
-    return (
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <motion.div
-          className="absolute -left-16 top-16 h-56 w-56 rounded-full"
-          style={{
-            background: "radial-gradient(circle, oklch(0.7 0.15 195 / 0.12) 0%, transparent 68%)",
-          }}
-          animate={{
-            x: [-12, 18, -12],
-            y: [-8, 20, -8],
-            scale: [1, 1.05, 1],
-          }}
-          transition={{
-            duration: 14,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute -bottom-10 right-[-2.5rem] h-52 w-52 rounded-full"
-          style={{
-            background: "radial-gradient(circle, oklch(0.78 0.14 74 / 0.1) 0%, transparent 68%)",
-          }}
-          animate={{
-            x: [10, -16, 10],
-            y: [8, -18, 8],
-            scale: [1.02, 0.98, 1.02],
-          }}
-          transition={{
-            duration: 16,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute left-1/2 top-1/3 h-28 w-28 -translate-x-1/2 rounded-full border border-primary/12"
-          animate={{
-            opacity: [0.18, 0.32, 0.18],
-            scale: [1, 1.08, 1],
-          }}
-          transition={{
-            duration: 9,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <div className="absolute inset-0 grid-pattern opacity-[0.018]" />
-        <div className="absolute inset-0 noise opacity-[0.02]" />
-        <div
-          className="absolute inset-0"
-          style={{
-            background: "radial-gradient(ellipse at center, transparent 0%, var(--background) 82%)",
-          }}
-        />
-      </div>
-    )
-  }
-
   return (
     <div className="fixed inset-0 pointer-events-none z-0">
       <canvas ref={canvasRef} className="absolute inset-0 opacity-40" />
 
-      {/* Simplified glow orbs - using CSS transforms only */}
       <motion.div
-        className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full will-change-transform"
+        className="absolute left-[-8rem] top-[-3rem] h-[18rem] w-[18rem] rounded-full will-change-transform sm:left-0 sm:top-0 sm:h-[28rem] sm:w-[28rem] md:h-[38rem] md:w-[38rem]"
         style={{
-          background: "radial-gradient(circle, oklch(0.7 0.15 195 / 0.06) 0%, transparent 60%)",
+          background: "radial-gradient(circle, oklch(0.7 0.15 195 / 0.08) 0%, transparent 62%)",
         }}
         animate={{
-          x: [-100, 50, -100],
-          y: [-50, 100, -50],
+          x: [-50, 35, -50],
+          y: [-20, 55, -20],
         }}
         transition={{
-          duration: 30,
+          duration: 24,
           repeat: Infinity,
           ease: "linear",
         }}
       />
       <motion.div
-        className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full will-change-transform"
+        className="absolute bottom-[-4rem] right-[-4rem] h-[16rem] w-[16rem] rounded-full will-change-transform sm:bottom-0 sm:right-0 sm:h-[24rem] sm:w-[24rem] md:h-[32rem] md:w-[32rem]"
         style={{
-          background: "radial-gradient(circle, oklch(0.65 0.2 300 / 0.04) 0%, transparent 60%)",
+          background: "radial-gradient(circle, oklch(0.65 0.2 300 / 0.06) 0%, transparent 62%)",
         }}
         animate={{
-          x: [50, -100, 50],
-          y: [50, -50, 50],
+          x: [30, -45, 30],
+          y: [25, -30, 25],
         }}
         transition={{
-          duration: 25,
+          duration: 22,
           repeat: Infinity,
           ease: "linear",
         }}

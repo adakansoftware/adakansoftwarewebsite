@@ -73,8 +73,8 @@ export function Navbar() {
         initial={false}
         animate={{ y: 0, opacity: 1 }}
         transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-0 left-0 right-0 z-[70] transition-all duration-500 ${
-          isScrolled ? "py-4 backdrop-blur-xl bg-background/78 border-b border-border/20" : "py-6"
+        className={`fixed top-0 left-0 right-0 z-[70] border-b border-border/20 bg-background/78 backdrop-blur-xl transition-all duration-500 ${
+          isScrolled ? "py-4" : "py-6"
         }`}
         style={{ zIndex: 1000 }}
       >

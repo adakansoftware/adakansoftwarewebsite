@@ -9,9 +9,8 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
-    const coarsePointerQuery = window.matchMedia("(pointer: coarse)")
 
-    if (motionQuery.matches || coarsePointerQuery.matches || window.innerWidth < 768) {
+    if (motionQuery.matches) {
       return
     }
 
