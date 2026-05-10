@@ -79,7 +79,7 @@ export function PhilosophySection() {
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"])
 
   return (
-    <section ref={containerRef} id="philosophy" className="py-32 relative overflow-hidden">
+    <section ref={containerRef} id="philosophy" className="relative overflow-hidden py-20 md:py-32">
       <motion.div
         style={prefersReducedMotion ? {} : { y: backgroundY }}
         className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
@@ -90,7 +90,7 @@ export function PhilosophySection() {
       </motion.div>
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-4xl mb-24">
+        <div className="mb-14 max-w-4xl md:mb-24">
           <motion.span
             initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -124,7 +124,7 @@ export function PhilosophySection() {
           </motion.p>
         </div>
 
-        <div className="space-y-16">
+        <div className="space-y-10 md:space-y-16">
           {sectionCopy.items.map((item, index) => (
             <PhilosophyItem key={item.number} item={item} index={index} prefersReducedMotion={prefersReducedMotion} />
           ))}
@@ -152,16 +152,16 @@ function PhilosophyItem({
       initial={prefersReducedMotion ? {} : { opacity: 0, y: 50 }}
       animate={isInView ? { opacity: 1, y: 0 } : prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
       transition={{ duration: 0.8, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      className="grid md:grid-cols-12 gap-8 items-start group"
+      className="group grid gap-4 md:grid-cols-12 md:items-start md:gap-8"
     >
       <div className="md:col-span-2">
-        <span className="text-6xl md:text-7xl font-bold text-border/15 group-hover:text-primary/15 transition-colors duration-500">
+        <span className="text-5xl font-bold text-border/15 transition-colors duration-500 group-hover:text-primary/15 md:text-7xl">
           {item.number}
         </span>
       </div>
 
       <div className="md:col-span-10 md:col-start-4">
-        <div className="border-t border-border/50 group-hover:border-primary/30 transition-colors duration-500 pt-8">
+        <div className="border-t border-border/50 pt-5 transition-colors duration-500 group-hover:border-primary/30 md:pt-8">
           <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors duration-300">
             {item.title}
           </h3>

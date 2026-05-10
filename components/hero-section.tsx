@@ -59,7 +59,7 @@ export function HeroSection() {
   const animationTransition = { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const }
 
   return (
-    <section ref={containerRef} className="relative isolate flex min-h-[100svh] max-w-full items-start justify-center overflow-hidden px-0 pb-16 pt-24 md:items-center md:py-0">
+    <section ref={containerRef} className="relative isolate flex min-h-[auto] max-w-full items-start justify-center overflow-hidden px-0 pb-14 pt-24 md:min-h-[100svh] md:items-center md:py-0">
       <div className="absolute inset-0">
         <div
           className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full opacity-50"
@@ -82,7 +82,7 @@ export function HeroSection() {
           </div>
         </motion.div>
 
-        <div className="mb-10 text-center md:mb-16">
+        <div className="mb-8 text-center md:mb-16">
           {copy.lines.map((line, index) => (
             <div key={line} className="mb-2 overflow-visible last:mb-0 sm:mb-4">
               <motion.h1
@@ -102,7 +102,7 @@ export function HeroSection() {
         <motion.div
           {...animationProps}
           transition={{ ...animationTransition, delay: 0.6 }}
-          className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-8 lg:flex-row lg:gap-12"
+          className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-6 lg:flex-row lg:gap-12"
         >
           <p className="mx-auto w-full max-w-[22rem] text-center text-base leading-relaxed text-muted-foreground sm:max-w-md sm:text-lg md:text-xl lg:mx-0 lg:text-left">
             {copy.description}
@@ -126,7 +126,7 @@ export function HeroSection() {
           </div>
         </motion.div>
 
-        <motion.div {...animationProps} transition={{ ...animationTransition, delay: 0.75 }} className="mx-auto mt-10 grid w-full max-w-[22rem] grid-cols-2 gap-3 sm:mt-16 sm:max-w-none sm:flex sm:flex-wrap sm:justify-center">
+        <motion.div {...animationProps} transition={{ ...animationTransition, delay: 0.75 }} className="mx-auto mt-8 grid w-full max-w-[22rem] grid-cols-2 gap-3 sm:mt-16 sm:max-w-none sm:flex sm:flex-wrap sm:justify-center">
           {copy.proofPoints.map((point) => (
             <span key={point} className="rounded-full border border-border/50 bg-card/25 px-4 py-2 text-center text-sm text-muted-foreground backdrop-blur-md">
               {point}

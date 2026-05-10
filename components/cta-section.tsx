@@ -56,10 +56,9 @@ export function CTASection() {
   })
 
   const y = useTransform(scrollYProgress, [0, 1], [50, -50])
-  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0])
 
   return (
-    <section ref={containerRef} className="py-32 relative overflow-hidden">
+    <section ref={containerRef} className="relative overflow-hidden py-20 md:py-32">
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-conic from-primary/10 via-accent/5 to-primary/10 opacity-50" />
         <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full" style={{ background: "radial-gradient(circle, oklch(0.7 0.15 195 / 0.08) 0%, transparent 70%)" }} />
@@ -69,13 +68,13 @@ export function CTASection() {
       <div className="absolute inset-0 grid-pattern opacity-15" />
 
       <div className="container mx-auto px-6 relative z-10">
-        <motion.div style={prefersReducedMotion ? {} : { y, opacity }} className="max-w-5xl mx-auto text-center">
+        <motion.div style={prefersReducedMotion ? {} : { y }} className="mx-auto max-w-5xl text-center">
           <motion.h2
             initial={prefersReducedMotion ? {} : { opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8"
+            className="mb-8 text-4xl font-bold tracking-tight md:text-7xl lg:text-8xl"
           >
             {sectionCopy.title}
             <br />
@@ -87,7 +86,7 @@ export function CTASection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
+            className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground md:mb-12 md:text-xl"
           >
             {sectionCopy.description}
           </motion.p>
@@ -97,7 +96,7 @@ export function CTASection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-6"
+            className="flex flex-col items-center justify-center gap-5 sm:flex-row sm:gap-6"
           >
             <MagneticButton strength={0.2}>
               <Button asChild size="lg" className="bg-foreground text-background hover:bg-foreground/90 group px-10 py-8 text-lg font-medium rounded-full transition-colors duration-300 hover:shadow-xl hover:shadow-foreground/10">
@@ -120,7 +119,7 @@ export function CTASection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-20 pt-12 border-t border-border/30"
+            className="mt-14 grid grid-cols-2 gap-6 border-t border-border/30 pt-10 md:mt-20 md:grid-cols-4 md:gap-8 md:pt-12"
           >
             {sectionCopy.stats.map((stat, index) => (
               <motion.div

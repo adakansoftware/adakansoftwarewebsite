@@ -130,13 +130,13 @@ export function TestimonialsSection() {
       }
 
   return (
-    <section id="testimonials" className="py-32 relative overflow-hidden">
+    <section id="testimonials" className="relative overflow-hidden py-20 md:py-32">
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gradient-radial from-primary/5 to-transparent" />
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
-        <div className="text-center mb-16">
+        <div className="mb-12 text-center md:mb-16">
           <motion.span
             initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -161,7 +161,7 @@ export function TestimonialsSection() {
         </div>
 
         <div className="max-w-4xl mx-auto">
-          <div className="relative min-h-[280px] flex items-center justify-center">
+          <div className="relative flex min-h-[430px] items-center justify-center sm:min-h-[360px] md:min-h-[300px]">
             <AnimatePresence initial={false} custom={direction} mode="wait">
               <motion.div
                 key={current}
@@ -174,7 +174,7 @@ export function TestimonialsSection() {
                 className="absolute w-full text-center"
               >
                 <Quote className="w-10 h-10 mx-auto mb-6 text-primary/30" />
-                <blockquote className="text-xl md:text-2xl lg:text-3xl font-medium text-foreground leading-relaxed mb-10">
+                <blockquote className="mb-8 text-lg font-medium leading-relaxed text-foreground md:mb-10 md:text-2xl lg:text-3xl">
                   &ldquo;{testimonials[current].quote}&rdquo;
                 </blockquote>
                 <div className="flex flex-col items-center">

@@ -42,7 +42,7 @@ export function ProjectsSection() {
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"])
 
   return (
-    <section ref={containerRef} id="projects" className="py-32 relative overflow-hidden">
+    <section ref={containerRef} id="projects" className="relative overflow-hidden py-20 md:py-32">
       {/* Background Element */}
       <motion.div
         style={prefersReducedMotion ? {} : { y: backgroundY }}
@@ -53,7 +53,7 @@ export function ProjectsSection() {
 
       <div className="container mx-auto px-6 relative z-10">
         {/* Section Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-20">
+        <div className="mb-12 flex flex-col gap-8 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <motion.span
               initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
@@ -95,7 +95,7 @@ export function ProjectsSection() {
         </div>
 
         {/* Projects Grid */}
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid gap-8 md:grid-cols-2">
           {projects.map((project, index) => (
             <ProjectCard
               key={project.title}
@@ -139,7 +139,7 @@ function ProjectCard({
       onMouseLeave={onLeave}
     >
       <Link href={project.href} className="block">
-      <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-6 premium-border">
+      <div className="premium-border relative mb-6 aspect-[4/3] overflow-hidden rounded-2xl">
         {/* Background Gradient */}
         <div
           className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
@@ -151,7 +151,7 @@ function ProjectCard({
         {/* Grid Pattern */}
         <div className="absolute inset-0 grid-pattern opacity-20 group-hover:opacity-40 transition-opacity duration-300" />
 
-        <div className="absolute inset-x-6 top-20 h-28 rounded-xl border border-white/10 bg-background/35 backdrop-blur-md">
+        <div className="absolute inset-x-4 top-14 h-24 rounded-xl border border-white/10 bg-background/35 backdrop-blur-md sm:inset-x-6 sm:top-20 sm:h-28">
           <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
             <span className="h-2 w-2 rounded-full bg-red-400/80" />
             <span className="h-2 w-2 rounded-full bg-amber-300/80" />
@@ -175,14 +175,14 @@ function ProjectCard({
         />
 
         {/* Content Overlay */}
-        <div className="absolute inset-0 p-8 flex flex-col justify-between">
+        <div className="absolute inset-0 flex flex-col justify-between p-5 sm:p-8">
           <div className="flex items-start justify-between">
             <span className="px-4 py-2 rounded-full text-xs bg-foreground/5 backdrop-blur-md border border-foreground/10 text-foreground/70">
               {project.category}
             </span>
             <div
-              className={`w-10 h-10 rounded-full bg-foreground/10 backdrop-blur-md flex items-center justify-center transition-all duration-300 ${
-                isHovered ? "opacity-100 scale-100" : "opacity-0 scale-75"
+              className={`flex h-10 w-10 items-center justify-center rounded-full bg-foreground/10 opacity-100 backdrop-blur-md transition-all duration-300 md:opacity-0 ${
+                isHovered ? "md:scale-100 md:opacity-100" : "md:scale-75"
               }`}
             >
               <ArrowUpRight className="w-4 h-4 text-foreground" />
@@ -197,8 +197,8 @@ function ProjectCard({
             >
               {project.title}
             </h3>
-            <p className={`text-foreground/60 text-sm max-w-xs transition-opacity duration-300 ${
-              isHovered ? "opacity-100" : "opacity-0"
+            <p className={`max-w-xs text-sm text-foreground/70 opacity-100 transition-opacity duration-300 md:text-foreground/60 ${
+              isHovered ? "md:opacity-100" : "md:opacity-0"
             }`}>
               {project.description}
             </p>

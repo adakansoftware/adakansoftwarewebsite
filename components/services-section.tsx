@@ -41,7 +41,7 @@ export function ServicesSection() {
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "10%"])
 
   return (
-    <section ref={containerRef} id="services" className="py-32 relative">
+    <section ref={containerRef} id="services" className="relative py-20 md:py-32">
       {/* Subtle Background Grid */}
       <motion.div
         style={prefersReducedMotion ? {} : { y: backgroundY }}
@@ -50,7 +50,7 @@ export function ServicesSection() {
 
       <div className="container mx-auto px-6 relative z-10">
         {/* Section Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-20">
+        <div className="mb-12 flex flex-col gap-8 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <motion.span
               initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
@@ -106,11 +106,11 @@ function ServiceCard({ service, index, prefersReducedMotion }: { service: Servic
       transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
       className="group"
     >
-      <Link href={service.href} className="relative block py-8 border-t border-border/50 hover:border-primary/50 transition-colors duration-300">
+      <Link href={service.href} className="relative block border-t border-border/50 py-6 transition-colors duration-300 hover:border-primary/50 md:py-8">
         {/* Hover Background */}
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
-        <div className="relative grid md:grid-cols-12 gap-6 items-center">
+        <div className="relative grid gap-5 md:grid-cols-12 md:items-center md:gap-6">
           {/* Number */}
           <div className="md:col-span-1">
             <span className="text-sm text-muted-foreground font-mono">
@@ -133,8 +133,8 @@ function ServiceCard({ service, index, prefersReducedMotion }: { service: Servic
           </div>
 
           {/* Tags & Arrow */}
-          <div className="md:col-span-3 flex items-center justify-between gap-4">
-            <div className="hidden lg:flex flex-wrap gap-2">
+          <div className="flex items-center justify-between gap-4 md:col-span-3">
+            <div className="flex flex-wrap gap-2">
               {service.tags.map((tag) => (
                 <span
                   key={tag}
@@ -145,7 +145,7 @@ function ServiceCard({ service, index, prefersReducedMotion }: { service: Servic
               ))}
             </div>
             
-            <div className="w-10 h-10 rounded-full border border-border/50 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:border-primary/50 transition-all duration-300">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border/50 opacity-100 transition-all duration-300 group-hover:border-primary/50 md:opacity-0 md:group-hover:opacity-100">
               <ArrowUpRight className="w-4 h-4 text-primary" />
             </div>
           </div>
