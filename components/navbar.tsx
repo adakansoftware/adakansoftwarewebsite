@@ -78,7 +78,7 @@ export function Navbar() {
         }`}
         style={{ zIndex: 1000 }}
       >
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 sm:px-6">
+        <div className="relative mx-auto flex w-full max-w-7xl items-center justify-between px-5 sm:px-6">
           <MagneticButton strength={0.15}>
             <Link href={withLocale("/", locale)} className="flex items-center" aria-label={labels.homeLabel}>
               <Image
@@ -92,13 +92,10 @@ export function Navbar() {
             </Link>
           </MagneticButton>
 
-          <div className="hidden lg:flex items-center gap-10">
-            {labels.links.map((link, index) => (
-              <motion.div
+          <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-10 lg:flex">
+            {labels.links.map((link) => (
+              <div
                 key={link.name}
-                initial={prefersReducedMotion ? {} : { opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 + index * 0.1 }}
               >
                 <MagneticButton strength={0.1}>
                   <Link
@@ -116,7 +113,7 @@ export function Navbar() {
                     />
                   </Link>
                 </MagneticButton>
-              </motion.div>
+              </div>
             ))}
           </div>
 
