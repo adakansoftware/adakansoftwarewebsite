@@ -79,14 +79,14 @@ export function Navbar() {
   return (
     <>
       <motion.nav
-        initial={prefersReducedMotion ? { opacity: 1 } : { y: -100, opacity: 0 }}
+        initial={false}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           isScrolled ? "py-4 backdrop-blur-xl bg-background/78 border-b border-border/20" : "py-6"
         }`}
       >
-        <div className="container mx-auto px-6 flex items-center justify-between">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 sm:px-6">
           <MagneticButton strength={0.15}>
             <Link href={withLocale("/", locale)} className="flex items-center" aria-label={labels.homeLabel}>
               <Image

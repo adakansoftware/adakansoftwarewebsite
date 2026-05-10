@@ -99,10 +99,12 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
   }
   body {
     @apply bg-background text-foreground;
     text-rendering: geometricPrecision;
+    width: 100%;
     overflow-x: hidden;
   }
   html {
@@ -123,6 +125,11 @@
 
 /* Custom utility classes */
 @layer utilities {
+  .container {
+    width: 100%;
+    max-width: 80rem;
+  }
+
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary;
     background-size: 200% auto;
@@ -133,7 +140,7 @@
   }
 
   .section-shell {
-    @apply container mx-auto px-6 relative z-10;
+    @apply relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-6;
   }
 
   .premium-border {
