@@ -2,8 +2,10 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import type { Locale } from "@/lib/i18n"
 
 type PageHeaderProps = {
+  locale?: Locale
   eyebrow: string
   title: string
   gradientText?: string
@@ -15,17 +17,18 @@ type PageHeaderProps = {
 }
 
 export function PageHeader({
+  locale = "tr",
   eyebrow,
   title,
   gradientText,
   description,
   primaryHref = "/contact",
-  primaryLabel = "Projeye Başla",
+  primaryLabel = locale === "en" ? "Start a Project" : "Projeye Başla",
   secondaryHref,
   secondaryLabel,
 }: PageHeaderProps) {
   return (
-    <section className="relative overflow-hidden pt-36 pb-20 md:pt-44 md:pb-28">
+    <section className="relative overflow-hidden pb-20 pt-36 md:pb-28 md:pt-44">
       <div className="absolute inset-0 grid-pattern opacity-10" />
       <div className="section-shell">
         <div className="max-w-4xl">
@@ -39,9 +42,7 @@ export function PageHeader({
               </>
             ) : null}
           </h1>
-          <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
-            {description}
-          </p>
+          <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">{description}</p>
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <Button
               asChild
