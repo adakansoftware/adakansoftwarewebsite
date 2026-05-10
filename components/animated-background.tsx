@@ -102,11 +102,6 @@ export function AnimatedBackground() {
 
     const animate = () => {
       if (!ctx) return
-      if (document.hidden) {
-        animationFrameId = requestAnimationFrame(animate)
-        return
-      }
-
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
 
       particles.forEach((particle) => {

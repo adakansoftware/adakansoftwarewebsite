@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react"
 
 import { getLocaleFromPathname, type Locale } from "@/lib/i18n"
@@ -94,7 +94,6 @@ export function TestimonialsSection() {
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(0)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
-  const prefersReducedMotion = useReducedMotion()
 
   const next = () => {
     setDirection(1)
@@ -107,8 +106,6 @@ export function TestimonialsSection() {
   }
 
   useEffect(() => {
-    if (prefersReducedMotion) return
-
     intervalRef.current = setInterval(() => {
       if (!document.hidden) {
         setDirection(1)
@@ -119,15 +116,13 @@ export function TestimonialsSection() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
-  }, [prefersReducedMotion, testimonials.length])
+  }, [testimonials.length])
 
-  const variants = prefersReducedMotion
-    ? { enter: { opacity: 1 }, center: { opacity: 1 }, exit: { opacity: 1 } }
-    : {
-        enter: (direction: number) => ({ x: direction > 0 ? 60 : -60, opacity: 0 }),
-        center: { x: 0, opacity: 1 },
-        exit: (direction: number) => ({ x: direction < 0 ? 60 : -60, opacity: 0 }),
-      }
+  const variants = {
+    enter: (direction: number) => ({ x: direction > 0 ? 60 : -60, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (direction: number) => ({ x: direction < 0 ? 60 : -60, opacity: 0 }),
+  }
 
   return (
     <section id="testimonials" className="relative overflow-hidden py-20 md:py-32">
@@ -138,9 +133,8 @@ export function TestimonialsSection() {
       <div className="container mx-auto px-6 relative z-10">
         <div className="mb-12 text-center md:mb-16">
           <motion.span
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="text-primary text-sm font-medium tracking-widest uppercase mb-6 block"
           >
@@ -148,9 +142,8 @@ export function TestimonialsSection() {
           </motion.span>
 
           <motion.h2
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="text-4xl md:text-6xl font-bold tracking-tight"
           >

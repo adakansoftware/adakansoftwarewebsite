@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { motion, useReducedMotion } from "framer-motion"
+import { motion } from "framer-motion"
 import { ArrowUpRight, Menu, MessageCircle, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -51,7 +51,6 @@ export function Navbar() {
   const labels = navLabels[locale]
   const whatsApp = whatsAppCopy[locale]
   const [isScrolled, setIsScrolled] = useState(false)
-  const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -72,7 +71,7 @@ export function Navbar() {
       <motion.nav
         initial={false}
         animate={{ y: 0, opacity: 1 }}
-        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         className={`fixed top-0 left-0 right-0 z-[70] border-b border-border/20 bg-background/78 backdrop-blur-xl transition-all duration-500 ${
           isScrolled ? "py-4" : "py-6"
         }`}

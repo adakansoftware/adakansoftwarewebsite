@@ -1,9 +1,8 @@
 "use client"
 
-import { useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion"
+import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -47,18 +46,9 @@ export function CTASection() {
   const pathname = usePathname()
   const locale = getLocaleFromPathname(pathname)
   const sectionCopy = copy[locale]
-  const containerRef = useRef<HTMLDivElement>(null)
-  const prefersReducedMotion = useReducedMotion()
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  })
-
-  const y = useTransform(scrollYProgress, [0, 1], [50, -50])
 
   return (
-    <section ref={containerRef} className="relative overflow-hidden py-20 md:py-32">
+    <section className="relative overflow-hidden py-20 md:py-32">
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-conic from-primary/10 via-accent/5 to-primary/10 opacity-50" />
         <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full" style={{ background: "radial-gradient(circle, oklch(0.7 0.15 195 / 0.08) 0%, transparent 70%)" }} />
@@ -68,12 +58,14 @@ export function CTASection() {
       <div className="absolute inset-0 grid-pattern opacity-15" />
 
       <div className="container mx-auto px-6 relative z-10">
-        <motion.div style={prefersReducedMotion ? {} : { y }} className="mx-auto max-w-5xl text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="mx-auto max-w-5xl text-center"
+        >
           <motion.h2
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            initial={false}
             className="mb-8 text-4xl font-bold tracking-tight md:text-7xl lg:text-8xl"
           >
             {sectionCopy.title}
@@ -82,20 +74,14 @@ export function CTASection() {
           </motion.h2>
 
           <motion.p
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            initial={false}
             className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground md:mb-12 md:text-xl"
           >
             {sectionCopy.description}
           </motion.p>
 
           <motion.div
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            initial={false}
             className="flex flex-col items-center justify-center gap-5 sm:flex-row sm:gap-6"
           >
             <MagneticButton strength={0.2}>
@@ -115,19 +101,15 @@ export function CTASection() {
           </motion.div>
 
           <motion.div
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            initial={false}
             className="mt-14 grid grid-cols-2 gap-6 border-t border-border/30 pt-10 md:mt-20 md:grid-cols-4 md:gap-8 md:pt-12"
           >
             {sectionCopy.stats.map((stat, index) => (
               <motion.div
                 key={stat.label}
-                initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.2 + index * 0.08 }}
                 className="text-center"
               >
                 <div className="text-4xl md:text-5xl font-bold text-foreground mb-2">{stat.value}</div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { motion, useReducedMotion } from "framer-motion"
+import { motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -78,7 +78,6 @@ export function Footer() {
   const pathname = usePathname()
   const locale = getLocaleFromPathname(pathname)
   const copy = footerCopy[locale]
-  const prefersReducedMotion = useReducedMotion()
   const localizedHref = (href: string) => withLocale(href, locale)
 
   return (
@@ -161,9 +160,8 @@ export function Footer() {
 
         <div className="absolute bottom-0 left-0 right-0 overflow-hidden pointer-events-none select-none">
           <motion.div
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
             className="text-[12vw] font-bold text-border/[0.02] tracking-tighter leading-none whitespace-nowrap"
           >
