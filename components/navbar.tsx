@@ -161,7 +161,7 @@ export function Navbar() {
             </MagneticButton>
           </div>
 
-          <details className="mobile-menu-native lg:hidden" data-mobile-menu>
+          <details className="mobile-menu-native fixed right-5 top-6 flex shrink-0 lg:hidden" data-mobile-menu>
             <summary className="relative inline-flex h-12 w-12 touch-manipulation items-center justify-center rounded-full border border-white/10 bg-background/70 text-foreground backdrop-blur-xl">
               <span className="sr-only">{labels.openMenu}</span>
               <Menu size={24} className="mobile-menu-open-icon" />
