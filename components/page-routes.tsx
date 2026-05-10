@@ -44,8 +44,8 @@ export function ApproachPageContent({ locale }: { locale: Locale }) {
   return (
     <>
       <PageHeader locale={locale} {...content.header} />
-      <PhilosophySection />
-      <CTASection />
+      <PhilosophySection locale={locale} />
+      <CTASection locale={locale} />
     </>
   )
 }
@@ -232,8 +232,8 @@ export function TestimonialsPageContent({ locale }: { locale: Locale }) {
   return (
     <>
       <PageHeader locale={locale} {...content.header} />
-      <TestimonialsSection />
-      <CTASection />
+      <TestimonialsSection locale={locale} />
+      <CTASection locale={locale} />
     </>
   )
 }

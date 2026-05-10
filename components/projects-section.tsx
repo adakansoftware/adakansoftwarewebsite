@@ -2,10 +2,9 @@
 
 import { useRef, useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
-import { getLocaleFromPathname, withLocale, type Locale } from "@/lib/i18n"
+import { withLocale, type Locale } from "@/lib/i18n"
 import { getProjects } from "@/lib/site-data"
 
 type Project = ReturnType<typeof getProjects>[number]
@@ -25,9 +24,7 @@ const copy = {
   },
 } satisfies Record<Locale, { eyebrow: string; title: string; gradient: string; all: string }>
 
-export function ProjectsSection() {
-  const pathname = usePathname()
-  const locale = getLocaleFromPathname(pathname)
+export function ProjectsSection({ locale = "tr" }: { locale?: Locale }) {
   const projects = getProjects(locale)
   const sectionCopy = copy[locale]
   const containerRef = useRef<HTMLDivElement>(null)

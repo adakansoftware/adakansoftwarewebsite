@@ -2,10 +2,9 @@
 
 import { useRef } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
-import { getLocaleFromPathname, type Locale } from "@/lib/i18n"
+import type { Locale } from "@/lib/i18n"
 import { getServices } from "@/lib/site-data"
 
 type Service = ReturnType<typeof getServices>[number]
@@ -25,9 +24,7 @@ const copy = {
   },
 } satisfies Record<Locale, { eyebrow: string; title: string; gradient: string; description: string }>
 
-export function ServicesSection() {
-  const pathname = usePathname()
-  const locale = getLocaleFromPathname(pathname)
+export function ServicesSection({ locale = "tr" }: { locale?: Locale }) {
   const services = getServices(locale)
   const sectionCopy = copy[locale]
   const containerRef = useRef<HTMLDivElement>(null)

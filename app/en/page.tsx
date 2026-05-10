@@ -8,12 +8,12 @@ import { CTASection } from "@/components/cta-section"
 export default function EnglishHomePage() {
   return (
     <>
-      <HeroSection />
-      <ServicesSection />
-      <PhilosophySection />
-      <ProjectsSection />
-      <TestimonialsSection />
-      <CTASection />
+      <HeroSection locale="en" />
+      <ServicesSection locale="en" />
+      <PhilosophySection locale="en" />
+      <ProjectsSection locale="en" />
+      <TestimonialsSection locale="en" />
+      <CTASection locale="en" />
     </>
   )
 }

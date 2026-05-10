@@ -1,11 +1,10 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { usePathname } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react"
 
-import { getLocaleFromPathname, type Locale } from "@/lib/i18n"
+import type { Locale } from "@/lib/i18n"
 
 const copy = {
   tr: {
@@ -86,9 +85,7 @@ const copy = {
   testimonials: Array<{ quote: string; author: string; role: string; company: string }>
 }>
 
-export function TestimonialsSection() {
-  const pathname = usePathname()
-  const locale = getLocaleFromPathname(pathname)
+export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
   const sectionCopy = copy[locale]
   const testimonials = sectionCopy.testimonials
   const [current, setCurrent] = useState(0)

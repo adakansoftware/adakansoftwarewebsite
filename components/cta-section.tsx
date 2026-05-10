@@ -1,13 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { MagneticButton } from "@/components/magnetic-button"
-import { getLocaleFromPathname, withLocale, type Locale } from "@/lib/i18n"
+import { withLocale, type Locale } from "@/lib/i18n"
 
 const copy = {
   tr: {
@@ -42,9 +41,7 @@ const copy = {
   stats: Array<{ value: string; label: string }>
 }>
 
-export function CTASection() {
-  const pathname = usePathname()
-  const locale = getLocaleFromPathname(pathname)
+export function CTASection({ locale = "tr" }: { locale?: Locale }) {
   const sectionCopy = copy[locale]
 
   return (

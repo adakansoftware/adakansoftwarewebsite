@@ -2,13 +2,12 @@
 
 import { useRef } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { ArrowDownRight, ArrowRight } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { MagneticButton } from "@/components/magnetic-button"
-import { getLocaleFromPathname, withLocale, type Locale } from "@/lib/i18n"
+import { withLocale, type Locale } from "@/lib/i18n"
 
 const heroCopy = {
   tr: {
@@ -39,9 +38,7 @@ const heroCopy = {
   proofPoints: string[]
 }>
 
-export function HeroSection() {
-  const pathname = usePathname()
-  const locale = getLocaleFromPathname(pathname)
+export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
   const copy = heroCopy[locale]
   const containerRef = useRef<HTMLDivElement>(null)
 

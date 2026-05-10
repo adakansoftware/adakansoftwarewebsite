@@ -1,10 +1,9 @@
 "use client"
 
 import { useRef } from "react"
-import { usePathname } from "next/navigation"
 import { motion, useScroll, useTransform } from "framer-motion"
 
-import { getLocaleFromPathname, type Locale } from "@/lib/i18n"
+import type { Locale } from "@/lib/i18n"
 
 const copy = {
   tr: {
@@ -64,9 +63,7 @@ const copy = {
   items: Array<{ number: string; title: string; description: string }>
 }>
 
-export function PhilosophySection() {
-  const pathname = usePathname()
-  const locale = getLocaleFromPathname(pathname)
+export function PhilosophySection({ locale = "tr" }: { locale?: Locale }) {
   const sectionCopy = copy[locale]
   const containerRef = useRef<HTMLDivElement>(null)
 
