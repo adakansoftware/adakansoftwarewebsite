@@ -82,7 +82,7 @@ export function Navbar() {
         initial={false}
         animate={{ y: 0, opacity: 1 }}
         transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={`fixed top-0 left-0 right-0 z-[70] transition-all duration-500 ${
           isScrolled ? "py-4 backdrop-blur-xl bg-background/78 border-b border-border/20" : "py-6"
         }`}
       >
@@ -170,9 +170,12 @@ export function Navbar() {
           </div>
 
           <button
-            className="lg:hidden text-foreground p-2"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            type="button"
+            className="relative z-[80] p-2 text-foreground lg:hidden"
+            onClick={() => setIsMobileMenuOpen((open) => !open)}
             aria-label={isMobileMenuOpen ? labels.closeMenu : labels.openMenu}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-navigation"
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -182,13 +185,14 @@ export function Navbar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
+            id="mobile-navigation"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 lg:hidden"
+            className="fixed inset-0 z-[60] bg-background lg:hidden"
           >
-            <div className="absolute inset-0 bg-background pt-24 px-6">
+            <div className="absolute inset-0 overflow-y-auto px-6 pt-28 pb-10">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
