@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { ArrowUpRight, Menu, MessageCircle, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -182,77 +182,63 @@ export function Navbar() {
         </div>
       </motion.nav>
 
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            id="mobile-navigation"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[60] bg-background lg:hidden"
-          >
-            <div className="absolute inset-0 overflow-y-auto px-6 pt-28 pb-10">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ delay: 0.1 }}
-                className="flex flex-col gap-8"
+      <div
+        id="mobile-navigation"
+        aria-hidden={!isMobileMenuOpen}
+        className={`fixed inset-0 z-[90] bg-background transition-[opacity,visibility] duration-200 lg:hidden ${
+          isMobileMenuOpen ? "visible opacity-100 pointer-events-auto" : "invisible opacity-0 pointer-events-none"
+        }`}
+      >
+        <button
+          type="button"
+          className="absolute right-5 top-6 z-[100] p-2 text-foreground"
+          onClick={() => setIsMobileMenuOpen(false)}
+          aria-label={labels.closeMenu}
+        >
+          <X size={28} />
+        </button>
+        <div className="absolute inset-0 overflow-y-auto px-6 pb-10 pt-28">
+          <div className={`flex flex-col gap-8 transition-transform duration-200 ${isMobileMenuOpen ? "translate-y-0" : "translate-y-4"}`}>
+            {labels.links.map((link) => (
+              <Link
+                key={link.name}
+                href={localizedHref(link.href)}
+                className="text-4xl font-bold text-foreground"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
-                {labels.links.map((link, index) => (
-                  <motion.div
-                    key={link.name}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + index * 0.05 }}
-                  >
-                    <Link
-                      href={localizedHref(link.href)}
-                      className="text-4xl font-bold text-foreground"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      {link.name}
-                    </Link>
-                  </motion.div>
-                ))}
-                <div className="flex gap-3">
-                  <Link href={switchLocalePath(pathname, "tr")} onClick={() => setIsMobileMenuOpen(false)} className="rounded-full border border-border/50 px-4 py-2 text-sm">
-                    TR
-                  </Link>
-                  <Link href={switchLocalePath(pathname, "en")} onClick={() => setIsMobileMenuOpen(false)} className="rounded-full border border-border/50 px-4 py-2 text-sm">
-                    EN
-                  </Link>
-                </div>
-                <a
-                  href={getWhatsAppHref(locale)}
-                  aria-label={whatsApp.label}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-3 rounded-full border border-primary/35 bg-primary/10 px-5 py-3 text-primary"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <MessageCircle className="h-5 w-5" />
-                  {whatsApp.short}
-                </a>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="mt-8"
-                >
-                  <Button asChild className="w-full bg-foreground text-background rounded-full py-6 text-lg">
-                    <Link href={localizedHref("/contact")} onClick={() => setIsMobileMenuOpen(false)}>
-                      {labels.cta}
-                      <ArrowUpRight className="ml-2 w-5 h-5" />
-                    </Link>
-                  </Button>
-                </motion.div>
-              </motion.div>
+                {link.name}
+              </Link>
+            ))}
+            <div className="flex gap-3">
+              <Link href={switchLocalePath(pathname, "tr")} onClick={() => setIsMobileMenuOpen(false)} className="rounded-full border border-border/50 px-4 py-2 text-sm">
+                TR
+              </Link>
+              <Link href={switchLocalePath(pathname, "en")} onClick={() => setIsMobileMenuOpen(false)} className="rounded-full border border-border/50 px-4 py-2 text-sm">
+                EN
+              </Link>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <a
+              href={getWhatsAppHref(locale)}
+              aria-label={whatsApp.label}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center gap-3 rounded-full border border-primary/35 bg-primary/10 px-5 py-3 text-primary"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <MessageCircle className="h-5 w-5" />
+              {whatsApp.short}
+            </a>
+            <div className="mt-8">
+              <Button asChild className="w-full bg-foreground text-background rounded-full py-6 text-lg">
+                <Link href={localizedHref("/contact")} onClick={() => setIsMobileMenuOpen(false)}>
+                  {labels.cta}
+                  <ArrowUpRight className="ml-2 w-5 h-5" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   )
 }
