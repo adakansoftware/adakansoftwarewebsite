@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState, type TouchEvent } from "react"
+import { useEffect, useRef, useState, type MouseEvent, type PointerEvent } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -78,7 +78,10 @@ export function Navbar() {
   const isActive = (href: string) => pathname === localizedHref(href)
   const closeMobileMenu = () => setIsMobileMenuOpen(false)
   const toggleMobileMenu = () => setIsMobileMenuOpen((open) => !open)
-  const handleMobileMenuClick = () => {
+  const handleMobileMenuClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
+
     if (Date.now() - lastTouchRef.current < 700) {
       return
     }
@@ -86,14 +89,35 @@ export function Navbar() {
     toggleMobileMenu()
   }
 
-  const handleMobileMenuTouchEnd = (event: TouchEvent<HTMLButtonElement>) => {
+  const handleMobileMenuPointerUp = (event: PointerEvent<HTMLButtonElement>) => {
+    if (event.pointerType === "mouse") {
+      return
+    }
+
     event.preventDefault()
+    event.stopPropagation()
     lastTouchRef.current = Date.now()
     toggleMobileMenu()
   }
 
-  const handleCloseTouchEnd = (event: TouchEvent<HTMLButtonElement>) => {
+  const handleCloseClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
+    event.stopPropagation()
+
+    if (Date.now() - lastTouchRef.current < 700) {
+      return
+    }
+
+    closeMobileMenu()
+  }
+
+  const handleClosePointerUp = (event: PointerEvent<HTMLButtonElement>) => {
+    if (event.pointerType === "mouse") {
+      return
+    }
+
+    event.preventDefault()
+    event.stopPropagation()
     lastTouchRef.current = Date.now()
     closeMobileMenu()
   }
@@ -194,9 +218,9 @@ export function Navbar() {
 
           <button
             type="button"
-            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-background/70 text-foreground backdrop-blur-xl lg:hidden"
+            className="relative inline-flex h-12 w-12 touch-manipulation items-center justify-center rounded-full border border-white/10 bg-background/70 text-foreground backdrop-blur-xl lg:hidden"
             onClick={handleMobileMenuClick}
-            onTouchEnd={handleMobileMenuTouchEnd}
+            onPointerUp={handleMobileMenuPointerUp}
             aria-label={isMobileMenuOpen ? labels.closeMenu : labels.openMenu}
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-navigation"
@@ -218,9 +242,9 @@ export function Navbar() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,oklch(0.76_0.13_174_/_0.16),transparent_34%),radial-gradient(circle_at_80%_15%,oklch(0.78_0.14_74_/_0.12),transparent_32%)]" />
           <button
             type="button"
-            className="absolute right-5 top-6 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-foreground backdrop-blur-xl"
-            onClick={closeMobileMenu}
-            onTouchEnd={handleCloseTouchEnd}
+            className="absolute right-5 top-6 inline-flex h-12 w-12 touch-manipulation items-center justify-center rounded-full border border-white/10 bg-white/5 text-foreground backdrop-blur-xl"
+            onClick={handleCloseClick}
+            onPointerUp={handleClosePointerUp}
             aria-label={labels.closeMenu}
           >
             <X size={28} />
