@@ -53,20 +53,14 @@ export function ServicesSection() {
         <div className="mb-12 flex flex-col gap-8 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <motion.span
-              initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+              initial={false}
               className="text-primary text-sm font-medium tracking-widest uppercase mb-6 block"
             >
               {sectionCopy.eyebrow}
             </motion.span>
             
             <motion.h2
-              initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              initial={false}
               className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight"
             >
               {sectionCopy.title}
@@ -76,10 +70,7 @@ export function ServicesSection() {
           </div>
           
           <motion.p
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            initial={false}
             className="text-muted-foreground text-lg max-w-md leading-relaxed"
           >
             {sectionCopy.description}
@@ -89,7 +80,7 @@ export function ServicesSection() {
         {/* Services List */}
         <div className="space-y-2">
           {services.map((service, index) => (
-            <ServiceCard key={service.title} service={service} index={index} prefersReducedMotion={prefersReducedMotion} />
+            <ServiceCard key={service.title} service={service} index={index} />
           ))}
         </div>
       </div>
@@ -97,13 +88,10 @@ export function ServicesSection() {
   )
 }
 
-function ServiceCard({ service, index, prefersReducedMotion }: { service: Service; index: number; prefersReducedMotion: boolean | null }) {
+function ServiceCard({ service, index }: { service: Service; index: number }) {
   return (
     <motion.div
-      initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+      initial={false}
       className="group"
     >
       <Link href={service.href} className="relative block border-t border-border/50 py-6 transition-colors duration-300 hover:border-primary/50 md:py-8">

@@ -2,7 +2,7 @@
 
 import { useRef } from "react"
 import { usePathname } from "next/navigation"
-import { motion, useInView, useReducedMotion, useScroll, useTransform } from "framer-motion"
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion"
 
 import { getLocaleFromPathname, type Locale } from "@/lib/i18n"
 
@@ -92,20 +92,14 @@ export function PhilosophySection() {
       <div className="container mx-auto px-6 relative z-10">
         <div className="mb-14 max-w-4xl md:mb-24">
           <motion.span
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            initial={false}
             className="text-primary text-sm font-medium tracking-widest uppercase mb-6 block"
           >
             {sectionCopy.eyebrow}
           </motion.span>
 
           <motion.h2
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            initial={false}
             className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-8"
           >
             {sectionCopy.title}
@@ -114,10 +108,7 @@ export function PhilosophySection() {
           </motion.h2>
 
           <motion.p
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            initial={false}
             className="text-xl text-muted-foreground leading-relaxed max-w-2xl"
           >
             {sectionCopy.description}
@@ -125,8 +116,8 @@ export function PhilosophySection() {
         </div>
 
         <div className="space-y-10 md:space-y-16">
-          {sectionCopy.items.map((item, index) => (
-            <PhilosophyItem key={item.number} item={item} index={index} prefersReducedMotion={prefersReducedMotion} />
+          {sectionCopy.items.map((item) => (
+            <PhilosophyItem key={item.number} item={item} />
           ))}
         </div>
       </div>
@@ -136,22 +127,13 @@ export function PhilosophySection() {
 
 function PhilosophyItem({
   item,
-  index,
-  prefersReducedMotion,
 }: {
   item: { number: string; title: string; description: string }
-  index: number
-  prefersReducedMotion: boolean | null
 }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
-
   return (
     <motion.div
-      ref={ref}
-      initial={prefersReducedMotion ? {} : { opacity: 0, y: 50 }}
-      animate={isInView ? { opacity: 1, y: 0 } : prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-      transition={{ duration: 0.8, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+      initial={false}
+      animate={{ opacity: 1, y: 0 }}
       className="group grid gap-4 md:grid-cols-12 md:items-start md:gap-8"
     >
       <div className="md:col-span-2">

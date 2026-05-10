@@ -56,20 +56,14 @@ export function ProjectsSection() {
         <div className="mb-12 flex flex-col gap-8 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <motion.span
-              initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+              initial={false}
               className="text-primary text-sm font-medium tracking-widest uppercase mb-6 block"
             >
               {sectionCopy.eyebrow}
             </motion.span>
             
             <motion.h2
-              initial={prefersReducedMotion ? {} : { opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              initial={false}
               className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight"
             >
               {sectionCopy.title}
@@ -79,10 +73,7 @@ export function ProjectsSection() {
           </div>
           
           <motion.div
-            initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            initial={false}
           >
             <Link
               href={withLocale("/projects", locale)}
@@ -100,11 +91,9 @@ export function ProjectsSection() {
             <ProjectCard
               key={project.title}
               project={project}
-              index={index}
               isHovered={hoveredIndex === index}
               onHover={() => setHoveredIndex(index)}
               onLeave={() => setHoveredIndex(null)}
-              prefersReducedMotion={prefersReducedMotion}
             />
           ))}
         </div>
@@ -115,25 +104,18 @@ export function ProjectsSection() {
 
 function ProjectCard({
   project,
-  index,
   isHovered,
   onHover,
   onLeave,
-  prefersReducedMotion,
 }: {
   project: Project
-  index: number
   isHovered: boolean
   onHover: () => void
   onLeave: () => void
-  prefersReducedMotion: boolean | null
 }) {
   return (
     <motion.div
-      initial={prefersReducedMotion ? {} : { opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+      initial={false}
       className="group"
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
