@@ -20,6 +20,16 @@ export function AnimatedBackground() {
     let animationFrameId: number
     let particles: Particle[] = []
     let resizeTimeout: number | null = null
+    let visibilityMedia: MediaQueryList | null = null
+    let isReducedMotion = false
+    let isDocumentVisible = document.visibilityState === "visible"
+    let lastFrameTime = 0
+
+    const getFrameDuration = () => {
+      if (isReducedMotion) return 1000 / 12
+      if (window.innerWidth < 768) return 1000 / 24
+      return 1000 / 36
+    }
 
     const resize = () => {
       const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5)
@@ -73,14 +83,17 @@ export function AnimatedBackground() {
       particles = []
       const surface = window.innerWidth * window.innerHeight
       const particleCount = Math.floor(surface / 32000)
-      const maxParticles = window.innerWidth < 768 ? 18 : 34
-      for (let i = 0; i < Math.min(Math.max(particleCount, 8), maxParticles); i++) {
+      const minParticles = isReducedMotion ? 0 : 8
+      const maxParticles = isReducedMotion ? 0 : window.innerWidth < 768 ? 14 : 28
+      for (let i = 0; i < Math.min(Math.max(particleCount, minParticles), maxParticles); i++) {
         particles.push(new Particle())
       }
     }
 
     const drawConnections = () => {
       if (!ctx) return
+      if (window.innerWidth < 640) return
+
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x
@@ -100,8 +113,19 @@ export function AnimatedBackground() {
       }
     }
 
-    const animate = () => {
+    const animate = (timestamp: number) => {
       if (!ctx) return
+      if (!isDocumentVisible) {
+        animationFrameId = requestAnimationFrame(animate)
+        return
+      }
+
+      if (timestamp - lastFrameTime < getFrameDuration()) {
+        animationFrameId = requestAnimationFrame(animate)
+        return
+      }
+
+      lastFrameTime = timestamp
       ctx.clearRect(0, 0, window.innerWidth, window.innerHeight)
 
       particles.forEach((particle) => {
@@ -118,12 +142,28 @@ export function AnimatedBackground() {
       resizeTimeout = window.setTimeout(resize, 120)
     }
 
+    const handleVisibilityChange = () => {
+      isDocumentVisible = document.visibilityState === "visible"
+    }
+
+    const handleReducedMotionChange = (event: MediaQueryListEvent) => {
+      isReducedMotion = event.matches
+      resize()
+    }
+
+    visibilityMedia = window.matchMedia("(prefers-reduced-motion: reduce)")
+    isReducedMotion = visibilityMedia.matches
+
     window.addEventListener("resize", handleResize, { passive: true })
+    document.addEventListener("visibilitychange", handleVisibilityChange, { passive: true })
+    visibilityMedia.addEventListener("change", handleReducedMotionChange)
     resize()
-    animate()
+    animationFrameId = requestAnimationFrame(animate)
 
     return () => {
       window.removeEventListener("resize", handleResize)
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+      visibilityMedia?.removeEventListener("change", handleReducedMotionChange)
       if (resizeTimeout) window.clearTimeout(resizeTimeout)
       cancelAnimationFrame(animationFrameId)
     }

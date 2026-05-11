@@ -1,3 +1,5 @@
+/* global console, fetch, process */
+
 const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3101";
 
 const checks = [
