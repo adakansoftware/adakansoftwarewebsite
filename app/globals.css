@@ -121,7 +121,9 @@
   }
   a:focus-visible,
   button:focus-visible,
+  summary:focus-visible,
   input:focus-visible,
+  [role="button"]:focus-visible,
   textarea:focus-visible {
     @apply outline-2 outline-offset-4 outline-primary/70;
   }
@@ -207,27 +209,6 @@
   }
 }
 
-/* Lenis smooth scroll */
-html.lenis, html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-
-.lenis.lenis-scrolling iframe {
-  pointer-events: none;
-}
-
 /* Performance-optimized CSS animations */
 @keyframes float-slow {
   0%, 100% {
@@ -279,5 +260,23 @@ html.lenis, html.lenis body {
 
   .grid-pattern {
     background-size: 44px 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+
+  .animate-float-slow,
+  .animate-float-slower,
+  .animate-bounce-slow {
+    animation: none !important;
   }
 }

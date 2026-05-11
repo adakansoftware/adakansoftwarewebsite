@@ -97,8 +97,6 @@ export const viewport: Viewport = {
   themeColor: "#0a0a0f",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 }
 
 export default async function RootLayout({
@@ -107,14 +105,23 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const locale = await getRequestLocale()
+  const skipLinkLabel = locale === "tr" ? "İçeriğe geç" : "Skip to content"
 
   return (
     <html lang={locale} className="bg-background">
       <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
         <SmoothScrollProvider>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[4000] focus:rounded-full focus:bg-foreground focus:px-4 focus:py-2 focus:text-background"
+          >
+            {skipLinkLabel}
+          </a>
           <AnimatedBackground />
           <Navbar locale={locale} />
-          <main className="relative">{children}</main>
+          <main id="main-content" className="relative">
+            {children}
+          </main>
           <Footer locale={locale} />
           <WhatsAppButton locale={locale} />
         </SmoothScrollProvider>

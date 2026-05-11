@@ -1,10 +1,11 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 
 export function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -152,7 +153,7 @@ export function AnimatedBackground() {
     }
 
     visibilityMedia = window.matchMedia("(prefers-reduced-motion: reduce)")
-    isReducedMotion = visibilityMedia.matches
+    isReducedMotion = visibilityMedia.matches || Boolean(prefersReducedMotion)
 
     window.addEventListener("resize", handleResize, { passive: true })
     document.addEventListener("visibilitychange", handleVisibilityChange, { passive: true })
@@ -167,7 +168,7 @@ export function AnimatedBackground() {
       if (resizeTimeout) window.clearTimeout(resizeTimeout)
       cancelAnimationFrame(animationFrameId)
     }
-  }, [])
+  }, [prefersReducedMotion])
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0">
@@ -178,30 +179,46 @@ export function AnimatedBackground() {
         style={{
           background: "radial-gradient(circle, oklch(0.7 0.15 195 / 0.08) 0%, transparent 62%)",
         }}
-        animate={{
-          x: [-50, 35, -50],
-          y: [-20, 55, -20],
-        }}
-        transition={{
-          duration: 24,
-          repeat: Infinity,
-          ease: "linear",
-        }}
+        animate={
+          prefersReducedMotion
+            ? { x: 0, y: 0 }
+            : {
+                x: [-50, 35, -50],
+                y: [-20, 55, -20],
+              }
+        }
+        transition={
+          prefersReducedMotion
+            ? { duration: 0 }
+            : {
+                duration: 24,
+                repeat: Infinity,
+                ease: "linear",
+              }
+        }
       />
       <motion.div
         className="absolute bottom-[-4rem] right-[-4rem] h-[16rem] w-[16rem] rounded-full will-change-transform sm:bottom-0 sm:right-0 sm:h-[24rem] sm:w-[24rem] md:h-[32rem] md:w-[32rem]"
         style={{
           background: "radial-gradient(circle, oklch(0.65 0.2 300 / 0.06) 0%, transparent 62%)",
         }}
-        animate={{
-          x: [30, -45, 30],
-          y: [25, -30, 25],
-        }}
-        transition={{
-          duration: 22,
-          repeat: Infinity,
-          ease: "linear",
-        }}
+        animate={
+          prefersReducedMotion
+            ? { x: 0, y: 0 }
+            : {
+                x: [30, -45, 30],
+                y: [25, -30, 25],
+              }
+        }
+        transition={
+          prefersReducedMotion
+            ? { duration: 0 }
+            : {
+                duration: 22,
+                repeat: Infinity,
+                ease: "linear",
+              }
+        }
       />
 
       <div className="absolute inset-0 noise opacity-[0.015]" />
