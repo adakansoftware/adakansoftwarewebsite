@@ -1,17 +1,14 @@
 "use client"
 
 import { Instagram } from "lucide-react"
-import { usePathname } from "next/navigation"
 import type { ReactNode } from "react"
 
 import { getWhatsAppHref, whatsAppCopy } from "@/lib/contact-links"
-import { getLocaleFromPathname } from "@/lib/i18n"
+import type { Locale } from "@/lib/i18n"
 
 const instagramHref = "https://www.instagram.com/adakansoftware"
 
-export function WhatsAppButton() {
-  const pathname = usePathname()
-  const locale = getLocaleFromPathname(pathname)
+export function WhatsAppButton({ locale }: { locale: Locale }) {
   const content = whatsAppCopy[locale]
 
   return (
@@ -72,12 +69,7 @@ function SocialBubble({
 
 function WhatsAppMark() {
   return (
-    <svg
-      viewBox="0 0 32 32"
-      className="h-5 w-5"
-      fill="none"
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 32 32" className="h-5 w-5" fill="none" aria-hidden="true">
       <path
         d="M6.8 25.7 8.1 21A10.4 10.4 0 1 1 12 24.8l-5.2.9Z"
         stroke="currentColor"

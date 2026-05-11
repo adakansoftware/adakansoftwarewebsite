@@ -1,4 +1,13 @@
-export default function Loading() {
+import { getRequestLocale } from "@/lib/request-locale"
+
+const loadingCopy = {
+  tr: "Sayfa hazırlanıyor",
+  en: "Preparing the page",
+} as const
+
+export default async function Loading() {
+  const locale = await getRequestLocale()
+
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background">
       <div className="absolute inset-0 grid-pattern opacity-10" />
@@ -10,7 +19,7 @@ export default function Loading() {
         </div>
         <div className="text-center">
           <p className="text-sm font-medium uppercase tracking-[0.24em] text-primary">Adakan Software</p>
-          <p className="mt-2 text-sm text-muted-foreground">Sayfa hazırlanıyor</p>
+          <p className="mt-2 text-sm text-muted-foreground">{loadingCopy[locale]}</p>
         </div>
       </div>
     </div>

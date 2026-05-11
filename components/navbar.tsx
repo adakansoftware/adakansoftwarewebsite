@@ -10,7 +10,7 @@ import { ArrowUpRight, Menu, MessageCircle, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { MagneticButton } from "@/components/magnetic-button"
 import { getWhatsAppHref, whatsAppCopy } from "@/lib/contact-links"
-import { getLocaleFromPathname, switchLocalePath, withLocale, type Locale } from "@/lib/i18n"
+import { switchLocalePath, withLocale, type Locale } from "@/lib/i18n"
 
 const navLabels = {
   tr: {
@@ -45,9 +45,8 @@ const navLabels = {
   closeMenu: string
 }>
 
-export function Navbar() {
+export function Navbar({ locale }: { locale: Locale }) {
   const pathname = usePathname()
-  const locale = getLocaleFromPathname(pathname)
   const labels = navLabels[locale]
   const whatsApp = whatsAppCopy[locale]
   const [isScrolled, setIsScrolled] = useState(false)

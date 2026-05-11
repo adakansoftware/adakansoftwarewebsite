@@ -3,11 +3,10 @@
 import { motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { ArrowUpRight, Github, Instagram, Linkedin, Twitter } from "lucide-react"
 
 import { MagneticButton } from "@/components/magnetic-button"
-import { getLocaleFromPathname, withLocale, type Locale } from "@/lib/i18n"
+import { withLocale, type Locale } from "@/lib/i18n"
 
 const footerCopy = {
   tr: {
@@ -74,9 +73,7 @@ const socialLinks = [
   { icon: Instagram, href: "https://www.instagram.com/adakansoftware", label: "Instagram" },
 ]
 
-export function Footer() {
-  const pathname = usePathname()
-  const locale = getLocaleFromPathname(pathname)
+export function Footer({ locale }: { locale: Locale }) {
   const copy = footerCopy[locale]
   const localizedHref = (href: string) => withLocale(href, locale)
 
