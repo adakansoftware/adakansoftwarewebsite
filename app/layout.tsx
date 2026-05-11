@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import { headers } from 'next/headers'
 import { Inter, Space_Grotesk } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { AnimatedBackground } from '@/components/animated-background'
@@ -6,6 +7,7 @@ import { Footer } from '@/components/footer'
 import { Navbar } from '@/components/navbar'
 import { SmoothScrollProvider } from '@/components/smooth-scroll-provider'
 import { WhatsAppButton } from '@/components/whatsapp-button'
+import { defaultLocale, isLocale, localeHeaderName } from '@/lib/i18n'
 import './globals.css'
 
 const inter = Inter({ 
@@ -99,13 +101,17 @@ export const viewport: Viewport = {
   userScalable: false,
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const requestHeaders = await headers()
+  const requestLocale = requestHeaders.get(localeHeaderName)
+  const locale = requestLocale && isLocale(requestLocale) ? requestLocale : defaultLocale
+
   return (
-    <html lang="tr" className="bg-background">
+    <html lang={locale} className="bg-background">
       <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
         <SmoothScrollProvider>
           <AnimatedBackground />
