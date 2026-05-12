@@ -3,6 +3,23 @@ import { fileURLToPath } from "node:url"
 
 const projectRoot = dirname(fileURLToPath(import.meta.url))
 
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "frame-ancestors 'self'",
+  "form-action 'self' mailto:",
+  "object-src 'none'",
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:",
+  "font-src 'self' data:",
+  "connect-src 'self' https://vitals.vercel-insights.com https://vercel.live",
+  "frame-src 'self'",
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+  "upgrade-insecure-requests",
+].join("; ")
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   turbopack: {
@@ -39,6 +56,22 @@ const nextConfig = {
           {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+          },
+          {
+            key: "Content-Security-Policy",
+            value: contentSecurityPolicy,
+          },
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin",
+          },
+          {
+            key: "Cross-Origin-Resource-Policy",
+            value: "same-origin",
+          },
+          {
+            key: "X-DNS-Prefetch-Control",
+            value: "off",
           },
         ],
       },
