@@ -26,7 +26,8 @@ export const metadata: Metadata = {
     default: "Adakan Software | Premium Web Tasarımı ve Marka Ajansı",
     template: "%s | Adakan Software",
   },
-  description: "Adakan Software; premium web tasarımı, logo, marka kimliği ve dönüşüm odaklı dijital ürün arayüzleri üreten futuristik yaratıcı ajans.",
+  description:
+    "Adakan Software; premium web tasarımı, logo, marka kimliği ve dönüşüm odaklı dijital ürün arayüzleri üreten futuristik yaratıcı ajans.",
   keywords: [
     "Adakan Software",
     "premium web tasarımı",
@@ -113,7 +114,7 @@ export default async function RootLayout({
         <SmoothScrollProvider>
           <a
             href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[4000] focus:rounded-full focus:bg-foreground focus:px-4 focus:py-2 focus:text-background"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[4000] focus:rounded-full focus:bg-foreground focus:px-4 focus:py-2 focus:text-background"
           >
             {skipLinkLabel}
           </a>

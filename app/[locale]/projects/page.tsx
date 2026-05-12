@@ -18,8 +18,8 @@ export async function generateMetadata({
     title: locale === "tr" ? "Projeler" : "Projects",
     description:
       locale === "tr"
-        ? "Adakan Software tarafından hazırlanan seçilmiş web tasarım, marka ve dijital ürün projeleri."
-        : "Selected web design, brand, and digital product projects crafted by Adakan Software.",
+        ? "Web tasar?m?, marka kimli?i ve dijital ?r?n geli?tirme i?lerinin se?ili ?rnekleri."
+        : "Selected examples of web design, brand identity, and digital product work.",
     path: "/projects",
   })
 }

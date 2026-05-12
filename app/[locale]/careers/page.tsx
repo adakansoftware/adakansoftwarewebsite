@@ -18,8 +18,8 @@ export async function generateMetadata({
     title: locale === "tr" ? "Kariyer" : "Careers",
     description:
       locale === "tr"
-        ? "Tasarım, frontend ve marka stratejisi alanlarında Adakan Software ile çalışma kültürünü keşfedin."
-        : "Explore how Adakan Software thinks about craft, design, frontend, and future team opportunities.",
+        ? "Adakan Software ile tasar?m, marka ve dijital ?r?n geli?tirme oda??nda ?al??ma f?rsatlar?n? ke?fedin."
+        : "Explore opportunities to work with Adakan Software on design, brand, and digital product delivery.",
     path: "/careers",
   })
 }

@@ -37,13 +37,16 @@ const navLabels = {
     openMenu: "Open menu",
     closeMenu: "Close menu",
   },
-} satisfies Record<Locale, {
-  links: Array<{ name: string; href: string }>
-  cta: string
-  homeLabel: string
-  openMenu: string
-  closeMenu: string
-}>
+} satisfies Record<
+  Locale,
+  {
+    links: Array<{ name: string; href: string }>
+    cta: string
+    homeLabel: string
+    openMenu: string
+    closeMenu: string
+  }
+>
 
 export function Navbar({ locale }: { locale: Locale }) {
   const pathname = usePathname()
@@ -71,7 +74,7 @@ export function Navbar({ locale }: { locale: Locale }) {
         initial={false}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed top-0 left-0 right-0 z-[70] border-b border-border/20 bg-background/78 backdrop-blur-xl transition-all duration-500 ${
+        className={`fixed top-0 right-0 left-0 z-[70] border-b border-border/20 bg-background/78 backdrop-blur-xl transition-all duration-500 ${
           isScrolled ? "py-4" : "py-6"
         }`}
         style={{ zIndex: 1000 }}
@@ -92,14 +95,12 @@ export function Navbar({ locale }: { locale: Locale }) {
 
           <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-10 lg:flex">
             {labels.links.map((link) => (
-              <div
-                key={link.name}
-              >
+              <div key={link.name}>
                 <MagneticButton strength={0.1}>
                   <Link
                     href={localizedHref(link.href)}
                     aria-current={isActive(link.href) ? "page" : undefined}
-                    className={`text-sm transition-colors relative group py-2 ${
+                    className={`group relative py-2 text-sm transition-colors ${
                       isActive(link.href) ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
@@ -115,7 +116,7 @@ export function Navbar({ locale }: { locale: Locale }) {
             ))}
           </div>
 
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden items-center gap-3 lg:flex">
             <MagneticButton strength={0.16}>
               <a
                 href={getWhatsAppHref(locale)}
@@ -147,16 +148,16 @@ export function Navbar({ locale }: { locale: Locale }) {
               EN
             </Link>
             <MagneticButton strength={0.2}>
-              <Button asChild className="bg-foreground text-background hover:bg-foreground/90 rounded-full px-6 transition-colors duration-300">
+              <Button asChild className="rounded-full bg-foreground px-6 text-background transition-colors duration-300 hover:bg-foreground/90">
                 <Link href={localizedHref("/contact")}>
                   {labels.cta}
-                  <ArrowUpRight className="ml-2 w-4 h-4" />
+                  <ArrowUpRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </MagneticButton>
           </div>
 
-          <details className="mobile-menu-native fixed right-5 top-6 flex shrink-0 lg:hidden" data-mobile-menu>
+          <details className="mobile-menu-native fixed top-6 right-5 flex shrink-0 lg:hidden" data-mobile-menu>
             <summary className="relative inline-flex h-12 w-12 touch-manipulation items-center justify-center rounded-full border border-white/10 bg-background/70 text-foreground backdrop-blur-xl">
               <span className="sr-only">{labels.openMenu}</span>
               <Menu size={24} className="mobile-menu-open-icon" />
@@ -171,23 +172,31 @@ export function Navbar({ locale }: { locale: Locale }) {
             >
               <div className="absolute inset-0 grid-pattern opacity-10" />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,oklch(0.76_0.13_174_/_0.16),transparent_34%),radial-gradient(circle_at_80%_15%,oklch(0.78_0.14_74_/_0.12),transparent_32%)]" />
-              <div className="relative h-full overflow-y-auto px-6 pb-10 pt-28">
+              <div className="relative h-full overflow-y-auto px-6 pt-28 pb-10">
                 <div className="flex flex-col gap-8">
                   {labels.links.map((link) => (
                     <Link
                       key={link.name}
                       href={localizedHref(link.href)}
-                      className="text-4xl font-bold leading-tight text-foreground"
+                      className="text-4xl leading-tight font-bold text-foreground"
                       onClick={closeNativeMobileMenu}
                     >
                       {link.name}
                     </Link>
                   ))}
                   <div className="flex gap-3">
-                    <Link href={switchLocalePath(pathname, "tr")} onClick={closeNativeMobileMenu} className="rounded-full border border-border/50 px-4 py-2 text-sm">
+                    <Link
+                      href={switchLocalePath(pathname, "tr")}
+                      onClick={closeNativeMobileMenu}
+                      className="rounded-full border border-border/50 px-4 py-2 text-sm"
+                    >
                       TR
                     </Link>
-                    <Link href={switchLocalePath(pathname, "en")} onClick={closeNativeMobileMenu} className="rounded-full border border-border/50 px-4 py-2 text-sm">
+                    <Link
+                      href={switchLocalePath(pathname, "en")}
+                      onClick={closeNativeMobileMenu}
+                      className="rounded-full border border-border/50 px-4 py-2 text-sm"
+                    >
                       EN
                     </Link>
                   </div>
@@ -203,10 +212,10 @@ export function Navbar({ locale }: { locale: Locale }) {
                     {whatsApp.short}
                   </a>
                   <div className="mt-8">
-                    <Button asChild className="w-full bg-foreground text-background rounded-full py-6 text-lg">
+                    <Button asChild className="w-full rounded-full bg-foreground py-6 text-lg text-background">
                       <Link href={localizedHref("/contact")} onClick={closeNativeMobileMenu}>
                         {labels.cta}
-                        <ArrowUpRight className="ml-2 w-5 h-5" />
+                        <ArrowUpRight className="ml-2 h-5 w-5" />
                       </Link>
                     </Button>
                   </div>

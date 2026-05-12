@@ -18,8 +18,8 @@ export async function generateMetadata({
     title: locale === "tr" ? "Yorumlar" : "Testimonials",
     description:
       locale === "tr"
-        ? "Adakan Software ile çalışan iş ortaklarının deneyimlerini ve teslim kalitesi hakkındaki geri bildirimlerini inceleyin."
-        : "Read partner feedback on delivery quality, clarity, and working with Adakan Software.",
+        ? "Adakan Software ile ?al??an ekiplerin deneyimleri, s?re? kalitesi ve sonu? odakl? i? birlikleri."
+        : "Experiences, process quality, and outcome-focused collaboration from teams working with Adakan Software.",
     path: "/testimonials",
   })
 }

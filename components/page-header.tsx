@@ -28,7 +28,7 @@ export function PageHeader({
   secondaryLabel,
 }: PageHeaderProps) {
   return (
-    <section className="relative overflow-hidden pb-20 pt-36 md:pb-28 md:pt-44">
+    <section className="relative overflow-hidden pt-36 pb-20 md:pt-44 md:pb-28">
       <div className="absolute inset-0 grid-pattern opacity-10" />
       <div className="section-shell">
         <div className="max-w-4xl">

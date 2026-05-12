@@ -11,22 +11,26 @@ const copy = {
     eyebrow: "Yaklaşımımız",
     title: "Harika tasarım",
     mutedTitle: "sessizce güven verir.",
-    description: "Parlak efektlerin arkasına saklanmayan, markanın değerini netleştiren ve kullanıcıyı doğru aksiyona taşıyan deneyimler tasarlıyoruz.",
+    description:
+      "Parlak efektlerin arkasına saklanmayan, markanın değerini netleştiren ve kullanıcıyı doğru aksiyona taşıyan deneyimler tasarlıyoruz.",
     items: [
       {
         number: "01",
         title: "Önce strateji",
-        description: "Her ekranın neyi anlatacağını, hangi itirazı azaltacağını ve hangi aksiyonu güçlendireceğini en başta netleştiririz.",
+        description:
+          "Her ekranın neyi anlatacağını, hangi itirazı azaltacağını ve hangi aksiyonu güçlendireceğini en başta netleştiririz.",
       },
       {
         number: "02",
         title: "Sonra zanaat",
-        description: "Tipografi, boşluk, hareket ve mikro etkileşimleri yalnızca estetik için değil, algıyı ve kullanımı iyileştirmek için kurarız.",
+        description:
+          "Tipografi, boşluk, hareket ve mikro etkileşimleri yalnızca estetik için değil, algıyı ve kullanımı iyileştirmek için kurarız.",
       },
       {
         number: "03",
         title: "En sonda sürdürülebilirlik",
-        description: "Teslim edilen işin hızlı, yönetilebilir ve geliştirilebilir kalmasına önem veririz. İyi tasarım, yayına çıktıktan sonra da çalışır.",
+        description:
+          "Teslim edilen işin hızlı, yönetilebilir ve geliştirilebilir kalmasına önem veririz. İyi tasarım, yayına çıktıktan sonra da çalışır.",
       },
     ],
   },
@@ -54,14 +58,7 @@ const copy = {
       },
     ],
   },
-} satisfies Record<Locale, {
-  background: string
-  eyebrow: string
-  title: string
-  mutedTitle: string
-  description: string
-  items: Array<{ number: string; title: string; description: string }>
-}>
+} satisfies Record<Locale, { background: string; eyebrow: string; title: string; mutedTitle: string; description: string; items: Array<{ number: string; title: string; description: string }> }>
 
 export function PhilosophySection({ locale = "tr" }: { locale?: Locale }) {
   const sectionCopy = copy[locale]
@@ -77,37 +74,23 @@ export function PhilosophySection({ locale = "tr" }: { locale?: Locale }) {
 
   return (
     <section ref={containerRef} id="philosophy" className="relative overflow-hidden py-20 md:py-32">
-      <motion.div
-        style={{ y: backgroundY }}
-        className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
-      >
-        <span className="text-[15vw] font-bold text-border/[0.02] tracking-tighter whitespace-nowrap">
-          {sectionCopy.background}
-        </span>
+      <motion.div style={{ y: backgroundY }} className="pointer-events-none absolute inset-0 flex items-center justify-center select-none">
+        <span className="text-[15vw] font-bold tracking-tighter text-border/[0.02] whitespace-nowrap">{sectionCopy.background}</span>
       </motion.div>
 
-      <motion.div style={{ y: contentY }} className="container mx-auto px-6 relative z-10">
+      <motion.div style={{ y: contentY }} className="container relative z-10 mx-auto px-6">
         <div className="mb-14 max-w-4xl md:mb-24">
-          <motion.span
-            initial={false}
-            className="text-primary text-sm font-medium tracking-widest uppercase mb-6 block"
-          >
+          <motion.span initial={false} className="mb-6 block text-sm font-medium tracking-widest text-primary uppercase">
             {sectionCopy.eyebrow}
           </motion.span>
 
-          <motion.h2
-            initial={false}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] mb-8"
-          >
+          <motion.h2 initial={false} className="mb-8 text-4xl leading-[1.1] font-bold tracking-tight md:text-6xl lg:text-7xl">
             {sectionCopy.title}
             <br />
             <span className="text-muted-foreground">{sectionCopy.mutedTitle}</span>
           </motion.h2>
 
-          <motion.p
-            initial={false}
-            className="text-xl text-muted-foreground leading-relaxed max-w-2xl"
-          >
+          <motion.p initial={false} className="max-w-2xl text-xl leading-relaxed text-muted-foreground">
             {sectionCopy.description}
           </motion.p>
         </div>
@@ -122,29 +105,17 @@ export function PhilosophySection({ locale = "tr" }: { locale?: Locale }) {
   )
 }
 
-function PhilosophyItem({
-  item,
-}: {
-  item: { number: string; title: string; description: string }
-}) {
+function PhilosophyItem({ item }: { item: { number: string; title: string; description: string } }) {
   return (
-    <motion.div
-      initial={false}
-      animate={{ opacity: 1, y: 0 }}
-      className="group grid gap-4 md:grid-cols-12 md:items-start md:gap-8"
-    >
+    <motion.div initial={false} animate={{ opacity: 1, y: 0 }} className="group grid gap-4 md:grid-cols-12 md:items-start md:gap-8">
       <div className="md:col-span-2">
-        <span className="text-5xl font-bold text-border/15 transition-colors duration-500 group-hover:text-primary/15 md:text-7xl">
-          {item.number}
-        </span>
+        <span className="text-5xl font-bold text-border/15 transition-colors duration-500 group-hover:text-primary/15 md:text-7xl">{item.number}</span>
       </div>
 
       <div className="md:col-span-10 md:col-start-4">
         <div className="border-t border-border/50 pt-5 transition-colors duration-500 group-hover:border-primary/30 md:pt-8">
-          <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors duration-300">
-            {item.title}
-          </h3>
-          <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">{item.description}</p>
+          <h3 className="mb-4 text-2xl font-bold text-foreground transition-colors duration-300 group-hover:text-primary md:text-3xl">{item.title}</h3>
+          <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground">{item.description}</p>
         </div>
       </div>
     </motion.div>

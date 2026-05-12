@@ -15,11 +15,11 @@ export async function generateMetadata({
 
   return createPageMetadata({
     locale,
-    title: locale === "tr" ? "Yaklaşımımız" : "Approach",
+    title: locale === "tr" ? "Yakla??m?m?z" : "Approach",
     description:
       locale === "tr"
-        ? "Önce strateji, sonra zanaat. Adakan Software tasarım kararlarını marka, kullanıcı ve sürdürülebilirlik odağında kurar."
-        : "Strategy first, craft second. Adakan Software shapes design decisions around brand, user, and long-term sustainability.",
+        ? "?nce strateji, sonra zanaat. Adakan Software tasar?m kararlar?n? marka, kullan?c? ve s?rd?r?lebilirlik oda??nda kurar."
+        : "Strategy first, craft second. Adakan Software builds design decisions around brand, users, and long-term sustainability.",
     path: "/approach",
   })
 }

@@ -18,8 +18,8 @@ export async function generateMetadata({
     title: locale === "tr" ? "Kullanım Şartları" : "Terms",
     description:
       locale === "tr"
-        ? "Adakan Software web sitesinin kullanımına dair genel şartlar ve içerik kullanım çerçevesi."
-        : "General website usage terms and content usage rules for the Adakan Software website.",
+        ? "Adakan Software web sitesi kullanım şartları, hizmet kapsamı ve sorumluluk sınırları."
+        : "Adakan Software website terms, service scope, and limitations of responsibility.",
     path: "/terms",
   })
 }

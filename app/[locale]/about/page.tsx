@@ -15,10 +15,10 @@ export async function generateMetadata({
 
   return createPageMetadata({
     locale,
-    title: locale === "tr" ? "Hakkımızda" : "About",
+    title: locale === "tr" ? "Hakk?m?zda" : "About",
     description:
       locale === "tr"
-        ? "Adakan Software tasarım, marka ve yazılımı aynı büyüme hedefinde birleştiren premium dijital stüdyodur."
+        ? "Adakan Software tasar?m, marka ve yaz?l?m? ayn? b?y?me hedefinde birle?tiren premium dijital st?dyodur."
         : "Adakan Software is a premium digital studio connecting design, brand, and software around business growth.",
     path: "/about",
   })

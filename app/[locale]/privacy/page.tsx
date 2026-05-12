@@ -18,8 +18,8 @@ export async function generateMetadata({
     title: locale === "tr" ? "Gizlilik" : "Privacy",
     description:
       locale === "tr"
-        ? "Adakan Software web sitesinde paylaşılan iletişim bilgilerinin nasıl işlendiğine dair özet gizlilik bilgileri."
-        : "Summary privacy information about how contact details shared through the Adakan Software website are handled.",
+        ? "Adakan Software gizlilik yaklaşımı, veri kullanımı ve iletişim süreçleri hakkında bilgiler."
+        : "Information about Adakan Software privacy practices, data use, and communication processes.",
     path: "/privacy",
   })
 }

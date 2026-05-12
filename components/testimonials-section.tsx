@@ -16,7 +16,7 @@ const copy = {
     goTo: (index: number) => `${index + 1}. yoruma git`,
     testimonials: [
       {
-        quote: "Adakan ekibi, dağınık ürün anlatımızı çok net bir web deneyimine dönüştürdü. İlk ayda demo taleplerimizin kalitesi belirgin şekilde arttı.",
+        quote: "Adakan ekibi, dağınık ürün anlatımımızı çok net bir web deneyimine dönüştürdü. İlk ayda demo taleplerimizin kalitesi belirgin şekilde arttı.",
         author: "Ayşe Yılmaz",
         role: "CEO",
         company: "Nexus Finans",
@@ -75,15 +75,7 @@ const copy = {
       },
     ],
   },
-} satisfies Record<Locale, {
-  eyebrow: string
-  title: string
-  gradient: string
-  prev: string
-  next: string
-  goTo: (index: number) => string
-  testimonials: Array<{ quote: string; author: string; role: string; company: string }>
-}>
+} satisfies Record<Locale, { eyebrow: string; title: string; gradient: string; prev: string; next: string; goTo: (index: number) => string; testimonials: Array<{ quote: string; author: string; role: string; company: string }> }>
 
 export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
   const sectionCopy = copy[locale]
@@ -124,16 +116,16 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
   return (
     <section id="testimonials" className="relative overflow-hidden py-20 md:py-32">
       <div className="absolute inset-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gradient-radial from-primary/5 to-transparent" />
+        <div className="absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-radial from-primary/5 to-transparent" />
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container relative z-10 mx-auto px-6">
         <div className="mb-12 text-center md:mb-16">
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-primary text-sm font-medium tracking-widest uppercase mb-6 block"
+            className="mb-6 block text-sm font-medium tracking-widest text-primary uppercase"
           >
             {sectionCopy.eyebrow}
           </motion.span>
@@ -142,7 +134,7 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="text-4xl md:text-6xl font-bold tracking-tight"
+            className="text-4xl font-bold tracking-tight md:text-6xl"
           >
             {sectionCopy.title}
             <br />
@@ -150,7 +142,7 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
           </motion.h2>
         </div>
 
-        <div className="max-w-4xl mx-auto">
+        <div className="mx-auto max-w-4xl">
           <div className="relative flex min-h-[430px] items-center justify-center sm:min-h-[360px] md:min-h-[300px]">
             <AnimatePresence initial={false} custom={direction} mode="wait">
               <motion.div
@@ -163,12 +155,12 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
                 transition={{ x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }}
                 className="absolute w-full text-center"
               >
-                <Quote className="w-10 h-10 mx-auto mb-6 text-primary/30" />
-                <blockquote className="mb-8 text-lg font-medium leading-relaxed text-foreground md:mb-10 md:text-2xl lg:text-3xl">
+                <Quote className="mx-auto mb-6 h-10 w-10 text-primary/30" />
+                <blockquote className="mb-8 text-lg leading-relaxed font-medium text-foreground md:mb-10 md:text-2xl lg:text-3xl">
                   &ldquo;{testimonials[current].quote}&rdquo;
                 </blockquote>
                 <div className="flex flex-col items-center">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center mb-4">
+                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary/30 to-accent/30">
                     <span className="text-lg font-bold text-foreground">{testimonials[current].author.charAt(0)}</span>
                   </div>
                   <p className="text-lg font-semibold text-foreground">{testimonials[current].author}</p>
@@ -180,15 +172,15 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
             </AnimatePresence>
           </div>
 
-          <div className="flex items-center justify-center gap-4 mt-12">
+          <div className="mt-12 flex items-center justify-center gap-4">
             <button
               onClick={prev}
-              className="w-11 h-11 rounded-full border border-border/50 flex items-center justify-center hover:border-primary/50 hover:bg-primary/5 transition-colors duration-300"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-border/50 transition-colors duration-300 hover:border-primary/50 hover:bg-primary/5"
               aria-label={sectionCopy.prev}
             >
-              <ChevronLeft className="w-5 h-5 text-muted-foreground" />
+              <ChevronLeft className="h-5 w-5 text-muted-foreground" />
             </button>
-            <div className="flex gap-2 mx-4">
+            <div className="mx-4 flex gap-2">
               {testimonials.map((_, index) => (
                 <button
                   key={index}
@@ -203,10 +195,10 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
             </div>
             <button
               onClick={next}
-              className="w-11 h-11 rounded-full border border-border/50 flex items-center justify-center hover:border-primary/50 hover:bg-primary/5 transition-colors duration-300"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-border/50 transition-colors duration-300 hover:border-primary/50 hover:bg-primary/5"
               aria-label={sectionCopy.next}
             >
-              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              <ChevronRight className="h-5 w-5 text-muted-foreground" />
             </button>
           </div>
         </div>

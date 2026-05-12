@@ -18,7 +18,7 @@ export async function generateMetadata({
     title: locale === "tr" ? "Hizmetler" : "Services",
     description:
       locale === "tr"
-        ? "Web tasarım, marka kimliği, UI/UX ve frontend geliştirme alanlarında premium, ölçülebilir dijital hizmetler."
+        ? "Web tasar?m, marka kimli?i, UI/UX ve frontend geli?tirme alanlar?nda premium, ?l??lebilir dijital hizmetler."
         : "Premium digital services across web design, brand identity, UI/UX, and frontend development.",
     path: "/services",
   })
