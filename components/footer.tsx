@@ -8,6 +8,7 @@ import { ArrowUpRight, Github, Instagram, Linkedin, Twitter } from "lucide-react
 import { MagneticButton } from "@/components/magnetic-button"
 import { withLocale, type Locale } from "@/lib/i18n"
 import { footerContent, socialLinks } from "@/lib/shell-content"
+import { siteConfig } from "@/lib/site-config"
 
 const socialIcons = {
   GitHub: Github,
@@ -102,7 +103,7 @@ export function Footer({ locale }: { locale: Locale }) {
             <Link href={localizedHref("/terms")} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
               {copy.terms}
             </Link>
-            <span className="text-sm text-muted-foreground">{locale === "tr" ? "İstanbul, Türkiye" : "Istanbul, Turkey"}</span>
+            <span className="text-sm text-muted-foreground">{siteConfig.location[locale]}</span>
           </div>
         </div>
 

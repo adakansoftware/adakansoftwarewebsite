@@ -137,7 +137,7 @@ export const boundaryContent = {
       home: "Return home",
     },
   },
-} satisfies Record<string, unknown>
+} as const
 
 type ContactOption = {
   title: string
@@ -153,8 +153,8 @@ export function getContactOptions(locale: Locale): ContactOption[] {
       value: siteConfig.email,
       href:
         locale === "tr"
-          ? "mailto:merhaba@adakan.com.tr?subject=Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi"
-          : "mailto:merhaba@adakan.com.tr?subject=New%20project%20inquiry",
+          ? `mailto:${siteConfig.email}?subject=Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi`
+          : `mailto:${siteConfig.email}?subject=New%20project%20inquiry`,
       icon: Mail,
     },
     {

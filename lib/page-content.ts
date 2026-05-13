@@ -1,7 +1,8 @@
 import type { LucideIcon } from "lucide-react"
-import { Mail, MapPin } from "lucide-react"
 
 import type { Locale } from "@/lib/i18n"
+import { getContactOptions } from "@/lib/shell-content"
+import { siteConfig } from "@/lib/site-config"
 
 type HeaderContent = {
   eyebrow: string
@@ -279,7 +280,7 @@ const contactPageContent: Record<Locale, ContactContent> = {
       gradientText: "birlikte netleştirelim",
       description:
         "Yeni web siteniz, marka kimliğiniz veya dijital ürününüz için hedefleri, kapsamı ve ilk teslim planını birlikte çıkaralım.",
-      primaryHref: "mailto:merhaba@adakan.com.tr?subject=Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi",
+      primaryHref: `mailto:${siteConfig.email}?subject=Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi`,
       primaryLabel: "E-posta Gönder",
       secondaryHref: "/services",
       secondaryLabel: "Hizmetleri Gör",
@@ -288,21 +289,8 @@ const contactPageContent: Record<Locale, ContactContent> = {
     noteDescription:
       "Mail atarken proje türünü, varsa mevcut web sitenizi, hedeflediğiniz teslim tarihini ve beklentinizi yazmanız yeterli.",
     tags: ["Web sitesi", "Marka kimliği", "UI/UX", "Frontend geliştirme"],
-    emailHref: "mailto:merhaba@adakan.com.tr?subject=Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi",
-    options: [
-      {
-        title: "E-posta",
-        value: "merhaba@adakan.com.tr",
-        href: "mailto:merhaba@adakan.com.tr?subject=Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi",
-        icon: Mail,
-      },
-      {
-        title: "Konum",
-        value: "İstanbul, Türkiye",
-        href: "/about",
-        icon: MapPin,
-      },
-    ],
+    emailHref: `mailto:${siteConfig.email}?subject=Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi`,
+    options: getContactOptions("tr"),
   },
   en: {
     header: {
@@ -311,7 +299,7 @@ const contactPageContent: Record<Locale, ContactContent> = {
       gradientText: "your project",
       description:
         "For your new website, brand identity, or digital product, let's define goals, scope, and the first delivery plan together.",
-      primaryHref: "mailto:merhaba@adakan.com.tr?subject=New%20project%20inquiry",
+      primaryHref: `mailto:${siteConfig.email}?subject=New%20project%20inquiry`,
       primaryLabel: "Send Email",
       secondaryHref: "/en/services",
       secondaryLabel: "View Services",
@@ -319,21 +307,8 @@ const contactPageContent: Record<Locale, ContactContent> = {
     noteTitle: "A short note is enough to start",
     noteDescription: "Include the project type, your current website if available, target timeline, and expectations.",
     tags: ["Website", "Brand identity", "UI/UX", "Frontend development"],
-    emailHref: "mailto:merhaba@adakan.com.tr?subject=New%20project%20inquiry",
-    options: [
-      {
-        title: "Email",
-        value: "merhaba@adakan.com.tr",
-        href: "mailto:merhaba@adakan.com.tr?subject=New%20project%20inquiry",
-        icon: Mail,
-      },
-      {
-        title: "Location",
-        value: "Istanbul, Turkey",
-        href: "/en/about",
-        icon: MapPin,
-      },
-    ],
+    emailHref: `mailto:${siteConfig.email}?subject=New%20project%20inquiry`,
+    options: getContactOptions("en"),
   },
 }
 
