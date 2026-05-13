@@ -187,7 +187,7 @@ export function ContactPageContent({ locale }: { locale: Locale }) {
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Button asChild size="lg" className="rounded-full bg-foreground px-8 py-7 text-background hover:bg-foreground/90">
                 <a href={content.emailHref}>
-                  merhaba@adakan.com.tr
+                  {content.emailLabel}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </a>
               </Button>
@@ -198,7 +198,7 @@ export function ContactPageContent({ locale }: { locale: Locale }) {
                 className="rounded-full border-primary/35 bg-primary/5 px-8 py-7 text-primary hover:border-primary/60 hover:bg-primary hover:text-background"
               >
                 <a href={getWhatsAppHref(locale)} target="_blank" rel="noreferrer">
-                  WhatsApp
+                  {content.messagingLabel}
                   <MessageCircle className="ml-2 h-5 w-5" />
                 </a>
               </Button>

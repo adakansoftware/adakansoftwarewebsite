@@ -45,6 +45,8 @@ type ContactContent = {
   noteDescription: string
   tags: string[]
   emailHref: string
+  emailLabel: string
+  messagingLabel: string
   options: ContactOption[]
 }
 
@@ -290,6 +292,8 @@ const contactPageContent: Record<Locale, ContactContent> = {
       "Mail atarken proje türünü, varsa mevcut web sitenizi, hedeflediğiniz teslim tarihini ve beklentinizi yazmanız yeterli.",
     tags: ["Web sitesi", "Marka kimliği", "UI/UX", "Frontend geliştirme"],
     emailHref: `mailto:${siteConfig.email}?subject=Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi`,
+    emailLabel: siteConfig.email,
+    messagingLabel: "WhatsApp",
     options: getContactOptions("tr"),
   },
   en: {
@@ -308,6 +312,8 @@ const contactPageContent: Record<Locale, ContactContent> = {
     noteDescription: "Include the project type, your current website if available, target timeline, and expectations.",
     tags: ["Website", "Brand identity", "UI/UX", "Frontend development"],
     emailHref: `mailto:${siteConfig.email}?subject=New%20project%20inquiry`,
+    emailLabel: siteConfig.email,
+    messagingLabel: "WhatsApp",
     options: getContactOptions("en"),
   },
 }

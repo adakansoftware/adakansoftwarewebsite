@@ -1,12 +1,7 @@
 import { AboutPageContent } from "@/components/page-routes"
-import { createPageMetadata } from "@/lib/metadata"
+import { createRouteMetadata } from "@/lib/metadata"
 
-export const metadata = createPageMetadata({
-  locale: "tr",
-  title: "Hakkımızda",
-  description: "Adakan Software tasarım, marka ve yazılımı aynı büyüme hedefinde birleştiren premium dijital stüdyodur.",
-  path: "/about",
-})
+export const metadata = createRouteMetadata("about", "tr", "/about")
 
 export default function AboutPage() {
   return <AboutPageContent locale="tr" />

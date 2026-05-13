@@ -5,29 +5,15 @@ import Link from "next/link"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
 
+import { servicesSectionContent } from "@/lib/home-content"
 import type { Locale } from "@/lib/i18n"
 import { getServices } from "@/lib/site-data"
 
 type Service = ReturnType<typeof getServices>[number]
 
-const copy = {
-  tr: {
-    eyebrow: "Hizmetlerimiz",
-    title: "Net hedef,",
-    gradient: "ölçülebilir etki",
-    description: "Güzel görünen işler yapmanın ötesine geçiyoruz: konumlandırma, deneyim ve teknik uygulama aynı hedefe bağlanıyor.",
-  },
-  en: {
-    eyebrow: "Services",
-    title: "Clear goals,",
-    gradient: "measurable impact",
-    description: "We go beyond good-looking work: positioning, experience, and technical execution all connect to the same business goal.",
-  },
-} satisfies Record<Locale, { eyebrow: string; title: string; gradient: string; description: string }>
-
 export function ServicesSection({ locale = "tr" }: { locale?: Locale }) {
   const services = getServices(locale)
-  const sectionCopy = copy[locale]
+  const sectionCopy = servicesSectionContent[locale]
   const containerRef = useRef<HTMLDivElement>(null)
 
   const { scrollYProgress } = useScroll({

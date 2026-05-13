@@ -2,25 +2,11 @@ import Link from "next/link"
 
 import { withLocale } from "@/lib/i18n"
 import { getRequestLocale } from "@/lib/request-locale"
-
-const notFoundCopy = {
-  tr: {
-    title: "Aradığın sayfa bulunamadı",
-    description: "Route artık yok olabilir ya da bağlantı eksik olabilir. Akışı ana sayfadan tekrar kurabiliriz.",
-    home: "Ana sayfaya dön",
-    contact: "İletişime geç",
-  },
-  en: {
-    title: "The page you are looking for was not found",
-    description: "The route may no longer exist or the link may be incomplete. We can rebuild the flow from the home page.",
-    home: "Back to home",
-    contact: "Contact us",
-  },
-} as const
+import { boundaryContent } from "@/lib/shell-content"
 
 export default async function NotFound() {
   const locale = await getRequestLocale()
-  const copy = notFoundCopy[locale]
+  const copy = boundaryContent.notFound[locale]
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-6">

@@ -5,23 +5,7 @@ import { usePathname } from "next/navigation"
 import { useEffect } from "react"
 
 import { getLocaleFromPathname, withLocale } from "@/lib/i18n"
-
-const errorCopy = {
-  tr: {
-    eyebrow: "Sistem hatası",
-    title: "Beklenmeyen bir durum oluştu",
-    description: "Deneyimi bozmadan hatayı izole ettik. Sayfayı yeniden denemek çoğu durumda yeterli olur.",
-    retry: "Tekrar dene",
-    home: "Ana sayfaya dön",
-  },
-  en: {
-    eyebrow: "System error",
-    title: "Something unexpected happened",
-    description: "We isolated the issue without breaking the experience. Retrying the page is usually enough.",
-    retry: "Try again",
-    home: "Back to home",
-  },
-} as const
+import { boundaryContent } from "@/lib/shell-content"
 
 export default function GlobalError({
   error,
@@ -32,7 +16,7 @@ export default function GlobalError({
 }) {
   const pathname = usePathname()
   const locale = getLocaleFromPathname(pathname)
-  const copy = errorCopy[locale]
+  const copy = boundaryContent.error[locale]
 
   useEffect(() => {
     console.error(error)

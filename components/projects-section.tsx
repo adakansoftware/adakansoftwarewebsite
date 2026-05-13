@@ -5,29 +5,15 @@ import Link from "next/link"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
 
+import { projectsSectionContent } from "@/lib/home-content"
 import { withLocale, type Locale } from "@/lib/i18n"
 import { getProjects } from "@/lib/site-data"
 
 type Project = ReturnType<typeof getProjects>[number]
 
-const copy = {
-  tr: {
-    eyebrow: "Seçilmiş Projeler",
-    title: "Görünür sonuç",
-    gradient: "üreten işler",
-    all: "Tüm Projeleri Gör",
-  },
-  en: {
-    eyebrow: "Selected Projects",
-    title: "Work that creates",
-    gradient: "visible results",
-    all: "View All Projects",
-  },
-} satisfies Record<Locale, { eyebrow: string; title: string; gradient: string; all: string }>
-
 export function ProjectsSection({ locale = "tr" }: { locale?: Locale }) {
   const projects = getProjects(locale)
-  const sectionCopy = copy[locale]
+  const sectionCopy = projectsSectionContent[locale]
   const containerRef = useRef<HTMLDivElement>(null)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 

@@ -3,65 +3,11 @@
 import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 
+import { philosophySectionContent } from "@/lib/home-content"
 import type { Locale } from "@/lib/i18n"
 
-const copy = {
-  tr: {
-    background: "YAKLAŞIM",
-    eyebrow: "Yaklaşımımız",
-    title: "Harika tasarım",
-    mutedTitle: "sessizce güven verir.",
-    description:
-      "Parlak efektlerin arkasına saklanmayan, markanın değerini netleştiren ve kullanıcıyı doğru aksiyona taşıyan deneyimler tasarlıyoruz.",
-    items: [
-      {
-        number: "01",
-        title: "Önce strateji",
-        description:
-          "Her ekranın neyi anlatacağını, hangi itirazı azaltacağını ve hangi aksiyonu güçlendireceğini en başta netleştiririz.",
-      },
-      {
-        number: "02",
-        title: "Sonra zanaat",
-        description:
-          "Tipografi, boşluk, hareket ve mikro etkileşimleri yalnızca estetik için değil, algıyı ve kullanımı iyileştirmek için kurarız.",
-      },
-      {
-        number: "03",
-        title: "En sonda sürdürülebilirlik",
-        description:
-          "Teslim edilen işin hızlı, yönetilebilir ve geliştirilebilir kalmasına önem veririz. İyi tasarım, yayına çıktıktan sonra da çalışır.",
-      },
-    ],
-  },
-  en: {
-    background: "APPROACH",
-    eyebrow: "Our Approach",
-    title: "Great design",
-    mutedTitle: "quietly builds trust.",
-    description: "We design experiences that clarify brand value and guide users toward the right action, without hiding behind shiny effects.",
-    items: [
-      {
-        number: "01",
-        title: "Strategy first",
-        description: "We clarify what each screen should communicate, which objection it should reduce, and which action it should support.",
-      },
-      {
-        number: "02",
-        title: "Craft second",
-        description: "Typography, spacing, motion, and micro-interactions are used to improve perception and usability, not decoration alone.",
-      },
-      {
-        number: "03",
-        title: "Sustainability last",
-        description: "We care that the delivered work remains fast, manageable, and extensible after launch. Good design keeps working.",
-      },
-    ],
-  },
-} satisfies Record<Locale, { background: string; eyebrow: string; title: string; mutedTitle: string; description: string; items: Array<{ number: string; title: string; description: string }> }>
-
 export function PhilosophySection({ locale = "tr" }: { locale?: Locale }) {
-  const sectionCopy = copy[locale]
+  const sectionCopy = philosophySectionContent[locale]
   const containerRef = useRef<HTMLDivElement>(null)
 
   const { scrollYProgress } = useScroll({

@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
 
 import type { Locale } from "@/lib/i18n"
+import { siteConfig } from "@/lib/site-config"
+import { routeMetadataContent, type RouteMetadataKey } from "@/lib/route-metadata-content"
 
-const siteName = "Adakan Software"
-const siteUrl = "https://adakansoftware.com"
-const defaultImage = "/adakan-logo.png"
+const siteName = siteConfig.name
+const siteUrl = siteConfig.url
+const defaultImage = siteConfig.defaultOgImage
 
 const localeMap: Record<Locale, { og: string; alternates: string }> = {
   tr: { og: "tr_TR", alternates: "tr-TR" },
@@ -63,4 +65,16 @@ export function createPageMetadata({
       images: [defaultImage],
     },
   }
+}
+
+export function createRouteMetadata(route: RouteMetadataKey, locale: Locale, path: string): Metadata {
+  const content = routeMetadataContent[route][locale]
+
+  return createPageMetadata({
+    locale,
+    title: content.title,
+    description: content.description,
+    path,
+    keywords: content.keywords,
+  })
 }

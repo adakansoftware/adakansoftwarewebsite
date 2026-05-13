@@ -1,9 +1,5 @@
 import { getRequestLocale } from "@/lib/request-locale"
-
-const loadingCopy = {
-  tr: "Sayfa hazırlanıyor",
-  en: "Preparing the page",
-} as const
+import { boundaryContent } from "@/lib/shell-content"
 
 export default async function Loading() {
   const locale = await getRequestLocale()
@@ -15,11 +11,11 @@ export default async function Loading() {
       <div className="relative z-10 flex flex-col items-center gap-5">
         <div className="relative h-12 w-12">
           <span className="absolute inset-0 rounded-full border border-primary/30" />
-          <span className="absolute inset-2 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <span className="absolute inset-2 rounded-full border-2 border-primary border-t-transparent animate-spin" />
         </div>
         <div className="text-center">
           <p className="text-sm font-medium uppercase tracking-[0.24em] text-primary">Adakan Software</p>
-          <p className="mt-2 text-sm text-muted-foreground">{loadingCopy[locale]}</p>
+          <p className="mt-2 text-sm text-muted-foreground">{boundaryContent.loading[locale]}</p>
         </div>
       </div>
     </div>

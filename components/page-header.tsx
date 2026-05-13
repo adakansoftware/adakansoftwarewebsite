@@ -2,7 +2,7 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import type { Locale } from "@/lib/i18n"
+import { withLocale, type Locale } from "@/lib/i18n"
 
 type PageHeaderProps = {
   locale?: Locale
@@ -22,7 +22,7 @@ export function PageHeader({
   title,
   gradientText,
   description,
-  primaryHref = "/contact",
+  primaryHref = withLocale("/contact", locale),
   primaryLabel = locale === "en" ? "Start a Project" : "Projeye Başla",
   secondaryHref,
   secondaryLabel,

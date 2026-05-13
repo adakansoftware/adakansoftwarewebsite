@@ -1,9 +1,9 @@
 import { LegalPageContent } from "@/components/static-page-routes"
-import { createPageMetadata } from "@/lib/metadata"
-import { getPrefixedLocaleStaticParams, getPrefixedRouteLocale } from "@/lib/route-locale"
+import { createRouteMetadata } from "@/lib/metadata"
+import { getLocaleStaticParams, getRouteLocale } from "@/lib/route-locale"
 
 export function generateStaticParams() {
-  return getPrefixedLocaleStaticParams()
+  return getLocaleStaticParams()
 }
 
 export async function generateMetadata({
@@ -11,17 +11,8 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const locale = await getPrefixedRouteLocale(params)
-
-  return createPageMetadata({
-    locale,
-    title: locale === "tr" ? "Gizlilik" : "Privacy",
-    description:
-      locale === "tr"
-        ? "Adakan Software gizlilik yaklaşımı, veri kullanımı ve iletişim süreçleri hakkında bilgiler."
-        : "Information about Adakan Software privacy practices, data use, and communication processes.",
-    path: "/privacy",
-  })
+  const locale = await getRouteLocale(params)
+  return createRouteMetadata("privacy", locale, "/privacy")
 }
 
 export default async function PrivacyRoute({
@@ -29,6 +20,6 @@ export default async function PrivacyRoute({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const locale = await getPrefixedRouteLocale(params)
+  const locale = await getRouteLocale(params)
   return <LegalPageContent locale={locale} type="privacy" />
 }

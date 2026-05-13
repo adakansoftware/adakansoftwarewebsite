@@ -161,3 +161,104 @@ export const testimonialsContent = {
     items: Array<{ quote: string; author: string; role: string; company: string }>
   }
 >
+
+export const servicesSectionContent = {
+  tr: {
+    eyebrow: "Hizmetlerimiz",
+    title: "Net hedef,",
+    gradient: "ölçülebilir etki",
+    description:
+      "Güzel görünen işler yapmanın ötesine geçiyoruz: konumlandırma, deneyim ve teknik uygulama aynı hedefe bağlanıyor.",
+  },
+  en: {
+    eyebrow: "Services",
+    title: "Clear goals,",
+    gradient: "measurable impact",
+    description:
+      "We go beyond good-looking work: positioning, experience, and technical execution all connect to the same business goal.",
+  },
+} satisfies Record<Locale, { eyebrow: string; title: string; gradient: string; description: string }>
+
+export const projectsSectionContent = {
+  tr: {
+    eyebrow: "Seçilmiş Projeler",
+    title: "Görünür sonuç",
+    gradient: "üreten işler",
+    all: "Tüm Projeleri Gör",
+  },
+  en: {
+    eyebrow: "Selected Projects",
+    title: "Work that creates",
+    gradient: "visible results",
+    all: "View All Projects",
+  },
+} satisfies Record<Locale, { eyebrow: string; title: string; gradient: string; all: string }>
+
+export const philosophySectionContent = {
+  tr: {
+    background: "YAKLAŞIM",
+    eyebrow: "Yaklaşımımız",
+    title: "Harika tasarım",
+    mutedTitle: "sessizce güven verir.",
+    description:
+      "Parlak efektlerin arkasına saklanmayan, markanın değerini netleştiren ve kullanıcıyı doğru aksiyona taşıyan deneyimler tasarlıyoruz.",
+    items: [
+      {
+        number: "01",
+        title: "Önce strateji",
+        description:
+          "Her ekranın neyi anlatacağını, hangi itirazı azaltacağını ve hangi aksiyonu güçlendireceğini en başta netleştiririz.",
+      },
+      {
+        number: "02",
+        title: "Sonra zanaat",
+        description:
+          "Tipografi, boşluk, hareket ve mikro etkileşimleri yalnızca estetik için değil, algıyı ve kullanımı iyileştirmek için kurarız.",
+      },
+      {
+        number: "03",
+        title: "En sonda sürdürülebilirlik",
+        description:
+          "Teslim edilen işin hızlı, yönetilebilir ve geliştirilebilir kalmasına önem veririz. İyi tasarım, yayına çıktıktan sonra da çalışır.",
+      },
+    ],
+  },
+  en: {
+    background: "APPROACH",
+    eyebrow: "Our Approach",
+    title: "Great design",
+    mutedTitle: "quietly builds trust.",
+    description:
+      "We design experiences that clarify brand value and guide users toward the right action, without hiding behind shiny effects.",
+    items: [
+      {
+        number: "01",
+        title: "Strategy first",
+        description:
+          "We clarify what each screen should communicate, which objection it should reduce, and which action it should support.",
+      },
+      {
+        number: "02",
+        title: "Craft second",
+        description:
+          "Typography, spacing, motion, and micro-interactions are used to improve perception and usability, not decoration alone.",
+      },
+      {
+        number: "03",
+        title: "Sustainability last",
+        description:
+          "We care that the delivered work remains fast, manageable, and extensible after launch. Good design keeps working.",
+      },
+    ],
+  },
+} satisfies Record<
+  Locale,
+  {
+    background: string
+    eyebrow: string
+    title: string
+    mutedTitle: string
+    description: string
+    items: Array<{ number: string; title: string; description: string }>
+  }
+>
