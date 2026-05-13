@@ -56,11 +56,11 @@ export function Navbar({ locale }: { locale: Locale }) {
           </Link>
         </MagneticButton>
 
-        <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-10 lg:flex">
+        <div className="desktop-nav-shell absolute left-1/2 -translate-x-1/2 items-center gap-10">
           <NavbarPrimaryLinks links={labels.links} locale={locale} pathname={pathname} />
         </div>
 
-        <div className="hidden items-center gap-3 lg:flex">
+        <div className="desktop-nav-shell items-center gap-3">
           <NavbarDesktopActions
             locale={locale}
             pathname={pathname}
