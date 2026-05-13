@@ -7,78 +7,17 @@ import { ArrowUpRight, Github, Instagram, Linkedin, Twitter } from "lucide-react
 
 import { MagneticButton } from "@/components/magnetic-button"
 import { withLocale, type Locale } from "@/lib/i18n"
+import { footerContent, socialLinks } from "@/lib/shell-content"
 
-const footerCopy = {
-  tr: {
-    homeLabel: "Adakan Software ana sayfa",
-    description:
-      "Büyümek isteyen markalar için stratejik web siteleri, marka kimlikleri ve dijital ürün arayüzleri üreten tasarım ve yazılım stüdyosu.",
-    companyTitle: "Şirket",
-    servicesTitle: "Hizmetler",
-    rights: "Tüm hakları saklıdır.",
-    privacy: "Gizlilik",
-    terms: "Kullanım Şartları",
-    location: "İstanbul, Türkiye",
-    company: [
-      { name: "Hakkımızda", href: "/about" },
-      { name: "Kariyer", href: "/careers" },
-      { name: "Blog", href: "/blog" },
-      { name: "İletişim", href: "/contact" },
-    ],
-    services: [
-      { name: "Web Tasarım", href: "/services#web-design" },
-      { name: "Marka Kimliği", href: "/services#brand-identity" },
-      { name: "UI/UX Tasarım", href: "/services#ui-ux" },
-      { name: "Frontend Geliştirme", href: "/services#frontend" },
-    ],
-  },
-  en: {
-    homeLabel: "Adakan Software home",
-    description: "A design and software studio creating strategic websites, brand identities, and digital product interfaces for ambitious brands.",
-    companyTitle: "Company",
-    servicesTitle: "Services",
-    rights: "All rights reserved.",
-    privacy: "Privacy",
-    terms: "Terms",
-    location: "Istanbul, Turkey",
-    company: [
-      { name: "About", href: "/about" },
-      { name: "Careers", href: "/careers" },
-      { name: "Blog", href: "/blog" },
-      { name: "Contact", href: "/contact" },
-    ],
-    services: [
-      { name: "Web Design", href: "/services#web-design" },
-      { name: "Brand Identity", href: "/services#brand-identity" },
-      { name: "UI/UX Design", href: "/services#ui-ux" },
-      { name: "Frontend Development", href: "/services#frontend" },
-    ],
-  },
-} satisfies Record<
-  Locale,
-  {
-    homeLabel: string
-    description: string
-    companyTitle: string
-    servicesTitle: string
-    rights: string
-    privacy: string
-    terms: string
-    location: string
-    company: Array<{ name: string; href: string }>
-    services: Array<{ name: string; href: string }>
-  }
->
-
-const socialLinks = [
-  { icon: Github, href: "https://github.com/adakansoftware", label: "GitHub" },
-  { icon: Twitter, href: "https://x.com/adakansoftware", label: "X" },
-  { icon: Linkedin, href: "https://www.linkedin.com/company/adakansoftware", label: "LinkedIn" },
-  { icon: Instagram, href: "https://www.instagram.com/adakansoftware", label: "Instagram" },
-]
+const socialIcons = {
+  GitHub: Github,
+  X: Twitter,
+  LinkedIn: Linkedin,
+  Instagram: Instagram,
+} as const
 
 export function Footer({ locale }: { locale: Locale }) {
-  const copy = footerCopy[locale]
+  const copy = footerContent[locale]
   const localizedHref = (href: string) => withLocale(href, locale)
 
   return (
@@ -86,7 +25,11 @@ export function Footer({ locale }: { locale: Locale }) {
       <div className="container mx-auto px-6">
         <div className="mb-16 grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
-            <Link href={withLocale("/", locale)} className="mb-6 inline-flex items-center" aria-label={copy.homeLabel}>
+            <Link
+              href={withLocale("/", locale)}
+              className="mb-6 inline-flex items-center"
+              aria-label={locale === "tr" ? "Adakan Software ana sayfa" : "Adakan Software home"}
+            >
               <Image
                 src="/adakan-logo.png"
                 alt="Adakan Software"
@@ -98,19 +41,23 @@ export function Footer({ locale }: { locale: Locale }) {
             <p className="mb-8 max-w-sm leading-relaxed text-muted-foreground">{copy.description}</p>
 
             <div className="flex gap-3">
-              {socialLinks.map((social) => (
-                <MagneticButton key={social.label} strength={0.2}>
-                  <a
-                    href={social.href}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-border/50 transition-colors duration-300 hover:border-primary/50 hover:bg-primary/5"
-                    aria-label={social.label}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <social.icon className="h-4 w-4 text-muted-foreground" />
-                  </a>
-                </MagneticButton>
-              ))}
+              {socialLinks.map((social) => {
+                const Icon = socialIcons[social.label]
+
+                return (
+                  <MagneticButton key={social.label} strength={0.2}>
+                    <a
+                      href={social.href}
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-border/50 transition-colors duration-300 hover:border-primary/50 hover:bg-primary/5"
+                      aria-label={social.label}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Icon className="h-4 w-4 text-muted-foreground" />
+                    </a>
+                  </MagneticButton>
+                )
+              })}
             </div>
           </div>
 
@@ -155,7 +102,7 @@ export function Footer({ locale }: { locale: Locale }) {
             <Link href={localizedHref("/terms")} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
               {copy.terms}
             </Link>
-            <span className="text-sm text-muted-foreground">{copy.location}</span>
+            <span className="text-sm text-muted-foreground">{locale === "tr" ? "İstanbul, Türkiye" : "Istanbul, Turkey"}</span>
           </div>
         </div>
 

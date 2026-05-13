@@ -8,6 +8,7 @@ import { Navbar } from "@/components/navbar"
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider"
 import { WhatsAppButton } from "@/components/whatsapp-button"
 import { getRequestLocale } from "@/lib/request-locale"
+import { rootMetadataCopy, siteConfig } from "@/lib/site-config"
 import "./globals.css"
 
 const inter = Inter({
@@ -21,26 +22,17 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://adakansoftware.com"),
+  metadataBase: new URL(siteConfig.url),
   title: {
-    default: "Adakan Software | Premium Web Tasarımı ve Marka Ajansı",
-    template: "%s | Adakan Software",
+    default: rootMetadataCopy.tr.title,
+    template: `%s | ${siteConfig.name}`,
   },
-  description:
-    "Adakan Software; premium web tasarımı, logo, marka kimliği ve dönüşüm odaklı dijital ürün arayüzleri üreten futuristik yaratıcı ajans.",
-  keywords: [
-    "Adakan Software",
-    "premium web tasarımı",
-    "logo tasarımı",
-    "marka kimliği",
-    "web tasarım ajansı",
-    "Next.js web sitesi",
-    "UI UX tasarımı",
-  ],
-  applicationName: "Adakan Software",
-  authors: [{ name: "Adakan Software" }],
-  creator: "Adakan Software",
-  publisher: "Adakan Software",
+  description: rootMetadataCopy.tr.description,
+  keywords: rootMetadataCopy.tr.keywords,
+  applicationName: siteConfig.name,
+  authors: [{ name: siteConfig.name }],
+  creator: siteConfig.name,
+  publisher: siteConfig.name,
   alternates: {
     canonical: "/",
     languages: {
@@ -53,23 +45,23 @@ export const metadata: Metadata = {
     locale: "tr_TR",
     alternateLocale: ["en_US"],
     url: "/",
-    siteName: "Adakan Software",
-    title: "Adakan Software | Premium Web Tasarımı ve Marka Ajansı",
-    description: "Premium web tasarımı, marka kimliği ve conversion odaklı dijital ürün deneyimleri.",
+    siteName: siteConfig.name,
+    title: rootMetadataCopy.tr.title,
+    description: rootMetadataCopy.tr.openGraphDescription,
     images: [
       {
-        url: "/adakan-logo.png",
+        url: siteConfig.defaultOgImage,
         width: 1600,
         height: 1200,
-        alt: "Adakan Software logo",
+        alt: `${siteConfig.name} logo`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Adakan Software | Premium Web Tasarımı ve Marka Ajansı",
-    description: "Futuristik web tasarımı, marka kimliği ve dijital ürün arayüzleri.",
-    images: ["/adakan-logo.png"],
+    title: rootMetadataCopy.tr.title,
+    description: rootMetadataCopy.tr.twitterDescription,
+    images: [siteConfig.defaultOgImage],
   },
   robots: {
     index: true,

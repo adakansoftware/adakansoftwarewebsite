@@ -4,82 +4,12 @@ import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react"
 
+import { testimonialsContent } from "@/lib/home-content"
 import type { Locale } from "@/lib/i18n"
 
-const copy = {
-  tr: {
-    eyebrow: "Müşteri Yorumları",
-    title: "İş ortaklarımızdan",
-    gradient: "net geri bildirimler",
-    prev: "Önceki yorum",
-    next: "Sonraki yorum",
-    goTo: (index: number) => `${index + 1}. yoruma git`,
-    testimonials: [
-      {
-        quote: "Adakan ekibi, dağınık ürün anlatımımızı çok net bir web deneyimine dönüştürdü. İlk ayda demo taleplerimizin kalitesi belirgin şekilde arttı.",
-        author: "Ayşe Yılmaz",
-        role: "CEO",
-        company: "Nexus Finans",
-      },
-      {
-        quote: "Sadece güzel bir arayüz değil, satış ekibimizin rahatça kullanabildiği güçlü bir iletişim sistemi teslim ettiler.",
-        author: "Mehmet Kaya",
-        role: "Kurucu",
-        company: "Atlas Studio",
-      },
-      {
-        quote: "Marka kimliğimiz daha güvenilir, web sitemiz daha anlaşılır hale geldi. Süreç boyunca neyin neden yapıldığını hep bildik.",
-        author: "Elif Demir",
-        role: "Operasyon Direktörü",
-        company: "Vita Klinik",
-      },
-      {
-        quote: "E-ticaret akışlarımız sadeleşti, ürün sayfaları daha iyi okunur hale geldi. Tasarım kararları doğrudan iş hedeflerine bağlandı.",
-        author: "Can Öztürk",
-        role: "E-ticaret Müdürü",
-        company: "Mira Market",
-      },
-    ],
-  },
-  en: {
-    eyebrow: "Testimonials",
-    title: "Clear feedback",
-    gradient: "from partners",
-    prev: "Previous testimonial",
-    next: "Next testimonial",
-    goTo: (index: number) => `Go to testimonial ${index + 1}`,
-    testimonials: [
-      {
-        quote: "Adakan turned our scattered product story into a very clear web experience. The quality of demo requests improved noticeably in the first month.",
-        author: "Ayse Yilmaz",
-        role: "CEO",
-        company: "Nexus Finance",
-      },
-      {
-        quote: "They delivered not only a beautiful interface, but a strong communication system that our sales team can actually use.",
-        author: "Mehmet Kaya",
-        role: "Founder",
-        company: "Atlas Studio",
-      },
-      {
-        quote: "Our brand identity feels more trustworthy and our website is easier to understand. We always knew why each decision was made.",
-        author: "Elif Demir",
-        role: "Operations Director",
-        company: "Vita Clinic",
-      },
-      {
-        quote: "Our e-commerce flows became simpler and product pages easier to scan. Design decisions were tied directly to business goals.",
-        author: "Can Ozturk",
-        role: "E-commerce Manager",
-        company: "Mira Market",
-      },
-    ],
-  },
-} satisfies Record<Locale, { eyebrow: string; title: string; gradient: string; prev: string; next: string; goTo: (index: number) => string; testimonials: Array<{ quote: string; author: string; role: string; company: string }> }>
-
 export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
-  const sectionCopy = copy[locale]
-  const testimonials = sectionCopy.testimonials
+  const sectionCopy = testimonialsContent[locale]
+  const testimonials = sectionCopy.items
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(0)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
@@ -108,9 +38,9 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
   }, [testimonials.length])
 
   const variants = {
-    enter: (direction: number) => ({ x: direction > 0 ? 60 : -60, opacity: 0 }),
+    enter: (entryDirection: number) => ({ x: entryDirection > 0 ? 60 : -60, opacity: 0 }),
     center: { x: 0, opacity: 1 },
-    exit: (direction: number) => ({ x: direction < 0 ? 60 : -60, opacity: 0 }),
+    exit: (entryDirection: number) => ({ x: entryDirection < 0 ? 60 : -60, opacity: 0 }),
   }
 
   return (

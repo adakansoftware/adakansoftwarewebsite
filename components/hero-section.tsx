@@ -5,45 +5,13 @@ import Link from "next/link"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { ArrowDownRight, ArrowRight } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
 import { MagneticButton } from "@/components/magnetic-button"
+import { Button } from "@/components/ui/button"
+import { heroContent } from "@/lib/home-content"
 import { withLocale, type Locale } from "@/lib/i18n"
 
-const heroCopy = {
-  tr: {
-    badge: "Mayıs 2026 için yeni proje görüşmeleri açık",
-    lines: ["Markanı", "dijitalde", "büyüt"],
-    description:
-      "Web siteleri, marka kimlikleri ve kullanıcı deneyimleri tasarlıyoruz. Her ekran; güven, hız ve satış için birlikte çalışır.",
-    primary: "Projeye Başla",
-    secondary: "Projeleri Gör",
-    scroll: "Kaydır",
-    proofPoints: ["Strateji", "Web tasarım", "Marka kimliği", "Ürün arayüzü"],
-  },
-  en: {
-    badge: "Now booking new projects for May 2026",
-    lines: ["Grow", "digital", "brands"],
-    description: "We design websites, brand identities, and user experiences. Every screen works together for trust, speed, and conversion.",
-    primary: "Start a Project",
-    secondary: "View Projects",
-    scroll: "Scroll",
-    proofPoints: ["Strategy", "Web design", "Brand identity", "Product UI"],
-  },
-} satisfies Record<
-  Locale,
-  {
-    badge: string
-    lines: [string, string, string]
-    description: string
-    primary: string
-    secondary: string
-    scroll: string
-    proofPoints: string[]
-  }
->
-
 export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
-  const copy = heroCopy[locale]
+  const copy = heroContent[locale]
   const containerRef = useRef<HTMLDivElement>(null)
 
   const { scrollYProgress } = useScroll({

@@ -1,7 +1,9 @@
 import { dirname } from "node:path"
+import process from "node:process"
 import { fileURLToPath } from "node:url"
 
 const projectRoot = dirname(fileURLToPath(import.meta.url))
+const isProduction = process.env.NODE_ENV === "production"
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -9,7 +11,7 @@ const contentSecurityPolicy = [
   "frame-ancestors 'self'",
   "form-action 'self' mailto:",
   "object-src 'none'",
-  "script-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline'${isProduction ? "" : " 'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",

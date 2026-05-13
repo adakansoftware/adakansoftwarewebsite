@@ -4,40 +4,14 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
 import { MagneticButton } from "@/components/magnetic-button"
+import { Button } from "@/components/ui/button"
+import { ctaContent } from "@/lib/home-content"
 import { withLocale, type Locale } from "@/lib/i18n"
-
-const copy = {
-  tr: {
-    title: "Markanı",
-    gradient: "daha güçlü anlatalım",
-    description:
-      "Yeni web siteniz, marka kimliğiniz veya dijital ürününüz için net kapsam, doğru öncelik ve güçlü bir uygulama planı çıkaralım.",
-    cta: "Görüşmeye Başla",
-    stats: [
-      { value: "4", label: "Ana hizmet alanı" },
-      { value: "2-6", label: "Haftalık teslim planı" },
-      { value: "100%", label: "Responsive yaklaşım" },
-      { value: "TR/EN", label: "Çift dil hazırlığı" },
-    ],
-  },
-  en: {
-    title: "Let's tell",
-    gradient: "your brand stronger",
-    description: "For your new website, brand identity, or digital product, let's define the scope, priorities, and a strong execution plan.",
-    cta: "Start the Conversation",
-    stats: [
-      { value: "4", label: "Core service areas" },
-      { value: "2-6", label: "Week delivery plan" },
-      { value: "100%", label: "Responsive approach" },
-      { value: "TR/EN", label: "Bilingual readiness" },
-    ],
-  },
-} satisfies Record<Locale, { title: string; gradient: string; description: string; cta: string; stats: Array<{ value: string; label: string }> }>
+import { siteConfig } from "@/lib/site-config"
 
 export function CTASection({ locale = "tr" }: { locale?: Locale }) {
-  const sectionCopy = copy[locale]
+  const sectionCopy = ctaContent[locale]
 
   return (
     <section className="relative overflow-hidden py-20 md:py-32">
@@ -78,10 +52,10 @@ export function CTASection({ locale = "tr" }: { locale?: Locale }) {
 
             <MagneticButton strength={0.2}>
               <a
-                href={`mailto:merhaba@adakan.com.tr?subject=${locale === "tr" ? "Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi" : "New%20project%20inquiry"}`}
+                href={`mailto:${siteConfig.email}?subject=${locale === "tr" ? "Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi" : "New%20project%20inquiry"}`}
                 className="text-lg font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
-                merhaba@adakan.com.tr
+                {siteConfig.email}
               </a>
             </MagneticButton>
           </motion.div>
