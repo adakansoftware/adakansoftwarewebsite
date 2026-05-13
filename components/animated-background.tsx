@@ -18,7 +18,7 @@ export function AnimatedBackground() {
       return
     }
 
-    let animationFrameId: number
+    let animationFrameId: number | null = null
     let particles: Particle[] = []
     let resizeTimeout: number | null = null
     let visibilityMedia: MediaQueryList | null = null
@@ -114,15 +114,28 @@ export function AnimatedBackground() {
       }
     }
 
+    const requestNextFrame = () => {
+      if (animationFrameId === null) {
+        animationFrameId = requestAnimationFrame(animate)
+      }
+    }
+
+    const cancelNextFrame = () => {
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId)
+        animationFrameId = null
+      }
+    }
+
     const animate = (timestamp: number) => {
+      animationFrameId = null
       if (!ctx) return
       if (!isDocumentVisible) {
-        animationFrameId = requestAnimationFrame(animate)
         return
       }
 
       if (timestamp - lastFrameTime < getFrameDuration()) {
-        animationFrameId = requestAnimationFrame(animate)
+        requestNextFrame()
         return
       }
 
@@ -135,7 +148,7 @@ export function AnimatedBackground() {
       })
 
       drawConnections()
-      animationFrameId = requestAnimationFrame(animate)
+      requestNextFrame()
     }
 
     const handleResize = () => {
@@ -145,6 +158,12 @@ export function AnimatedBackground() {
 
     const handleVisibilityChange = () => {
       isDocumentVisible = document.visibilityState === "visible"
+      if (isDocumentVisible) {
+        lastFrameTime = 0
+        requestNextFrame()
+      } else {
+        cancelNextFrame()
+      }
     }
 
     const handleReducedMotionChange = (event: MediaQueryListEvent) => {
@@ -159,14 +178,14 @@ export function AnimatedBackground() {
     document.addEventListener("visibilitychange", handleVisibilityChange, { passive: true })
     visibilityMedia.addEventListener("change", handleReducedMotionChange)
     resize()
-    animationFrameId = requestAnimationFrame(animate)
+    requestNextFrame()
 
     return () => {
       window.removeEventListener("resize", handleResize)
       document.removeEventListener("visibilitychange", handleVisibilityChange)
       visibilityMedia?.removeEventListener("change", handleReducedMotionChange)
       if (resizeTimeout) window.clearTimeout(resizeTimeout)
-      cancelAnimationFrame(animationFrameId)
+      cancelNextFrame()
     }
   }, [prefersReducedMotion])
 

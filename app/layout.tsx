@@ -5,7 +5,6 @@ import { Analytics } from "@vercel/analytics/next"
 import { AnimatedBackground } from "@/components/animated-background"
 import { Footer } from "@/components/footer"
 import { Navbar } from "@/components/navbar"
-import { SmoothScrollProvider } from "@/components/smooth-scroll-provider"
 import { WhatsAppButton } from "@/components/whatsapp-button"
 import { getRequestLocale } from "@/lib/request-locale"
 import { rootMetadataCopy, siteConfig } from "@/lib/site-config"
@@ -14,11 +13,13 @@ import "./globals.css"
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
 })
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-display",
+  display: "swap",
 })
 
 export const metadata: Metadata = {
@@ -103,21 +104,19 @@ export default async function RootLayout({
   return (
     <html lang={locale} className="bg-background">
       <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
-        <SmoothScrollProvider>
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[4000] focus:rounded-full focus:bg-foreground focus:px-4 focus:py-2 focus:text-background"
-          >
-            {skipLinkLabel}
-          </a>
-          <AnimatedBackground />
-          <Navbar locale={locale} />
-          <main id="main-content" className="relative">
-            {children}
-          </main>
-          <Footer locale={locale} />
-          <WhatsAppButton locale={locale} />
-        </SmoothScrollProvider>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[4000] focus:rounded-full focus:bg-foreground focus:px-4 focus:py-2 focus:text-background"
+        >
+          {skipLinkLabel}
+        </a>
+        <AnimatedBackground />
+        <Navbar locale={locale} />
+        <main id="main-content" className="relative">
+          {children}
+        </main>
+        <Footer locale={locale} />
+        <WhatsAppButton locale={locale} />
         {process.env.NODE_ENV === "production" && <Analytics />}
       </body>
     </html>
