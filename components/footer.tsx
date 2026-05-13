@@ -1,21 +1,12 @@
-"use client"
-
-import { motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowUpRight, Github, Instagram, Linkedin, Twitter } from "lucide-react"
+import { ArrowUpRight } from "lucide-react"
 
-import { MagneticButton } from "@/components/magnetic-button"
+import { FooterSocialLinks } from "@/components/footer-social-links"
+import { FooterWordmark } from "@/components/footer-wordmark"
 import { withLocale, type Locale } from "@/lib/i18n"
 import { footerContent, socialLinks } from "@/lib/shell-content"
 import { siteConfig } from "@/lib/site-config"
-
-const socialIcons = {
-  GitHub: Github,
-  X: Twitter,
-  LinkedIn: Linkedin,
-  Instagram: Instagram,
-} as const
 
 export function Footer({ locale }: { locale: Locale }) {
   const copy = footerContent[locale]
@@ -41,25 +32,7 @@ export function Footer({ locale }: { locale: Locale }) {
             </Link>
             <p className="mb-8 max-w-sm leading-relaxed text-muted-foreground">{copy.description}</p>
 
-            <div className="flex gap-3">
-              {socialLinks.map((social) => {
-                const Icon = socialIcons[social.label]
-
-                return (
-                  <MagneticButton key={social.label} strength={0.2}>
-                    <a
-                      href={social.href}
-                      className="flex h-10 w-10 items-center justify-center rounded-full border border-border/50 transition-colors duration-300 hover:border-primary/50 hover:bg-primary/5"
-                      aria-label={social.label}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <Icon className="h-4 w-4 text-muted-foreground" />
-                    </a>
-                  </MagneticButton>
-                )
-              })}
-            </div>
+            <FooterSocialLinks links={socialLinks} />
           </div>
 
           <div className="lg:col-span-3 lg:col-start-7">
@@ -106,17 +79,7 @@ export function Footer({ locale }: { locale: Locale }) {
             <span className="text-sm text-muted-foreground">{siteConfig.location[locale]}</span>
           </div>
         </div>
-
-        <div className="pointer-events-none absolute right-0 bottom-0 left-0 overflow-hidden select-none">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[12vw] leading-none font-bold tracking-tighter text-border/[0.02] whitespace-nowrap"
-          >
-            ADAKAN
-          </motion.div>
-        </div>
+        <FooterWordmark />
       </div>
     </footer>
   )
