@@ -55,7 +55,7 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mb-6 block text-sm font-medium tracking-widest text-primary uppercase"
+            className="mb-6 block text-sm font-medium tracking-widest text-accent uppercase"
           >
             {sectionCopy.eyebrow}
           </motion.span>

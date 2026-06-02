@@ -34,7 +34,7 @@ export function ProjectsSection({ locale = "tr" }: { locale?: Locale }) {
       <motion.div style={{ y: contentY }} className="container relative z-10 mx-auto px-6">
         <div className="mb-12 flex flex-col gap-8 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <motion.span initial={false} className="mb-6 block text-sm font-medium tracking-widest text-primary uppercase">
+            <motion.span initial={false} className="mb-6 block text-sm font-medium tracking-widest text-accent uppercase">
               {sectionCopy.eyebrow}
             </motion.span>
 

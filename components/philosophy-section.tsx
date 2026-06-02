@@ -26,7 +26,7 @@ export function PhilosophySection({ locale = "tr" }: { locale?: Locale }) {
 
       <motion.div style={{ y: contentY }} className="container relative z-10 mx-auto px-6">
         <div className="mb-14 max-w-4xl md:mb-24">
-          <motion.span initial={false} className="mb-6 block text-sm font-medium tracking-widest text-primary uppercase">
+          <motion.span initial={false} className="mb-6 block text-sm font-medium tracking-widest text-accent uppercase">
             {sectionCopy.eyebrow}
           </motion.span>
 

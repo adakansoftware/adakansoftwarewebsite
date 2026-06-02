@@ -42,7 +42,7 @@ export function CTASection({ locale = "tr" }: { locale?: Locale }) {
 
           <motion.div initial={false} className="flex flex-col items-center justify-center gap-5 sm:flex-row sm:gap-6">
             <MagneticButton strength={0.2}>
-              <Button asChild size="lg" className="group rounded-full bg-foreground px-10 py-8 text-lg font-medium text-background transition-colors duration-300 hover:bg-foreground/90 hover:shadow-xl hover:shadow-foreground/10">
+              <Button asChild size="lg" className="group rounded-full bg-accent px-10 py-8 text-lg font-medium text-accent-foreground transition-colors duration-300 hover:bg-accent/90 hover:shadow-xl hover:shadow-accent/20">
                 <Link href={withLocale("/contact", locale)}>
                   {sectionCopy.cta}
                   <ArrowRight className="ml-3 h-5 w-5 transition-transform duration-300 group-hover:translate-x-2" />

@@ -13,6 +13,11 @@ import { withLocale, type Locale } from "@/lib/i18n"
 export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
   const copy = heroContent[locale]
   const containerRef = useRef<HTMLDivElement>(null)
+  const headlineStyles = [
+    "text-[clamp(2.75rem,9vw,7rem)] font-light text-foreground/60",
+    "text-[clamp(4rem,12vw,9rem)] font-bold text-accent",
+    "text-[clamp(3.25rem,10vw,8rem)] font-medium text-foreground",
+  ]
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -62,9 +67,7 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
                 initial={false}
                 animate={{ y: 0 }}
                 transition={{ duration: 1, delay: 0.2 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className={`mx-auto max-w-full break-words text-[4rem] leading-[0.94] font-bold tracking-tighter min-[390px]:text-[4.25rem] sm:text-[clamp(3.5rem,10vw,9rem)] ${
-                  index === 1 ? "text-gradient" : "text-foreground"
-                }`}
+                className={`mx-auto max-w-full break-words leading-[0.94] tracking-tighter ${headlineStyles[index]}`}
               >
                 {line}
               </motion.h1>
@@ -86,7 +89,7 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
               <Button
                 asChild
                 size="lg"
-                className="group w-full rounded-full bg-foreground px-8 py-7 text-base font-medium text-background transition-colors duration-300 hover:bg-foreground/90 hover:shadow-xl hover:shadow-foreground/10 sm:w-auto"
+                className="group w-full rounded-full bg-accent px-8 py-7 text-base font-medium text-accent-foreground transition-colors duration-300 hover:bg-accent/90 hover:shadow-xl hover:shadow-accent/20 sm:w-auto"
               >
                 <Link href={withLocale("/contact", locale)}>
                   {copy.primary}
@@ -135,8 +138,8 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
         >
           <div className="min-w-0">
             <div className="mb-2 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium tracking-widest text-primary uppercase">{copy.operationalSignals.eyebrow}</span>
-              <span className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-[0.7rem] font-medium text-primary">
+              <span className="text-xs font-medium tracking-widest text-accent uppercase">{copy.operationalSignals.eyebrow}</span>
+              <span className="rounded-full border border-accent/25 bg-accent/10 px-2.5 py-1 text-[0.7rem] font-medium text-accent">
                 {copy.operationalSignals.status}
               </span>
             </div>
@@ -150,7 +153,7 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
           </div>
 
           <div className="grid grid-cols-3 gap-1.5 sm:w-32">
-            <span className="h-1.5 rounded-full bg-primary" />
+            <span className="h-1.5 rounded-full bg-accent" />
             <span className="h-1.5 rounded-full bg-accent" />
             <span className="h-1.5 rounded-full bg-foreground/35" />
           </div>

@@ -16,13 +16,13 @@
   --secondary-foreground: oklch(0.98 0 0);
   --muted: oklch(0.2 0.018 245);
   --muted-foreground: oklch(0.72 0.01 245);
-  --accent: oklch(0.78 0.14 74);
+  --accent: #0066ff;
   --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.26 0.018 245);
   --input: oklch(0.18 0.018 245);
-  --ring: oklch(0.76 0.13 174);
+  --ring: var(--accent);
   --chart-1: oklch(0.76 0.13 174);
   --chart-2: oklch(0.78 0.14 74);
   --chart-3: oklch(0.6 0.15 250);
@@ -50,13 +50,13 @@
   --secondary-foreground: oklch(0.98 0 0);
   --muted: oklch(0.2 0.02 270);
   --muted-foreground: oklch(0.65 0 0);
-  --accent: oklch(0.78 0.14 74);
+  --accent: #0066ff;
   --accent-foreground: oklch(0.98 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.25 0.02 270);
   --input: oklch(0.18 0.02 270);
-  --ring: oklch(0.7 0.15 195);
+  --ring: var(--accent);
 }
 
 @theme inline {
@@ -125,7 +125,7 @@
   input:focus-visible,
   [role="button"]:focus-visible,
   textarea:focus-visible {
-    @apply outline-2 outline-offset-4 outline-primary/70;
+    @apply outline-2 outline-offset-4 outline-accent/80;
   }
 }
 
@@ -189,7 +189,7 @@
   }
 
   .eyebrow {
-    @apply text-primary text-sm font-medium tracking-widest uppercase;
+    @apply text-accent text-sm font-medium tracking-widest uppercase;
   }
 
   .section-shell {
