@@ -30,7 +30,7 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
         setDirection(1)
         setCurrent((prev) => (prev + 1) % testimonials.length)
       }
-    }, 8000)
+    }, 4000)
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current)
@@ -105,7 +105,7 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
           <div className="mt-12 flex items-center justify-center gap-4">
             <button
               onClick={prev}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-border/50 transition-colors duration-300 hover:border-primary/50 hover:bg-primary/5"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-border/50 transition-colors duration-300 hover:border-accent/50 hover:bg-accent/5"
               aria-label={sectionCopy.prev}
             >
               <ChevronLeft className="h-5 w-5 text-muted-foreground" />
@@ -118,14 +118,14 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
                     setDirection(index > current ? 1 : -1)
                     setCurrent(index)
                   }}
-                  className={`h-2 rounded-full transition-all duration-300 ${index === current ? "w-8 bg-primary" : "w-2 bg-border hover:bg-muted-foreground"}`}
+                  className={`h-2 rounded-full transition-all duration-300 ${index === current ? "w-8 bg-accent" : "w-2 bg-border hover:bg-muted-foreground"}`}
                   aria-label={sectionCopy.goTo(index)}
                 />
               ))}
             </div>
             <button
               onClick={next}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-border/50 transition-colors duration-300 hover:border-primary/50 hover:bg-primary/5"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-border/50 transition-colors duration-300 hover:border-accent/50 hover:bg-accent/5"
               aria-label={sectionCopy.next}
             >
               <ChevronRight className="h-5 w-5 text-muted-foreground" />
