@@ -3,13 +3,14 @@
 import { useRef } from "react"
 import Link from "next/link"
 import { motion, useScroll, useTransform } from "framer-motion"
-import { ArrowUpRight } from "lucide-react"
+import { ArrowUpRight, Code2, Globe, Layout, Palette } from "lucide-react"
 
 import { servicesSectionContent } from "@/lib/home-content"
 import type { Locale } from "@/lib/i18n"
 import { getServices } from "@/lib/site-data"
 
 type Service = ReturnType<typeof getServices>[number]
+const serviceIcons = [Globe, Palette, Layout, Code2]
 
 export function ServicesSection({ locale = "tr" }: { locale?: Locale }) {
   const services = getServices(locale)
@@ -58,18 +59,24 @@ export function ServicesSection({ locale = "tr" }: { locale?: Locale }) {
 }
 
 function ServiceCard({ service, index }: { service: Service; index: number }) {
+  const Icon = serviceIcons[index] ?? Globe
+
   return (
     <motion.div initial={false} className="group">
-      <Link href={service.href} className="relative block border-t border-border/50 py-6 transition-colors duration-300 hover:border-primary/50 md:py-8">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <Link href={service.href} className="relative block border-t border-border/50 py-6 transition-[border-color] duration-200 ease-out hover:border-accent md:py-8">
+        <div className="absolute inset-0 bg-gradient-to-r from-accent/8 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <ArrowUpRight className="absolute right-0 bottom-6 h-5 w-5 translate-x-[-4px] text-accent opacity-0 transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100 md:bottom-8" />
 
         <div className="relative grid gap-5 md:grid-cols-12 md:items-center md:gap-6">
-          <div className="md:col-span-1">
+          <div className="flex items-center gap-3 md:col-span-1 md:block">
             <span className="font-mono text-sm text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-border/50 bg-card/30 text-accent transition-colors duration-200 group-hover:border-accent/45 group-hover:bg-accent/10 md:mt-4">
+              <Icon className="h-4 w-4" />
+            </span>
           </div>
 
           <div className="md:col-span-3">
-            <h3 className="text-2xl font-bold text-foreground transition-colors duration-300 group-hover:text-primary md:text-3xl">{service.title}</h3>
+            <h3 className="text-2xl font-bold text-foreground transition-colors duration-300 group-hover:text-accent md:text-3xl">{service.title}</h3>
           </div>
 
           <div className="md:col-span-5">
@@ -81,15 +88,15 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
               {service.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full border border-border/50 px-3 py-1 text-xs text-muted-foreground transition-colors duration-300 group-hover:border-primary/30 group-hover:text-foreground"
+                  className="rounded-full border border-border/50 px-3 py-1 text-xs text-muted-foreground transition-colors duration-300 group-hover:border-accent/30 group-hover:text-foreground"
                 >
                   {tag}
                 </span>
               ))}
             </div>
 
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border/50 opacity-100 transition-all duration-300 group-hover:border-primary/50 md:opacity-0 md:group-hover:opacity-100">
-              <ArrowUpRight className="h-4 w-4 text-primary" />
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border/50 opacity-100 transition-all duration-300 group-hover:border-accent/50 md:opacity-0 md:group-hover:opacity-100">
+              <ArrowUpRight className="h-4 w-4 text-accent" />
             </div>
           </div>
         </div>
