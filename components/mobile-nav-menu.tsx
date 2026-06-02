@@ -35,7 +35,7 @@ export function MobileNavMenu({
   }
 
   return (
-    <details className="mobile-nav-shell fixed top-5 right-5 z-[1200] shrink-0" data-mobile-menu>
+    <details className="mobile-menu-native mobile-nav-shell fixed top-4 right-4 z-[1200] shrink-0 sm:top-5 sm:right-5" data-mobile-menu>
       <summary className="relative inline-flex h-12 w-12 touch-manipulation items-center justify-center rounded-full border border-white/10 bg-background text-foreground shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
         <span className="sr-only">{openMenuLabel}</span>
         <Menu size={24} className="mobile-menu-open-icon" />
@@ -44,10 +44,10 @@ export function MobileNavMenu({
       <div id="mobile-navigation" className="fixed inset-0 isolate overflow-hidden bg-background text-foreground" style={{ zIndex: 2147483646 }} role="dialog" aria-modal="true">
         <div className="absolute inset-0 grid-pattern opacity-10" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,oklch(0.76_0.13_174_/_0.16),transparent_34%),radial-gradient(circle_at_80%_15%,oklch(0.78_0.14_74_/_0.12),transparent_32%)]" />
-        <div className="relative h-full overflow-y-auto px-6 pt-28 pb-10">
-          <div className="flex flex-col gap-8">
+        <div className="relative h-full overflow-y-auto px-5 pt-24 pb-8 sm:px-6 sm:pt-28 sm:pb-10">
+          <div className="flex min-h-[calc(100dvh-8rem)] flex-col justify-center gap-6 sm:min-h-0 sm:justify-start sm:gap-8">
             {links.map((link) => (
-              <Link key={link.name} href={localizedHref(link.href)} className="text-4xl leading-tight font-bold text-foreground" onClick={closeNativeMobileMenu}>
+              <Link key={link.name} href={localizedHref(link.href)} className="text-[clamp(2rem,9vw,3rem)] leading-[1.05] font-bold text-foreground" onClick={closeNativeMobileMenu}>
                 {link.name}
               </Link>
             ))}

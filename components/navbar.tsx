@@ -33,53 +33,55 @@ export function Navbar({ locale }: { locale: Locale }) {
   }, [])
 
   return (
-    <motion.nav
-      initial={false}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className={`fixed top-0 right-0 left-0 z-[70] border-b border-border/20 bg-background/78 backdrop-blur-xl transition-all duration-500 ${
-        isScrolled ? "py-4" : "py-6"
-      }`}
-      style={{ zIndex: 1000 }}
-    >
-      <div className="relative mx-auto flex w-full max-w-7xl items-center justify-between px-5 sm:px-6">
-        <MagneticButton strength={0.15}>
-          <Link href={withLocale("/", locale)} className="flex items-center" aria-label={labels.homeLabel}>
-            <Image
-              src="/adakan-logo.png"
-              alt="Adakan Software"
-              width={128}
-              height={84}
-              priority
-              className="h-9 w-auto drop-shadow-[0_0_18px_rgba(45,212,191,0.22)] md:h-10"
+    <>
+      <motion.nav
+        initial={false}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className={`fixed top-0 right-0 left-0 z-[70] border-b border-border/20 bg-background/78 backdrop-blur-xl transition-all duration-500 ${
+          isScrolled ? "py-4" : "py-6"
+        }`}
+        style={{ zIndex: 1000 }}
+      >
+        <div className="relative mx-auto flex w-full max-w-7xl items-center justify-between px-5 sm:px-6">
+          <MagneticButton strength={0.15}>
+            <Link href={withLocale("/", locale)} className="flex items-center" aria-label={labels.homeLabel}>
+              <Image
+                src="/adakan-logo.png"
+                alt="Adakan Software"
+                width={128}
+                height={84}
+                priority
+                className="h-9 w-auto drop-shadow-[0_0_18px_rgba(45,212,191,0.22)] md:h-10"
+              />
+            </Link>
+          </MagneticButton>
+
+          <div className="desktop-nav-shell absolute left-1/2 -translate-x-1/2 items-center gap-10">
+            <NavbarPrimaryLinks links={labels.links} locale={locale} pathname={pathname} />
+          </div>
+
+          <div className="desktop-nav-shell items-center gap-3">
+            <NavbarDesktopActions
+              locale={locale}
+              pathname={pathname}
+              ctaLabel={labels.cta}
+              whatsAppLabel={whatsApp.label}
+              whatsAppShort={whatsApp.short}
             />
-          </Link>
-        </MagneticButton>
-
-        <div className="desktop-nav-shell absolute left-1/2 -translate-x-1/2 items-center gap-10">
-          <NavbarPrimaryLinks links={labels.links} locale={locale} pathname={pathname} />
+          </div>
         </div>
+      </motion.nav>
 
-        <div className="desktop-nav-shell items-center gap-3">
-          <NavbarDesktopActions
-            locale={locale}
-            pathname={pathname}
-            ctaLabel={labels.cta}
-            whatsAppLabel={whatsApp.label}
-            whatsAppShort={whatsApp.short}
-          />
-        </div>
-
-        <MobileNavMenu
-          locale={locale}
-          pathname={pathname}
-          links={labels.links}
-          ctaLabel={labels.cta}
-          openMenuLabel={labels.openMenu}
-          whatsAppLabel={whatsApp.label}
-          whatsAppShort={whatsApp.short}
-        />
-      </div>
-    </motion.nav>
+      <MobileNavMenu
+        locale={locale}
+        pathname={pathname}
+        links={labels.links}
+        ctaLabel={labels.cta}
+        openMenuLabel={labels.openMenu}
+        whatsAppLabel={whatsApp.label}
+        whatsAppShort={whatsApp.short}
+      />
+    </>
   )
 }
