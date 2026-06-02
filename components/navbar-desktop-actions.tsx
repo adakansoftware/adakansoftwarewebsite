@@ -1,10 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowUpRight, MessageCircle } from "lucide-react"
+import { ArrowUpRight, Languages, MessageCircle } from "lucide-react"
 
 import { MagneticButton } from "@/components/magnetic-button"
 import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { getWhatsAppHref } from "@/lib/contact-links"
 import { switchLocalePath, withLocale, type Locale } from "@/lib/i18n"
 
@@ -26,37 +28,49 @@ export function NavbarDesktopActions({
   return (
     <>
       <MagneticButton strength={0.16}>
-        <a
-          href={getWhatsAppHref(locale)}
-          aria-label={whatsAppLabel}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex h-9 items-center gap-2 rounded-full border border-primary/25 bg-primary/5 px-4 text-xs font-medium text-primary backdrop-blur-md transition-all duration-300 hover:border-primary/60 hover:bg-primary hover:text-background hover:shadow-[0_0_28px_rgba(45,212,191,0.22)]"
-        >
-          <MessageCircle className="h-4 w-4" />
-          {whatsAppShort}
-        </a>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <a
+              href={getWhatsAppHref(locale)}
+              aria-label={whatsAppLabel}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-accent/25 bg-accent/5 text-accent backdrop-blur-md transition-all duration-300 hover:border-accent/60 hover:bg-accent hover:text-accent-foreground hover:shadow-[0_0_28px_color-mix(in_oklab,var(--accent)_30%,transparent)]"
+            >
+              <MessageCircle className="h-4 w-4" />
+            </a>
+          </TooltipTrigger>
+          <TooltipContent sideOffset={8}>{whatsAppShort}</TooltipContent>
+        </Tooltip>
       </MagneticButton>
-      <Link
-        href={switchLocalePath(pathname, "tr")}
-        aria-current={locale === "tr" ? "true" : undefined}
-        className={`rounded-full px-3 py-1 text-xs transition-colors ${
-          locale === "tr" ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
-        }`}
-      >
-        TR
-      </Link>
-      <Link
-        href={switchLocalePath(pathname, "en")}
-        aria-current={locale === "en" ? "true" : undefined}
-        className={`rounded-full px-3 py-1 text-xs transition-colors ${
-          locale === "en" ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
-        }`}
-      >
-        EN
-      </Link>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className="inline-flex h-10 items-center gap-2 rounded-full border border-border/50 bg-card/20 px-3 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/45 hover:text-foreground"
+            aria-label={locale === "tr" ? "Dil seçimi" : "Language selector"}
+          >
+            <Languages className="h-4 w-4" />
+            {locale.toUpperCase()}
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="border-border/50 bg-popover/95 backdrop-blur-xl">
+          <DropdownMenuItem asChild>
+            <Link href={switchLocalePath(pathname, "tr")} aria-current={locale === "tr" ? "true" : undefined}>
+              TR
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href={switchLocalePath(pathname, "en")} aria-current={locale === "en" ? "true" : undefined}>
+              EN
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <MagneticButton strength={0.2}>
-        <Button asChild className="rounded-full bg-foreground px-6 text-background transition-colors duration-300 hover:bg-foreground/90">
+        <Button asChild className="rounded-full bg-accent px-6 text-accent-foreground transition-colors duration-300 hover:bg-accent/90">
           <Link href={localizedHref("/contact")}>
             {ctaLabel}
             <ArrowUpRight className="ml-2 h-4 w-4" />

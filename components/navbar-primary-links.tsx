@@ -31,12 +31,12 @@ export function NavbarPrimaryLinks({
               href={localizedHref(link.href)}
               aria-current={isActive(link.href) ? "page" : undefined}
               className={`group relative py-2 text-sm transition-colors ${
-                isActive(link.href) ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                isActive(link.href) ? "text-foreground" : "text-muted-foreground hover:text-accent"
               }`}
             >
               {link.name}
               <span
-                className={`absolute bottom-0 left-0 h-px bg-primary transition-all duration-300 ${
+                className={`absolute bottom-0 left-0 h-px bg-accent transition-all duration-300 ${
                   isActive(link.href) ? "w-full" : "w-0 group-hover:w-full"
                 }`}
               />
