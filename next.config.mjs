@@ -24,12 +24,10 @@ const contentSecurityPolicy = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  turbopack: {
-    root: projectRoot,
-  },
+  outputFileTracingRoot: projectRoot,
   experimental: {
-    cpus: 4,
-    staticGenerationMaxConcurrency: 4,
+    cpus: 2,
+    staticGenerationMaxConcurrency: 2,
     staticGenerationMinPagesPerWorker: 8,
   },
   images: {
