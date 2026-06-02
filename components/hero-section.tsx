@@ -128,6 +128,34 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
           ))}
         </motion.div>
 
+        <motion.div
+          {...animationProps}
+          transition={{ ...animationTransition, delay: 0.95 }}
+          className="mx-auto mt-4 flex w-full max-w-[22rem] flex-col gap-4 rounded-2xl border border-border/35 bg-card/20 p-4 text-left shadow-2xl shadow-background/20 backdrop-blur-xl sm:mt-5 sm:max-w-3xl sm:flex-row sm:items-center sm:justify-between sm:p-5"
+        >
+          <div className="min-w-0">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <span className="text-xs font-medium tracking-widest text-primary uppercase">{copy.operationalSignals.eyebrow}</span>
+              <span className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-[0.7rem] font-medium text-primary">
+                {copy.operationalSignals.status}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {copy.operationalSignals.items.map((item) => (
+                <span key={item} className="rounded-full border border-border/35 bg-background/40 px-3 py-1.5 text-xs text-muted-foreground">
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-1.5 sm:w-32">
+            <span className="h-1.5 rounded-full bg-primary" />
+            <span className="h-1.5 rounded-full bg-accent" />
+            <span className="h-1.5 rounded-full bg-foreground/35" />
+          </div>
+        </motion.div>
+
         <div className="pointer-events-none absolute inset-0 hidden overflow-hidden lg:block">
           <div className="absolute left-[10%] top-[15%] h-20 w-20 animate-float-slow rounded-2xl border border-primary/20" />
           <div className="absolute bottom-[25%] right-[15%] h-14 w-14 animate-float-slower rounded-full border border-accent/30" />

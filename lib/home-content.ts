@@ -15,6 +15,11 @@ export const heroContent = {
       { value: "2-6 hafta", label: "net teslim planı" },
       { value: "TR/EN", label: "yayına hazır içerik" },
     ],
+    operationalSignals: {
+      eyebrow: "Canlı teslim ritmi",
+      status: "Aktif sprint",
+      items: ["Kapsam netleşir", "Arayüz sistemi kurulur", "Yayın hazırlığı tamamlanır"],
+    },
   },
   en: {
     badge: "Now booking new projects for June 2026",
@@ -30,6 +35,11 @@ export const heroContent = {
       { value: "2-6 weeks", label: "clear delivery plan" },
       { value: "TR/EN", label: "launch-ready content" },
     ],
+    operationalSignals: {
+      eyebrow: "Live delivery rhythm",
+      status: "Active sprint",
+      items: ["Scope is clarified", "Interface system is shaped", "Launch readiness is completed"],
+    },
   },
 } satisfies Record<
   Locale,
@@ -42,6 +52,7 @@ export const heroContent = {
     scroll: string
     proofPoints: string[]
     signals: Array<{ value: string; label: string }>
+    operationalSignals: { eyebrow: string; status: string; items: string[] }
   }
 >
 
