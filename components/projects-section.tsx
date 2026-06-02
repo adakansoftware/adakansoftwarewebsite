@@ -81,7 +81,15 @@ function ProjectCard({
   onLeave: () => void
 }) {
   return (
-    <motion.div initial={false} className="group" onMouseEnter={onHover} onMouseLeave={onLeave}>
+    <motion.div
+      initial={false}
+      whileHover={{ scale: 1.015 }}
+      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+      style={{ willChange: "transform" }}
+      className="group"
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
+    >
       <Link href={project.href} className="block">
         <div className="premium-border relative mb-6 aspect-[4/3] overflow-hidden rounded-2xl">
           <div
@@ -117,7 +125,7 @@ function ProjectCard({
 
           <div className="absolute inset-0 flex flex-col justify-between p-5 sm:p-8">
             <div className="flex items-start justify-between">
-              <span className="rounded-full border border-foreground/10 bg-foreground/5 px-4 py-2 text-xs text-foreground/70 backdrop-blur-md">
+              <span className="rounded-full border border-foreground/10 bg-foreground/5 px-4 py-2 text-xs text-foreground/70 backdrop-blur-md transition-colors duration-300 group-hover:border-accent/45 group-hover:bg-accent group-hover:text-accent-foreground">
                 {project.category}
               </span>
               <div
@@ -147,7 +155,7 @@ function ProjectCard({
             </div>
           </div>
 
-          <div className="absolute inset-0 rounded-2xl border border-border/50 transition-colors duration-300 group-hover:border-primary/30" />
+          <div className="absolute inset-0 rounded-2xl border border-border/50 transition-colors duration-300 group-hover:border-accent/35" />
         </div>
 
         <div className="flex items-center justify-between">
