@@ -2,7 +2,7 @@ import type { Locale } from "@/lib/i18n"
 
 export const heroContent = {
   tr: {
-    badge: "Mayıs 2026 için yeni proje görüşmeleri açık",
+    badge: "Haziran 2026 için yeni proje görüşmeleri açık",
     lines: ["Markanı", "dijitalde", "büyüt"] as [string, string, string],
     description:
       "Web siteleri, marka kimlikleri ve kullanıcı deneyimleri tasarlıyoruz. Her ekran; güven, hız ve satış için birlikte çalışır.",
@@ -10,9 +10,14 @@ export const heroContent = {
     secondary: "Projeleri Gör",
     scroll: "Kaydır",
     proofPoints: ["Strateji", "Web tasarım", "Marka kimliği", "Ürün arayüzü"],
+    signals: [
+      { value: "48 saat", label: "ilk kapsam dönüşü" },
+      { value: "2-6 hafta", label: "net teslim planı" },
+      { value: "TR/EN", label: "yayına hazır içerik" },
+    ],
   },
   en: {
-    badge: "Now booking new projects for May 2026",
+    badge: "Now booking new projects for June 2026",
     lines: ["Grow", "digital", "brands"] as [string, string, string],
     description:
       "We design websites, brand identities, and user experiences. Every screen works together for trust, speed, and conversion.",
@@ -20,6 +25,11 @@ export const heroContent = {
     secondary: "View Projects",
     scroll: "Scroll",
     proofPoints: ["Strategy", "Web design", "Brand identity", "Product UI"],
+    signals: [
+      { value: "48 hrs", label: "first scope response" },
+      { value: "2-6 weeks", label: "clear delivery plan" },
+      { value: "TR/EN", label: "launch-ready content" },
+    ],
   },
 } satisfies Record<
   Locale,
@@ -31,6 +41,7 @@ export const heroContent = {
     secondary: string
     scroll: string
     proofPoints: string[]
+    signals: Array<{ value: string; label: string }>
   }
 >
 

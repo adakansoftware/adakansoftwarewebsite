@@ -115,6 +115,19 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
           ))}
         </motion.div>
 
+        <motion.div
+          {...animationProps}
+          transition={{ ...animationTransition, delay: 0.85 }}
+          className="mx-auto mt-6 grid w-full max-w-[22rem] overflow-hidden rounded-2xl border border-border/45 bg-background/55 backdrop-blur-md sm:mt-8 sm:max-w-3xl sm:grid-cols-3"
+        >
+          {copy.signals.map((signal) => (
+            <div key={signal.label} className="border-b border-border/35 px-5 py-4 last:border-b-0 sm:border-r sm:border-b-0 sm:last:border-r-0">
+              <p className="text-lg font-semibold tracking-tight text-foreground">{signal.value}</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{signal.label}</p>
+            </div>
+          ))}
+        </motion.div>
+
         <div className="pointer-events-none absolute inset-0 hidden overflow-hidden lg:block">
           <div className="absolute left-[10%] top-[15%] h-20 w-20 animate-float-slow rounded-2xl border border-primary/20" />
           <div className="absolute bottom-[25%] right-[15%] h-14 w-14 animate-float-slower rounded-full border border-accent/30" />

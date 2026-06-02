@@ -27,6 +27,13 @@ const nextConfig = {
   turbopack: {
     root: projectRoot,
   },
+  experimental: {
+    cpus: 4,
+    staticGenerationMaxConcurrency: 4,
+    staticGenerationMinPagesPerWorker: 8,
+    turbopackPluginRuntimeStrategy: "workerThreads",
+    turbopackMemoryLimit: 1073741824,
+  },
   images: {
     localPatterns: [
       {
