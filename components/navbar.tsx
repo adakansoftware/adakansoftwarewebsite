@@ -11,13 +11,14 @@ import { MobileNavMenu } from "@/components/mobile-nav-menu"
 import { NavbarDesktopActions } from "@/components/navbar-desktop-actions"
 import { NavbarPrimaryLinks } from "@/components/navbar-primary-links"
 import { whatsAppCopy } from "@/lib/contact-links"
-import { withLocale, type Locale } from "@/lib/i18n"
+import { getLocaleFromPathname, withLocale, type Locale } from "@/lib/i18n"
 import { navbarContent } from "@/lib/shell-content"
 
-export function Navbar({ locale }: { locale: Locale }) {
+export function Navbar({ locale: _locale }: { locale: Locale }) {
   const pathname = usePathname()
-  const labels = navbarContent[locale]
-  const whatsApp = whatsAppCopy[locale]
+  const activeLocale = getLocaleFromPathname(pathname)
+  const labels = navbarContent[activeLocale]
+  const whatsApp = whatsAppCopy[activeLocale]
   const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
@@ -45,7 +46,7 @@ export function Navbar({ locale }: { locale: Locale }) {
       >
         <div className="relative mx-auto flex w-full max-w-7xl items-center justify-between px-5 sm:px-6">
           <MagneticButton strength={0.15}>
-            <Link href={withLocale("/", locale)} className="flex items-center" aria-label={labels.homeLabel}>
+            <Link href={withLocale("/", activeLocale)} className="flex items-center" aria-label={labels.homeLabel}>
               <Image
                 src="/adakan-logo.png"
                 alt="Adakan Software"
@@ -58,12 +59,12 @@ export function Navbar({ locale }: { locale: Locale }) {
           </MagneticButton>
 
           <div className="desktop-nav-shell absolute left-1/2 -translate-x-1/2 items-center gap-10">
-            <NavbarPrimaryLinks links={labels.links} locale={locale} pathname={pathname} />
+            <NavbarPrimaryLinks links={labels.links} locale={activeLocale} pathname={pathname} />
           </div>
 
           <div className="desktop-nav-shell items-center gap-3">
             <NavbarDesktopActions
-              locale={locale}
+              locale={activeLocale}
               pathname={pathname}
               ctaLabel={labels.cta}
               whatsAppLabel={whatsApp.label}
@@ -74,7 +75,7 @@ export function Navbar({ locale }: { locale: Locale }) {
       </motion.nav>
 
       <MobileNavMenu
-        locale={locale}
+        locale={activeLocale}
         pathname={pathname}
         links={labels.links}
         ctaLabel={labels.cta}
