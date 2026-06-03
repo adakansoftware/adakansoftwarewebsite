@@ -30,10 +30,11 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
   const animationTransition = { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const }
 
   return (
-    <section
-      ref={containerRef}
-      className="relative isolate flex min-h-[auto] max-w-full items-start justify-center overflow-hidden px-0 pb-14 pt-24 md:min-h-[100svh] md:items-center md:py-0"
-    >
+    <div className="grain relative">
+      <section
+        ref={containerRef}
+        className="relative isolate flex min-h-[auto] max-w-full items-start justify-center overflow-hidden px-0 pb-14 pt-24 md:min-h-[100svh] md:items-center md:py-0"
+      >
       <div className="absolute inset-0">
         <div
           className="absolute left-1/4 top-1/4 h-[500px] w-[500px] rounded-full opacity-50"
@@ -67,7 +68,9 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
                 initial={false}
                 animate={{ y: 0 }}
                 transition={{ duration: 1, delay: 0.2 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className={`mx-auto max-w-full break-words leading-[0.94] tracking-tighter ${headlineStyles[index]}`}
+                className={`mx-auto max-w-full break-words leading-[0.94] tracking-tighter ${
+                  index === 1 ? "text-shimmer animate-shimmer" : ""
+                } ${headlineStyles[index]}`}
               >
                 {line}
               </motion.h1>
@@ -176,6 +179,7 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
           <ArrowDownRight className="h-5 w-5 rotate-45 text-muted-foreground" />
         </div>
       </motion.div>
-    </section>
+      </section>
+    </div>
   )
 }

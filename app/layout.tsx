@@ -3,8 +3,10 @@ import { Inter, Space_Grotesk } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 
 import { AnimatedBackground } from "@/components/animated-background"
+import { CursorGlow } from "@/components/cursor-glow"
 import { Footer } from "@/components/footer"
 import { Navbar } from "@/components/navbar"
+import { ScrollProgress } from "@/components/scroll-progress"
 import { WhatsAppButton } from "@/components/whatsapp-button"
 import { getRequestLocale } from "@/lib/request-locale"
 import { rootMetadataCopy, siteConfig } from "@/lib/site-config"
@@ -104,6 +106,8 @@ export default async function RootLayout({
   return (
     <html lang={locale} className="bg-background">
       <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
+        <CursorGlow />
+        <ScrollProgress />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[4000] focus:rounded-full focus:bg-foreground focus:px-4 focus:py-2 focus:text-background"

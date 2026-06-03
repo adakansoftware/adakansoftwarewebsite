@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 
 import { MagneticButton } from "@/components/magnetic-button"
+import { SectionReveal } from "@/components/section-reveal"
 import { Button } from "@/components/ui/button"
 import { ctaContent } from "@/lib/home-content"
 import { withLocale, type Locale } from "@/lib/i18n"
@@ -30,6 +31,8 @@ export function CTASection({ locale = "tr" }: { locale?: Locale }) {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="mx-auto max-w-5xl text-center"
         >
+          <div className="accent-line mx-auto mb-10 w-32" />
+
           <motion.h2 initial={false} className="mb-8 text-4xl font-bold tracking-tight md:text-7xl lg:text-8xl">
             {sectionCopy.title}
             <br />
@@ -62,16 +65,10 @@ export function CTASection({ locale = "tr" }: { locale?: Locale }) {
 
           <motion.div initial={false} className="mt-14 grid grid-cols-2 gap-6 border-t border-border/30 pt-10 md:mt-20 md:grid-cols-4 md:gap-8 md:pt-12">
             {sectionCopy.stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: 0.2 + index * 0.08 }}
-                className="text-center"
-              >
+              <SectionReveal key={stat.label} delay={0.2 + index * 0.08} className="text-center">
                 <div className="mb-2 text-4xl font-bold text-foreground md:text-5xl">{stat.value}</div>
                 <div className="text-sm text-muted-foreground">{stat.label}</div>
-              </motion.div>
+              </SectionReveal>
             ))}
           </motion.div>
         </motion.div>

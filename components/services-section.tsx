@@ -62,7 +62,15 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
   const Icon = serviceIcons[index] ?? Globe
 
   return (
-    <motion.div initial={false} className="group">
+    <motion.div
+      initial={false}
+      className="spotlight group"
+      onMouseMove={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect()
+        e.currentTarget.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`)
+        e.currentTarget.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`)
+      }}
+    >
       <Link href={service.href} className="relative block border-t border-border/50 py-6 transition-[border-color] duration-200 ease-out hover:border-accent md:py-8">
         <div className="absolute inset-0 bg-gradient-to-r from-accent/8 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         <ArrowUpRight className="absolute right-0 bottom-6 h-5 w-5 translate-x-[-4px] text-accent opacity-0 transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100 md:bottom-8" />

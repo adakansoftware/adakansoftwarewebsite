@@ -3,6 +3,7 @@
 import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 
+import { SectionReveal } from "@/components/section-reveal"
 import { philosophySectionContent } from "@/lib/home-content"
 import type { Locale } from "@/lib/i18n"
 
@@ -42,8 +43,10 @@ export function PhilosophySection({ locale = "tr" }: { locale?: Locale }) {
         </div>
 
         <div className="space-y-10 md:space-y-16">
-          {sectionCopy.items.map((item) => (
-            <PhilosophyItem key={item.number} item={item} />
+          {sectionCopy.items.map((item, index) => (
+            <SectionReveal key={item.number} delay={index * 0.15}>
+              <PhilosophyItem item={item} />
+            </SectionReveal>
           ))}
         </div>
       </motion.div>

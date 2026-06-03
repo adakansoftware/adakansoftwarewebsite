@@ -99,7 +99,10 @@ function ProjectCard({
             }}
           />
 
-          <div className="absolute inset-0 grid-pattern opacity-20 transition-opacity duration-300 group-hover:opacity-40" />
+          <div
+            className="absolute inset-0 grid-pattern opacity-20 transition-all duration-500 group-hover:opacity-40"
+            style={isHovered ? { backgroundColor: `${project.color}12`, filter: "saturate(1.2)" } : undefined}
+          />
 
           <div className="absolute inset-x-4 top-14 h-24 rounded-xl border border-white/10 bg-background/35 backdrop-blur-md sm:inset-x-6 sm:top-20 sm:h-28">
             <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
@@ -156,6 +159,7 @@ function ProjectCard({
           </div>
 
           <div className="absolute inset-0 rounded-2xl border border-border/50 transition-colors duration-300 group-hover:border-accent/35" />
+          <div className="accent-line absolute right-0 bottom-0 left-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         </div>
 
         <div className="flex items-center justify-between">
