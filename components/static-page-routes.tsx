@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ArrowRight, ArrowUpRight } from "lucide-react"
 
+import { CTASection } from "@/components/cta-section"
 import { PageHeader } from "@/components/page-header"
 import type { Locale } from "@/lib/i18n"
 import { careersPageContent, blogPageContent, legalPageContent } from "@/lib/static-page-content"
@@ -18,18 +19,19 @@ export function BlogPageContent({ locale }: { locale: Locale }) {
             <Link
               key={post}
               href={copy.ctaHref}
-              className="group rounded-2xl border border-border/50 bg-card/25 p-8 backdrop-blur-md transition-colors hover:border-primary/50"
+              className="group rounded-2xl border border-border/50 bg-card/25 p-8 backdrop-blur-md transition-colors hover:border-accent/50"
             >
-              <span className="text-sm text-primary">{copy.badge}</span>
+              <span className="text-sm text-accent">{copy.badge}</span>
               <h2 className="mt-4 text-2xl font-bold">{post}</h2>
               <span className="mt-8 inline-flex items-center gap-2 text-sm text-muted-foreground group-hover:text-foreground">
                 {copy.ctaLabel}
-                <ArrowUpRight className="h-4 w-4" />
+                <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
               </span>
             </Link>
           ))}
         </div>
       </section>
+      <CTASection locale={locale} />
     </>
   )
 }
@@ -44,12 +46,13 @@ export function CareersPageContent({ locale }: { locale: Locale }) {
         <div className="section-shell rounded-2xl border border-border/50 bg-card/25 p-8 backdrop-blur-md">
           <h2 className="text-2xl font-bold">{copy.sectionTitle}</h2>
           <p className="mt-4 max-w-2xl text-muted-foreground">{copy.sectionDescription}</p>
-          <Link href={`mailto:${siteConfig.email}`} className="mt-8 inline-flex items-center gap-2 text-primary">
+          <Link href={`mailto:${siteConfig.email}`} className="group mt-8 inline-flex items-center gap-2 text-accent">
             {siteConfig.email}
-            <ArrowRight className="h-4 w-4" />
+            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </div>
       </section>
+      <CTASection locale={locale} />
     </>
   )
 }
@@ -73,6 +76,7 @@ export function LegalPageContent({
           ))}
         </div>
       </section>
+      <CTASection locale={locale} />
     </>
   )
 }

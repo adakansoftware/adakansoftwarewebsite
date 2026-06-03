@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ArrowRight, ArrowUpRight, MessageCircle } from "lucide-react"
 
 import { CTASection } from "@/components/cta-section"
+import { MagneticButton } from "@/components/magnetic-button"
 import { PageHeader } from "@/components/page-header"
 import { PhilosophySection } from "@/components/philosophy-section"
 import { TestimonialsSection } from "@/components/testimonials-section"
@@ -34,6 +35,8 @@ export function AboutPageContent({ locale }: { locale: Locale }) {
           ))}
         </div>
       </section>
+      <PhilosophySection locale={locale} />
+      <CTASection locale={locale} />
     </>
   )
 }
@@ -101,6 +104,7 @@ export function ServicesPageContent({ locale }: { locale: Locale }) {
           </div>
         </div>
       </section>
+      <CTASection locale={locale} />
     </>
   )
 }
@@ -155,13 +159,15 @@ export function ProjectsPageContent({ locale }: { locale: Locale }) {
         <div className="section-shell mt-12">
           <Link
             href={content.cta.href}
-            className="inline-flex items-center gap-2 rounded-full border border-border/50 px-6 py-3 text-sm text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
+            className="group inline-flex items-center gap-2 rounded-full border border-border/50 px-6 py-3 text-sm text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground"
           >
             {content.cta.label}
-            <ArrowUpRight className="h-4 w-4" />
+            <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
           </Link>
         </div>
       </section>
+      <TestimonialsSection locale={locale} />
+      <CTASection locale={locale} />
     </>
   )
 }
@@ -185,23 +191,27 @@ export function ContactPageContent({ locale }: { locale: Locale }) {
               ))}
             </div>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button asChild size="lg" className="rounded-full bg-foreground px-8 py-7 text-background hover:bg-foreground/90">
-                <a href={content.emailHref}>
-                  {content.emailLabel}
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </a>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="rounded-full border-primary/35 bg-primary/5 px-8 py-7 text-primary hover:border-primary/60 hover:bg-primary hover:text-background"
-              >
-                <a href={getWhatsAppHref(locale)} target="_blank" rel="noreferrer">
-                  {content.messagingLabel}
-                  <MessageCircle className="ml-2 h-5 w-5" />
-                </a>
-              </Button>
+              <MagneticButton strength={0.22}>
+                <Button asChild size="lg" className="group rounded-full bg-accent px-8 py-7 text-accent-foreground hover:bg-accent/90 hover:shadow-xl hover:shadow-accent/20">
+                  <a href={content.emailHref}>
+                    {content.emailLabel}
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                  </a>
+                </Button>
+              </MagneticButton>
+              <MagneticButton strength={0.18}>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="group rounded-full border-accent/35 bg-accent/5 px-8 py-7 text-accent hover:border-accent/60 hover:bg-accent hover:text-accent-foreground"
+                >
+                  <a href={getWhatsAppHref(locale)} target="_blank" rel="noreferrer">
+                    {content.messagingLabel}
+                    <MessageCircle className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+                  </a>
+                </Button>
+              </MagneticButton>
             </div>
           </div>
 
@@ -210,9 +220,9 @@ export function ContactPageContent({ locale }: { locale: Locale }) {
               <Link
                 key={option.title}
                 href={option.href}
-                className="flex items-center gap-4 rounded-2xl border border-border/50 bg-card/25 p-6 transition-colors hover:border-primary/50"
+                className="flex items-center gap-4 rounded-2xl border border-border/50 bg-card/25 p-6 transition-colors hover:border-accent/50"
               >
-                <option.icon className="h-5 w-5 text-primary" />
+                <option.icon className="h-5 w-5 text-accent" />
                 <span>
                   <span className="block text-sm text-muted-foreground">{option.title}</span>
                   <span className="font-medium">{option.value}</span>
@@ -222,6 +232,7 @@ export function ContactPageContent({ locale }: { locale: Locale }) {
           </div>
         </div>
       </section>
+      <TestimonialsSection locale={locale} />
     </>
   )
 }

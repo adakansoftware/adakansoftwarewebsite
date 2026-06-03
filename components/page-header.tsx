@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
+import { MagneticButton } from "@/components/magnetic-button"
 import { Button } from "@/components/ui/button"
 import { withLocale, type Locale } from "@/lib/i18n"
 
@@ -44,25 +45,29 @@ export function PageHeader({
           </h1>
           <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">{description}</p>
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-            <Button
-              asChild
-              size="lg"
-              className="rounded-full bg-foreground px-8 py-7 text-background hover:bg-foreground/90"
-            >
-              <Link href={primaryHref}>
-                {primaryLabel}
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-            {secondaryHref && secondaryLabel ? (
+            <MagneticButton strength={0.22}>
               <Button
                 asChild
-                variant="ghost"
                 size="lg"
-                className="rounded-full px-8 py-7 text-muted-foreground hover:text-foreground"
+                className="group rounded-full bg-accent px-8 py-7 text-accent-foreground transition-colors duration-300 hover:bg-accent/90 hover:shadow-xl hover:shadow-accent/20"
               >
-                <Link href={secondaryHref}>{secondaryLabel}</Link>
+                <Link href={primaryHref}>
+                  {primaryLabel}
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
               </Button>
+            </MagneticButton>
+            {secondaryHref && secondaryLabel ? (
+              <MagneticButton strength={0.18}>
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="lg"
+                  className="rounded-full px-8 py-7 text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <Link href={secondaryHref}>{secondaryLabel}</Link>
+                </Button>
+              </MagneticButton>
             ) : null}
           </div>
         </div>

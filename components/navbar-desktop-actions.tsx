@@ -1,7 +1,8 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ArrowUpRight, Languages, MessageCircle } from "lucide-react"
+import { ArrowUpRight, Check, Languages, MessageCircle } from "lucide-react"
 
 import { MagneticButton } from "@/components/magnetic-button"
 import { Button } from "@/components/ui/button"
@@ -24,6 +25,11 @@ export function NavbarDesktopActions({
   whatsAppShort: string
 }) {
   const localizedHref = (href: string) => withLocale(href, locale)
+  const [isLanguageOpen, setIsLanguageOpen] = useState(false)
+
+  useEffect(() => {
+    setIsLanguageOpen(false)
+  }, [locale, pathname])
 
   return (
     <>
@@ -44,7 +50,7 @@ export function NavbarDesktopActions({
         </Tooltip>
       </MagneticButton>
 
-      <DropdownMenu>
+      <DropdownMenu open={isLanguageOpen} onOpenChange={setIsLanguageOpen}>
         <DropdownMenuTrigger asChild>
           <button
             type="button"
@@ -55,15 +61,17 @@ export function NavbarDesktopActions({
             {locale.toUpperCase()}
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="border-border/50 bg-popover/95 backdrop-blur-xl">
+        <DropdownMenuContent align="end" sideOffset={12} className="z-[1400] min-w-24 border-border/50 bg-popover/95 backdrop-blur-xl">
           <DropdownMenuItem asChild>
-            <Link href={switchLocalePath(pathname, "tr")} aria-current={locale === "tr" ? "true" : undefined}>
+            <Link href={switchLocalePath(pathname, "tr")} aria-current={locale === "tr" ? "true" : undefined} onClick={() => setIsLanguageOpen(false)}>
               TR
+              {locale === "tr" ? <Check className="ml-auto h-4 w-4 text-accent" /> : null}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href={switchLocalePath(pathname, "en")} aria-current={locale === "en" ? "true" : undefined}>
+            <Link href={switchLocalePath(pathname, "en")} aria-current={locale === "en" ? "true" : undefined} onClick={() => setIsLanguageOpen(false)}>
               EN
+              {locale === "en" ? <Check className="ml-auto h-4 w-4 text-accent" /> : null}
             </Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
