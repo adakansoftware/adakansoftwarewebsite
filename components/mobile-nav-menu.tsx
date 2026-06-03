@@ -30,6 +30,10 @@ export function MobileNavMenu({
   whatsAppShort: string
 }) {
   const localizedHref = (href: string) => withLocale(href, locale)
+  const isActive = (href: string) => {
+    const localized = withLocale(href, locale)
+    return pathname === localized || (href !== "/" && pathname.startsWith(localized))
+  }
   const closeNativeMobileMenu = () => {
     document.querySelector<HTMLDetailsElement>("[data-mobile-menu]")?.removeAttribute("open")
   }
@@ -47,8 +51,16 @@ export function MobileNavMenu({
         <div className="relative h-full overflow-y-auto px-5 pt-24 pb-8 sm:px-6 sm:pt-28 sm:pb-10">
           <div className="flex min-h-[calc(100dvh-8rem)] flex-col justify-center gap-6 sm:min-h-0 sm:justify-start sm:gap-8">
             {links.map((link) => (
-              <Link key={link.name} href={localizedHref(link.href)} className="text-[clamp(2rem,9vw,3rem)] leading-[1.05] font-bold text-foreground" onClick={closeNativeMobileMenu}>
+              <Link
+                key={link.name}
+                href={localizedHref(link.href)}
+                className={`text-[clamp(2rem,9vw,3rem)] leading-[1.05] font-bold transition-colors ${
+                  isActive(link.href) ? "text-accent" : "text-foreground"
+                }`}
+                onClick={closeNativeMobileMenu}
+              >
                 {link.name}
+                {isActive(link.href) ? <span className="ml-3 inline-block h-2 w-2 rounded-full bg-accent" aria-hidden="true" /> : null}
               </Link>
             ))}
             <div className="flex gap-3">

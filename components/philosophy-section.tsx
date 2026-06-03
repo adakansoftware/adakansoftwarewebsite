@@ -59,9 +59,9 @@ function PhilosophyItem({ item, index }: { item: { number: string; title: string
   return (
     <motion.div
       ref={ref}
-      initial={prefersReducedMotion ? false : { opacity: 0, y: 28 }}
-      animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
-      transition={{ duration: prefersReducedMotion ? 0 : 0.7, delay: prefersReducedMotion ? 0 : index * 0.12, ease: [0.22, 1, 0.36, 1] }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+      animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+      transition={{ duration: prefersReducedMotion ? 0 : 0.65, delay: prefersReducedMotion ? 0 : index * 0.13, ease: [0.22, 1, 0.36, 1] }}
       className="group grid gap-4 md:grid-cols-12 md:items-start md:gap-8"
     >
       <div className="md:col-span-2">

@@ -60,16 +60,16 @@ export function ServicesSection({ locale = "tr" }: { locale?: Locale }) {
 
 function ServiceCard({ service, index }: { service: Service; index: number }) {
   const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: "-40px" })
+  const isInView = useInView(ref, { once: true, margin: "-50px" })
   const prefersReducedMotion = useReducedMotion()
   const Icon = serviceIcons[index] ?? Globe
 
   return (
     <motion.div
       ref={ref}
-      initial={prefersReducedMotion ? false : { opacity: 0, x: -16 }}
-      animate={prefersReducedMotion || isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -16 }}
-      transition={{ duration: prefersReducedMotion ? 0 : 0.5, delay: prefersReducedMotion ? 0 : index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      initial={prefersReducedMotion ? false : { opacity: 0, x: -20 }}
+      animate={prefersReducedMotion || isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+      transition={{ duration: prefersReducedMotion ? 0 : 0.55, delay: prefersReducedMotion ? 0 : index * 0.07, ease: [0.22, 1, 0.36, 1] }}
       className="spotlight group"
       onMouseMove={(e) => {
         const rect = e.currentTarget.getBoundingClientRect()

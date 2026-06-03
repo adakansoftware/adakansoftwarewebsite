@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
+import Image from "next/image"
 import Link from "next/link"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
@@ -80,6 +81,8 @@ function ProjectCard({
   onHover: () => void
   onLeave: () => void
 }) {
+  const isExternalProject = project.href.startsWith("http://") || project.href.startsWith("https://")
+
   return (
     <motion.div
       initial={false}
@@ -90,7 +93,7 @@ function ProjectCard({
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
     >
-      <Link href={project.href} className="block">
+      <Link href={project.href} className="block" target={isExternalProject ? "_blank" : undefined} rel={isExternalProject ? "noreferrer" : undefined}>
         <div className="premium-border relative mb-6 aspect-[4/3] overflow-hidden rounded-2xl">
           <div
             className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
@@ -99,25 +102,48 @@ function ProjectCard({
             }}
           />
 
-          <div
-            className="absolute inset-0 grid-pattern opacity-20 transition-all duration-500 group-hover:opacity-40"
-            style={isHovered ? { backgroundColor: `${project.color}12`, filter: "saturate(1.2)" } : undefined}
-          />
+          {project.coverImage ? (
+            <>
+              <Image
+                src={project.coverImage}
+                alt={`${project.title} kapak görseli`}
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover opacity-80 transition-transform duration-700 group-hover:scale-105"
+                priority={false}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/35 to-background/20" />
+            </>
+          ) : null}
 
-          <div className="absolute inset-x-4 top-14 h-24 rounded-xl border border-white/10 bg-background/35 backdrop-blur-md sm:inset-x-6 sm:top-20 sm:h-28">
-            <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
-              <span className="h-2 w-2 rounded-full bg-red-400/80" />
-              <span className="h-2 w-2 rounded-full bg-amber-300/80" />
-              <span className="h-2 w-2 rounded-full bg-emerald-300/80" />
-            </div>
-            <div className="grid grid-cols-3 gap-3 p-4">
-              <span className="h-3 rounded-full bg-white/25" />
-              <span className="h-3 rounded-full bg-white/15" />
-              <span className="h-3 rounded-full bg-white/10" />
-              <span className="col-span-2 h-8 rounded-lg" style={{ backgroundColor: `${project.color}35` }} />
-              <span className="h-8 rounded-lg bg-white/10" />
-            </div>
-          </div>
+          {!project.coverImage ? (
+            <>
+              <div
+                className="absolute inset-0 grid-pattern opacity-20 transition-all duration-500 group-hover:opacity-40"
+                style={isHovered ? { backgroundColor: `${project.color}12`, filter: "saturate(1.2)" } : undefined}
+              />
+
+              <div className="absolute inset-x-4 top-14 h-24 rounded-xl border border-white/10 bg-background/35 backdrop-blur-md sm:inset-x-6 sm:top-20 sm:h-28">
+                <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
+                  <span className="h-2 w-2 rounded-full bg-red-400/80" />
+                  <span className="h-2 w-2 rounded-full bg-amber-300/80" />
+                  <span className="h-2 w-2 rounded-full bg-emerald-300/80" />
+                </div>
+                <div className="grid grid-cols-3 gap-3 p-4">
+                  <span className="h-3 rounded-full bg-white/25" />
+                  <span className="h-3 rounded-full bg-white/15" />
+                  <span className="h-3 rounded-full bg-white/10" />
+                  <span className="col-span-2 h-8 rounded-lg" style={{ backgroundColor: `${project.color}35` }} />
+                  <span className="h-8 rounded-lg bg-white/10" />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div
+              className="absolute inset-0 grid-pattern opacity-10 transition-all duration-500 group-hover:opacity-20"
+              style={isHovered ? { backgroundColor: `${project.color}10`, filter: "saturate(1.1)" } : undefined}
+            />
+          )}
 
           <div
             className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"

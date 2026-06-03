@@ -1,4 +1,8 @@
+"use client"
+
+import { useRef } from "react"
 import Link from "next/link"
+import { motion, useInView, useReducedMotion } from "framer-motion"
 import { ArrowRight } from "lucide-react"
 
 import { MagneticButton } from "@/components/magnetic-button"
@@ -28,11 +32,20 @@ export function PageHeader({
   secondaryHref,
   secondaryLabel,
 }: PageHeaderProps) {
+  const ref = useRef<HTMLDivElement>(null)
+  const isInView = useInView(ref, { once: true, margin: "-20px" })
+  const prefersReducedMotion = useReducedMotion()
+
   return (
     <section className="relative overflow-hidden pt-36 pb-20 md:pt-44 md:pb-28">
       <div className="absolute inset-0 grid-pattern opacity-10" />
-      <div className="section-shell">
-        <div className="max-w-4xl">
+      <div ref={ref} className="section-shell">
+        <motion.div
+          className="max-w-4xl"
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 32 }}
+          animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
+          transition={{ duration: prefersReducedMotion ? 0 : 0.75, ease: [0.22, 1, 0.36, 1] }}
+        >
           <span className="eyebrow mb-6 block">{eyebrow}</span>
           <h1 className="text-5xl font-bold tracking-tight md:text-7xl lg:text-8xl">
             {title}
@@ -70,7 +83,7 @@ export function PageHeader({
               </MagneticButton>
             ) : null}
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   )

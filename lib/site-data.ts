@@ -59,6 +59,15 @@ export const servicesByLocale = {
 export const projectsByLocale = {
   tr: [
     {
+      title: "Sallıhoğulları Hafriyat",
+      href: "https://sallihogullaridemobyadakansoftware.vercel.app/",
+      category: "Hafriyat kurumsal web sitesi",
+      year: "2026",
+      description: "Adana merkezli hafriyat ve iş makinesi hizmetleri için saha güveni, hizmet kapsamı ve teklif akışını netleştiren kurumsal web deneyimi.",
+      color: "#f59e0b",
+      coverImage: "/projects/sallihogullari-hafriyat-cover.png",
+    },
+    {
       title: "Nova Finans",
       href: "/projects#nova-finans",
       category: "Fintech web deneyimi",
@@ -93,6 +102,15 @@ export const projectsByLocale = {
   ],
   en: [
     {
+      title: "Sallıhoğulları Excavation",
+      href: "https://sallihogullaridemobyadakansoftware.vercel.app/",
+      category: "Construction services website",
+      year: "2026",
+      description: "A corporate web experience for an Adana-based excavation and machinery company, clarifying field trust, service scope, and quote flow.",
+      color: "#f59e0b",
+      coverImage: "/projects/sallihogullari-hafriyat-cover.png",
+    },
+    {
       title: "Nova Finance",
       href: "/projects#nova-finans",
       category: "Fintech web experience",
@@ -125,19 +143,23 @@ export const projectsByLocale = {
       color: "#22c55e",
     },
   ],
-} satisfies Record<Locale, Array<{ title: string; href: string; category: string; year: string; description: string; color: string }>>
+} satisfies Record<Locale, Array<{ title: string; href: string; category: string; year: string; description: string; color: string; coverImage?: string }>>
+
+function localizeHref(href: string, locale: Locale) {
+  return href.startsWith("http://") || href.startsWith("https://") ? href : withLocale(href, locale)
+}
 
 export function getServices(locale: Locale) {
   return servicesByLocale[locale].map((service) => ({
     ...service,
-    href: withLocale(service.href, locale),
+    href: localizeHref(service.href, locale),
   }))
 }
 
 export function getProjects(locale: Locale) {
   return projectsByLocale[locale].map((project) => ({
     ...project,
-    href: withLocale(project.href, locale),
+    href: localizeHref(project.href, locale),
   }))
 }
 

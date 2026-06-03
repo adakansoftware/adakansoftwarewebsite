@@ -118,7 +118,7 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
         <motion.div
           {...animationProps}
           transition={{ ...animationTransition, delay: 0.75 }}
-          className="mx-auto mt-8 grid w-full max-w-[22rem] grid-cols-2 gap-3 sm:mt-16 sm:max-w-none sm:flex sm:flex-wrap sm:justify-center"
+          className="stagger mx-auto mt-8 grid w-full max-w-[22rem] grid-cols-2 gap-3 sm:mt-16 sm:max-w-none sm:flex sm:flex-wrap sm:justify-center"
         >
           {copy.proofPoints.map((point) => (
             <span key={point} className="rounded-full border border-border/50 bg-card/25 px-4 py-2 text-center text-sm text-muted-foreground backdrop-blur-md">
