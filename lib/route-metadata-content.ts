@@ -7,6 +7,7 @@ export type RouteMetadataKey =
   | "blog"
   | "careers"
   | "contact"
+  | "logo"
   | "privacy"
   | "projects"
   | "services"
@@ -82,6 +83,18 @@ export const routeMetadataContent: Record<RouteMetadataKey, Record<Locale, Metad
     en: {
       title: "Contact",
       description: "Get in touch with Adakan Software about your new website, brand identity, or digital product project.",
+    },
+  },
+  logo: {
+    tr: {
+      title: "Logo Tasarımı",
+      description: "Adakan Software logo tasarımı, marka işareti ve kurumsal kimlik sistemleri için premium görsel kimlik çözümleri sunar.",
+      keywords: ["logo tasarımı", "marka kimliği", "kurumsal kimlik", "premium logo"],
+    },
+    en: {
+      title: "Logo Design",
+      description: "Adakan Software creates premium logo design, brand marks, and visual identity systems for ambitious brands.",
+      keywords: ["logo design", "brand identity", "visual identity", "premium logo"],
     },
   },
   privacy: {

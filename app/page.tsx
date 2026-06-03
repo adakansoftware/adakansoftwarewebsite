@@ -1,5 +1,6 @@
 import { CTASection } from "@/components/cta-section"
 import { HeroSection } from "@/components/hero-section"
+import { LogoWorksSection } from "@/components/logo-works-section"
 import { PhilosophySection } from "@/components/philosophy-section"
 import { ProjectsSection } from "@/components/projects-section"
 import { ServicesSection } from "@/components/services-section"
@@ -14,6 +15,7 @@ export default function HomePage() {
       <HeroSection locale="tr" />
       <ServicesSection locale="tr" />
       <PhilosophySection locale="tr" />
+      <LogoWorksSection locale="tr" />
       <ProjectsSection locale="tr" />
       <TestimonialsSection locale="tr" />
       <CTASection locale="tr" />

@@ -17,11 +17,12 @@ import {
   getAboutPageContent,
   getApproachPageContent,
   getContactPageContent,
+  getLogoPageContent,
   getProjectsPageContent,
   getServicesPageContent,
   getTestimonialsPageContent,
 } from "@/lib/page-content"
-import { getProjects, getServices } from "@/lib/site-data"
+import { getDemoExamples, getLogoWorks, getProjects, getServices } from "@/lib/site-data"
 
 export function AboutPageContent({ locale }: { locale: Locale }) {
   const content = getAboutPageContent(locale)
@@ -85,6 +86,8 @@ export function ServicesPageContent({ locale }: { locale: Locale }) {
 export function ProjectsPageContent({ locale }: { locale: Locale }) {
   const content = getProjectsPageContent(locale)
   const projects = getProjects(locale)
+  const demoExamples = getDemoExamples(locale)
+  const logoWorks = getLogoWorks(locale)
 
   return (
     <>
@@ -160,6 +163,113 @@ export function ProjectsPageContent({ locale }: { locale: Locale }) {
           })}
         </div>
 
+        <div className="section-shell mt-20">
+          <div className="mb-8 max-w-2xl">
+            <p className="text-sm font-medium tracking-widest text-accent uppercase">{locale === "tr" ? "Demo Örnekler" : "Demo Examples"}</p>
+            <h2 className="mt-4 text-3xl font-bold tracking-tight md:text-5xl">
+              {locale === "tr" ? "Canlı akışları hızlıca incele" : "Explore live flows quickly"}
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              {locale === "tr"
+                ? "Hazır demo örnekleri; sektör, akış ve marka dili kararlarını canlı görmek için ayrı bir vitrin gibi çalışır."
+                : "Demo examples act as a separate showcase for reviewing industry, flow, and brand language decisions live."}
+            </p>
+          </div>
+
+          <div className="grid gap-5 md:grid-cols-3">
+            {demoExamples.map((demo) => {
+              const isExternalDemo = demo.href.startsWith("http://") || demo.href.startsWith("https://")
+
+              return (
+                <Link
+                  key={demo.title}
+                  href={demo.href}
+                  target={isExternalDemo ? "_blank" : undefined}
+                  rel={isExternalDemo ? "noreferrer" : undefined}
+                  className="group rounded-2xl border border-border/50 bg-card/25 p-5 transition-colors hover:border-accent/45"
+                >
+                  <div
+                    className="relative mb-5 aspect-[16/10] overflow-hidden rounded-xl"
+                    style={{ background: `linear-gradient(135deg, ${demo.color}30, transparent 55%, ${demo.color}18)` }}
+                  >
+                    {demo.coverImage ? (
+                      <>
+                        <Image
+                          src={demo.coverImage}
+                          alt={`${demo.title} kapak görseli`}
+                          fill
+                          sizes="(min-width: 768px) 33vw, 100vw"
+                          className="object-cover opacity-75 transition-transform duration-500 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/25 to-transparent" />
+                      </>
+                    ) : (
+                      <>
+                        <div className="absolute inset-0 grid-pattern opacity-20" />
+                        <div className="absolute inset-x-5 top-6 rounded-xl border border-white/10 bg-background/35 p-4 backdrop-blur-md">
+                          <span className="block h-3 w-1/2 rounded-full bg-white/25" />
+                          <span className="mt-4 block h-10 rounded-lg" style={{ backgroundColor: `${demo.color}35` }} />
+                        </div>
+                      </>
+                    )}
+                    <div className="absolute right-4 bottom-4 flex h-10 w-10 items-center justify-center rounded-full bg-foreground/10 backdrop-blur-md transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">
+                      <ArrowUpRight className="h-4 w-4" />
+                    </div>
+                  </div>
+                  <p className="text-xs font-medium tracking-widest text-accent uppercase">{demo.category}</p>
+                  <h3 className="mt-3 text-xl font-bold">{demo.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{demo.description}</p>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className="section-shell mt-20">
+          <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-sm font-medium tracking-widest text-accent uppercase">{locale === "tr" ? "Logo Çalışmaları" : "Logo Works"}</p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight md:text-5xl">
+                {locale === "tr" ? "Marka işaretleri ve kimlik denemeleri" : "Brand marks and identity studies"}
+              </h2>
+              <p className="mt-4 text-muted-foreground">
+                {locale === "tr"
+                  ? "Logo çalışmalarını sadece tek bir görsel olarak değil; sembol, wordmark, renk ve kullanım ritmiyle birlikte gösteriyoruz."
+                  : "Logo work is presented as more than a single visual: symbol, wordmark, color, and usage rhythm are considered together."}
+              </p>
+            </div>
+            <Link
+              href={locale === "tr" ? "/logo" : "/en/logo"}
+              className="group inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {locale === "tr" ? "Logo sayfasını aç" : "Open logo page"}
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+            </Link>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {logoWorks.map((work) => (
+              <article key={work.title} className="group overflow-hidden rounded-2xl border border-border/50 bg-card/25 p-5 transition-colors hover:border-accent/45 premium-border">
+                <div
+                  className="relative mb-5 aspect-square overflow-hidden rounded-xl border border-white/10"
+                  style={{ background: `linear-gradient(135deg, ${work.color}24, transparent 52%, ${work.color}14)` }}
+                >
+                  <div className="absolute inset-0 grid-pattern opacity-15" />
+                  <div className="absolute inset-6 flex items-center justify-center rounded-2xl border border-white/10 bg-background/35 backdrop-blur-md">
+                    <span className="font-aquire text-[clamp(2.8rem,8vw,4.8rem)] leading-none transition-transform duration-300 group-hover:scale-105" style={{ color: work.color }}>
+                      {work.initials}
+                    </span>
+                  </div>
+                  <div className="absolute right-4 bottom-4 h-2 w-16 rounded-full transition-transform duration-300 group-hover:scale-x-110" style={{ backgroundColor: work.color }} />
+                </div>
+                <p className="text-xs font-medium tracking-widest text-accent uppercase">{work.category}</p>
+                <h3 className="mt-3 text-xl font-bold">{work.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{work.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
         <div className="section-shell mt-12">
           <Link
             href={content.cta.href}
@@ -171,6 +281,59 @@ export function ProjectsPageContent({ locale }: { locale: Locale }) {
         </div>
       </section>
       <TestimonialsSection locale={locale} />
+      <CTASection locale={locale} />
+    </>
+  )
+}
+
+export function LogoPageContent({ locale }: { locale: Locale }) {
+  const content = getLogoPageContent(locale)
+
+  return (
+    <>
+      <PageHeader locale={locale} {...content.header} />
+      <section className="relative pb-32">
+        <div className="section-shell">
+          <div className="grid gap-6 md:grid-cols-3">
+            {content.sections.map((section, index) => (
+              <article key={section.title} className="premium-border rounded-2xl border border-border/50 bg-card/25 p-6 backdrop-blur-md">
+                <span className="font-mono text-sm text-accent">{String(index + 1).padStart(2, "0")}</span>
+                <h2 className="mt-5 text-2xl font-bold">{section.title}</h2>
+                <p className="mt-4 leading-relaxed text-muted-foreground">{section.description}</p>
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {section.points.map((point) => (
+                    <span key={point} className="rounded-full border border-border/50 bg-background/35 px-3 py-1.5 text-xs text-muted-foreground">
+                      {point}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-12 overflow-hidden rounded-3xl border border-border/50 bg-background/40 p-8 premium-border md:p-10">
+            <div className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-center">
+              <div>
+                <p className="text-sm font-medium tracking-widest text-accent uppercase">{locale === "tr" ? "Logo sistemi" : "Logo system"}</p>
+                <h2 className="mt-4 text-3xl font-bold tracking-tight md:text-5xl">
+                  {locale === "tr" ? "Tek logo değil, kullanılabilir marka seti" : "Not just one logo, a usable brand kit"}
+                </h2>
+                <p className="mt-5 max-w-2xl leading-relaxed text-muted-foreground">
+                  {locale === "tr"
+                    ? "Web sitesi, sosyal medya, teklif dosyası ve baskı gibi gerçek alanlarda çalışacak versiyonları baştan planlarız."
+                    : "We plan versions that work across real touchpoints: website, social media, proposal decks, and print."}
+                </p>
+              </div>
+              <div className="relative aspect-square overflow-hidden rounded-2xl border border-border/50 bg-card/30">
+                <div className="absolute inset-0 grid-pattern opacity-20" />
+                <div className="absolute inset-8 flex items-center justify-center rounded-full border border-accent/25 bg-accent/10">
+                  <span className="font-aquire text-[clamp(4rem,12vw,7rem)] leading-none text-accent">A</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       <CTASection locale={locale} />
     </>
   )

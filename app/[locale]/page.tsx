@@ -1,5 +1,6 @@
 import { CTASection } from "@/components/cta-section"
 import { HeroSection } from "@/components/hero-section"
+import { LogoWorksSection } from "@/components/logo-works-section"
 import { PhilosophySection } from "@/components/philosophy-section"
 import { ProjectsSection } from "@/components/projects-section"
 import { ServicesSection } from "@/components/services-section"
@@ -32,6 +33,7 @@ export default async function LocalizedHomePage({
       <HeroSection locale={locale} />
       <ServicesSection locale={locale} />
       <PhilosophySection locale={locale} />
+      <LogoWorksSection locale={locale} />
       <ProjectsSection locale={locale} />
       <TestimonialsSection locale={locale} />
       <CTASection locale={locale} />

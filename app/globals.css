@@ -389,7 +389,7 @@
 
   /* Staggered list reveal - add to a parent wrapper */
   .stagger > * {
-    animation: slide-up-fade-in 0.4s ease forwards;
+    animation: slide-up-fade 0.4s ease forwards;
     opacity: 0;
   }
 
@@ -466,17 +466,6 @@
   from {
     opacity: 0;
     transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-up-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
   }
   to {
     opacity: 1;

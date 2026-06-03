@@ -145,6 +145,120 @@ export const projectsByLocale = {
   ],
 } satisfies Record<Locale, Array<{ title: string; href: string; category: string; year: string; description: string; color: string; coverImage?: string }>>
 
+export const demoExamplesByLocale = {
+  tr: [
+    {
+      title: "Sallıhoğulları Hafriyat Demo",
+      href: "https://sallihogullaridemobyadakansoftware.vercel.app/",
+      category: "Kurumsal demo",
+      description: "Hafriyat ve iş makinesi hizmetleri için hazırlanmış canlı demo deneyimi.",
+      coverImage: "/projects/sallihogullari-hafriyat-cover.png",
+      color: "#f59e0b",
+    },
+    {
+      title: "Premium Ajans Landing",
+      href: "/projects#nova-finans",
+      category: "Landing demo",
+      description: "Güçlü hero, net CTA ve hızlı güven sinyalleriyle örnek satış odaklı sayfa akışı.",
+      color: "#0066ff",
+    },
+    {
+      title: "Marka Kimliği Sunumu",
+      href: "/logo",
+      category: "Logo demo",
+      description: "Logo, renk, tipografi ve kullanım sistemini tek anlatıda gösteren örnek kimlik akışı.",
+      color: "#14b8a6",
+    },
+  ],
+  en: [
+    {
+      title: "Sallıhoğulları Excavation Demo",
+      href: "https://sallihogullaridemobyadakansoftware.vercel.app/",
+      category: "Corporate demo",
+      description: "A live demo experience for excavation and machinery services.",
+      coverImage: "/projects/sallihogullari-hafriyat-cover.png",
+      color: "#f59e0b",
+    },
+    {
+      title: "Premium Agency Landing",
+      href: "/projects#nova-finans",
+      category: "Landing demo",
+      description: "A sample conversion-focused flow with a strong hero, clear CTA, and fast trust signals.",
+      color: "#0066ff",
+    },
+    {
+      title: "Brand Identity Presentation",
+      href: "/logo",
+      category: "Logo demo",
+      description: "A sample identity flow that presents logo, color, typography, and usage as one system.",
+      color: "#14b8a6",
+    },
+  ],
+} satisfies Record<Locale, Array<{ title: string; href: string; category: string; description: string; color: string; coverImage?: string }>>
+
+export const logoWorksByLocale = {
+  tr: [
+    {
+      title: "Apex Studio",
+      category: "Minimal wordmark",
+      description: "Teknoloji ve danışmanlık markaları için keskin, sade ve dijitalde güçlü duran logotype çalışması.",
+      initials: "AX",
+      color: "#0066ff",
+    },
+    {
+      title: "Luma Clinic",
+      category: "Sağlık kimliği",
+      description: "Güven, sakinlik ve premium bakım hissini taşıyan yumuşak sembol ve tipografi sistemi.",
+      initials: "LC",
+      color: "#14b8a6",
+    },
+    {
+      title: "Orion Build",
+      category: "Endüstriyel marka",
+      description: "İnşaat ve saha operasyonları için güçlü, okunaklı ve kurumsal uygulamalara hazır logo seti.",
+      initials: "OB",
+      color: "#f59e0b",
+    },
+    {
+      title: "Mira Select",
+      category: "E-ticaret logosu",
+      description: "Modern satış kanalları, ambalaj ve sosyal medya kullanımına uyumlu esnek marka işareti.",
+      initials: "MS",
+      color: "#84cc16",
+    },
+  ],
+  en: [
+    {
+      title: "Apex Studio",
+      category: "Minimal wordmark",
+      description: "A sharp, simple, digitally strong logotype study for technology and consulting brands.",
+      initials: "AX",
+      color: "#0066ff",
+    },
+    {
+      title: "Luma Clinic",
+      category: "Healthcare identity",
+      description: "A soft symbol and typography system built around trust, calmness, and premium care.",
+      initials: "LC",
+      color: "#14b8a6",
+    },
+    {
+      title: "Orion Build",
+      category: "Industrial brand",
+      description: "A strong, readable logo set ready for corporate use across construction and field operations.",
+      initials: "OB",
+      color: "#f59e0b",
+    },
+    {
+      title: "Mira Select",
+      category: "E-commerce logo",
+      description: "A flexible brand mark suited to modern sales channels, packaging, and social media usage.",
+      initials: "MS",
+      color: "#84cc16",
+    },
+  ],
+} satisfies Record<Locale, Array<{ title: string; category: string; description: string; initials: string; color: string }>>
+
 function localizeHref(href: string, locale: Locale) {
   return href.startsWith("http://") || href.startsWith("https://") ? href : withLocale(href, locale)
 }
@@ -161,6 +275,17 @@ export function getProjects(locale: Locale) {
     ...project,
     href: localizeHref(project.href, locale),
   }))
+}
+
+export function getDemoExamples(locale: Locale) {
+  return demoExamplesByLocale[locale].map((demo) => ({
+    ...demo,
+    href: localizeHref(demo.href, locale),
+  }))
+}
+
+export function getLogoWorks(locale: Locale) {
+  return logoWorksByLocale[locale]
 }
 
 export const services = getServices("tr")

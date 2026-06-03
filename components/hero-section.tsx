@@ -164,13 +164,13 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
           <div className="grid grid-cols-3 gap-1.5 sm:w-32">
             <motion.span
               className="h-1.5 rounded-full bg-accent"
-              animate={prefersReducedMotion ? { opacity: 1 } : { opacity: [1, 0.5, 1] }}
-              transition={prefersReducedMotion ? { duration: 0 } : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              animate={prefersReducedMotion ? {} : { opacity: [1, 0.45, 1] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
             />
             <motion.span
               className="h-1.5 rounded-full bg-accent"
-              animate={prefersReducedMotion ? { opacity: 1 } : { opacity: [1, 0.5, 1] }}
-              transition={prefersReducedMotion ? { duration: 0 } : { duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
+              animate={prefersReducedMotion ? {} : { opacity: [1, 0.45, 1] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: 0.45 }}
             />
             <span className="h-1.5 rounded-full bg-foreground/35" />
           </div>

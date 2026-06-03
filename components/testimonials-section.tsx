@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion"
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react"
 
 import { testimonialsContent } from "@/lib/home-content"
@@ -13,6 +13,9 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(0)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const headingRef = useRef<HTMLDivElement>(null)
+  const isInView = useInView(headingRef, { once: true, margin: "-60px" })
+  const prefersReducedMotion = useReducedMotion()
 
   const next = () => {
     setDirection(1)
@@ -50,20 +53,20 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
       </div>
 
       <div className="container relative z-10 mx-auto px-6">
-        <div className="mb-12 text-center md:mb-16">
+        <div ref={headingRef} className="mb-12 text-center md:mb-16">
           <motion.span
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+            animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.6 }}
             className="mb-6 block text-sm font-medium tracking-widest text-accent uppercase"
           >
             {sectionCopy.eyebrow}
           </motion.span>
 
           <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 30 }}
+            animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.8, delay: prefersReducedMotion ? 0 : 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="text-4xl font-bold tracking-tight md:text-6xl"
           >
             {sectionCopy.title}

@@ -70,6 +70,15 @@ type TestimonialsContent = {
   header: HeaderContent
 }
 
+type LogoContent = {
+  header: HeaderContent
+  sections: Array<{
+    title: string
+    description: string
+    points: string[]
+  }>
+}
+
 type ApproachContent = {
   header: HeaderContent
 }
@@ -318,6 +327,69 @@ const contactPageContent: Record<Locale, ContactContent> = {
   },
 }
 
+const logoPageContent: Record<Locale, LogoContent> = {
+  tr: {
+    header: {
+      eyebrow: "Logo Tasarımı",
+      title: "Markanı tek bakışta",
+      gradientText: "tanınır hale getir",
+      description:
+        "Logo tasarımını sadece güzel bir işaret olarak değil; renk, tipografi, kullanım kuralları ve dijital temas noktalarıyla birlikte çalışan bir marka sistemi olarak ele alıyoruz.",
+      primaryHref: "/contact",
+      primaryLabel: "Logo Projesi Başlat",
+      secondaryHref: "/projects",
+      secondaryLabel: "Örnekleri Gör",
+    },
+    sections: [
+      {
+        title: "Stratejik işaret",
+        description: "Sektör, hedef kitle ve marka tonuna göre ilk algıyı taşıyan net bir logo sistemi kurarız.",
+        points: ["Ana logo", "Alternatif kullanım", "Sembol ve wordmark"],
+      },
+      {
+        title: "Kimlik dili",
+        description: "Logonun tek başına kalmaması için renk, tipografi ve görsel ritmi birlikte tanımlarız.",
+        points: ["Renk paleti", "Tipografi seçimi", "Sosyal medya uyumu"],
+      },
+      {
+        title: "Teslim sistemi",
+        description: "Dosyaları gerçek kullanım senaryolarına hazır, düzenli ve ölçeklenebilir şekilde teslim ederiz.",
+        points: ["SVG/PNG/PDF", "Koyu/açık versiyon", "Kullanım rehberi"],
+      },
+    ],
+  },
+  en: {
+    header: {
+      eyebrow: "Logo Design",
+      title: "Make your brand",
+      gradientText: "recognizable at a glance",
+      description:
+        "We treat logo design as a working identity system: a clear mark supported by color, typography, usage rules, and digital touchpoints.",
+      primaryHref: "/en/contact",
+      primaryLabel: "Start a Logo Project",
+      secondaryHref: "/en/projects",
+      secondaryLabel: "View Examples",
+    },
+    sections: [
+      {
+        title: "Strategic mark",
+        description: "We build a clear logo system shaped by your market, audience, and brand tone.",
+        points: ["Primary logo", "Alternate lockups", "Symbol and wordmark"],
+      },
+      {
+        title: "Identity language",
+        description: "Color, typography, and visual rhythm are defined together so the logo does not stand alone.",
+        points: ["Color palette", "Typography", "Social media fit"],
+      },
+      {
+        title: "Delivery system",
+        description: "Assets are delivered cleanly for real usage scenarios, from web to print.",
+        points: ["SVG/PNG/PDF", "Dark/light versions", "Usage guide"],
+      },
+    ],
+  },
+}
+
 const testimonialsPageContent: Record<Locale, TestimonialsContent> = {
   tr: {
     header: {
@@ -363,6 +435,10 @@ export function getProjectsPageContent(locale: Locale) {
 
 export function getContactPageContent(locale: Locale) {
   return contactPageContent[locale]
+}
+
+export function getLogoPageContent(locale: Locale) {
+  return logoPageContent[locale]
 }
 
 export function getTestimonialsPageContent(locale: Locale) {

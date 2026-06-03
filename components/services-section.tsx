@@ -16,6 +16,9 @@ export function ServicesSection({ locale = "tr" }: { locale?: Locale }) {
   const services = getServices(locale)
   const sectionCopy = servicesSectionContent[locale]
   const containerRef = useRef<HTMLDivElement>(null)
+  const headingRef = useRef<HTMLDivElement>(null)
+  const isHeadingInView = useInView(headingRef, { once: true, margin: "-60px" })
+  const prefersReducedMotion = useReducedMotion()
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -30,20 +33,35 @@ export function ServicesSection({ locale = "tr" }: { locale?: Locale }) {
       <motion.div style={{ y: backgroundY }} className="absolute inset-0 grid-pattern opacity-20" />
 
       <motion.div style={{ y: contentY }} className="container relative z-10 mx-auto px-6">
-        <div className="mb-12 flex flex-col gap-8 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
+        <div ref={headingRef} className="mb-12 flex flex-col gap-8 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <motion.span initial={false} className="mb-6 block text-sm font-medium tracking-widest text-accent uppercase">
+            <motion.span
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+              animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-6 block text-sm font-medium tracking-widest text-accent uppercase"
+            >
               {sectionCopy.eyebrow}
             </motion.span>
 
-            <motion.h2 initial={false} className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
+            <motion.h2
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+              animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.65, delay: prefersReducedMotion ? 0 : 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl"
+            >
               {sectionCopy.title}
               <br />
               <span className="text-gradient">{sectionCopy.gradient}</span>
             </motion.h2>
           </div>
 
-          <motion.p initial={false} className="max-w-md text-lg leading-relaxed text-muted-foreground">
+          <motion.p
+            initial={prefersReducedMotion ? false : { opacity: 0 }}
+            animate={prefersReducedMotion || isHeadingInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.5, delay: prefersReducedMotion ? 0 : 0.2 }}
+            className="max-w-md text-lg leading-relaxed text-muted-foreground"
+          >
             {sectionCopy.description}
           </motion.p>
         </div>

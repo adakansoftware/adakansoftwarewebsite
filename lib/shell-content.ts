@@ -10,6 +10,7 @@ export const navbarContent = {
     links: [
       { name: "Hizmetler", href: "/services" },
       { name: "Projeler", href: "/projects" },
+      { name: "Logo", href: "/logo" },
       { name: "Yaklaşımımız", href: "/approach" },
       { name: "Yorumlar", href: "/testimonials" },
     ],
@@ -21,6 +22,7 @@ export const navbarContent = {
     links: [
       { name: "Services", href: "/services" },
       { name: "Projects", href: "/projects" },
+      { name: "Logo", href: "/logo" },
       { name: "Approach", href: "/approach" },
       { name: "Testimonials", href: "/testimonials" },
     ],

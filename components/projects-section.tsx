@@ -3,7 +3,7 @@
 import { useRef, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion, useInView, useReducedMotion, useScroll, useTransform } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
 
 import { projectsSectionContent } from "@/lib/home-content"
@@ -16,6 +16,9 @@ export function ProjectsSection({ locale = "tr" }: { locale?: Locale }) {
   const projects = getProjects(locale)
   const sectionCopy = projectsSectionContent[locale]
   const containerRef = useRef<HTMLDivElement>(null)
+  const headingRef = useRef<HTMLDivElement>(null)
+  const isHeadingInView = useInView(headingRef, { once: true, margin: "-60px" })
+  const prefersReducedMotion = useReducedMotion()
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   const { scrollYProgress } = useScroll({
@@ -33,20 +36,34 @@ export function ProjectsSection({ locale = "tr" }: { locale?: Locale }) {
       </motion.div>
 
       <motion.div style={{ y: contentY }} className="container relative z-10 mx-auto px-6">
-        <div className="mb-12 flex flex-col gap-8 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
+        <div ref={headingRef} className="mb-12 flex flex-col gap-8 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <motion.span initial={false} className="mb-6 block text-sm font-medium tracking-widest text-accent uppercase">
+            <motion.span
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+              animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="mb-6 block text-sm font-medium tracking-widest text-accent uppercase"
+            >
               {sectionCopy.eyebrow}
             </motion.span>
 
-            <motion.h2 initial={false} className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
+            <motion.h2
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+              animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.65, delay: prefersReducedMotion ? 0 : 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl"
+            >
               {sectionCopy.title}
               <br />
               <span className="text-gradient">{sectionCopy.gradient}</span>
             </motion.h2>
           </div>
 
-          <motion.div initial={false}>
+          <motion.div
+            initial={prefersReducedMotion ? false : { opacity: 0 }}
+            animate={prefersReducedMotion || isHeadingInView ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.5, delay: prefersReducedMotion ? 0 : 0.2 }}
+          >
             <Link href={withLocale("/projects", locale)} className="group inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground">
               <span className="text-sm">{sectionCopy.all}</span>
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />

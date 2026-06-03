@@ -54,13 +54,13 @@ export function MobileNavMenu({
               <Link
                 key={link.name}
                 href={localizedHref(link.href)}
-                className={`text-[clamp(2rem,9vw,3rem)] leading-[1.05] font-bold transition-colors ${
-                  isActive(link.href) ? "text-accent" : "text-foreground"
+                className={`relative text-[clamp(2rem,9vw,3rem)] leading-[1.05] font-bold transition-colors duration-200 ${
+                  isActive(link.href) ? "text-accent" : "text-foreground hover:text-accent/80"
                 }`}
                 onClick={closeNativeMobileMenu}
               >
                 {link.name}
-                {isActive(link.href) ? <span className="ml-3 inline-block h-2 w-2 rounded-full bg-accent" aria-hidden="true" /> : null}
+                {isActive(link.href) ? <span className="ml-3 inline-block h-2 w-2 translate-y-[-0.15em] rounded-full bg-accent" aria-hidden="true" /> : null}
               </Link>
             ))}
             <div className="flex gap-3">
