@@ -1,9 +1,8 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion, useInView, useReducedMotion, useScroll, useTransform } from "framer-motion"
 
-import { SectionReveal } from "@/components/section-reveal"
 import { philosophySectionContent } from "@/lib/home-content"
 import type { Locale } from "@/lib/i18n"
 
@@ -44,9 +43,7 @@ export function PhilosophySection({ locale = "tr" }: { locale?: Locale }) {
 
         <div className="space-y-10 md:space-y-16">
           {sectionCopy.items.map((item, index) => (
-            <SectionReveal key={item.number} delay={index * 0.15}>
-              <PhilosophyItem item={item} />
-            </SectionReveal>
+            <PhilosophyItem key={item.number} item={item} index={index} />
           ))}
         </div>
       </motion.div>
@@ -54,9 +51,19 @@ export function PhilosophySection({ locale = "tr" }: { locale?: Locale }) {
   )
 }
 
-function PhilosophyItem({ item }: { item: { number: string; title: string; description: string } }) {
+function PhilosophyItem({ item, index }: { item: { number: string; title: string; description: string }; index: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const isInView = useInView(ref, { once: true, margin: "-60px" })
+  const prefersReducedMotion = useReducedMotion()
+
   return (
-    <motion.div initial={false} animate={{ opacity: 1, y: 0 }} className="group grid gap-4 md:grid-cols-12 md:items-start md:gap-8">
+    <motion.div
+      ref={ref}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 28 }}
+      animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
+      transition={{ duration: prefersReducedMotion ? 0 : 0.7, delay: prefersReducedMotion ? 0 : index * 0.12, ease: [0.22, 1, 0.36, 1] }}
+      className="group grid gap-4 md:grid-cols-12 md:items-start md:gap-8"
+    >
       <div className="md:col-span-2">
         <span className="text-5xl font-bold text-border/15 transition-colors duration-500 group-hover:text-primary/15 md:text-7xl">{item.number}</span>
       </div>

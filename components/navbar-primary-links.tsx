@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { motion } from "framer-motion"
 
 import { MagneticButton } from "@/components/magnetic-button"
 import { withLocale, type Locale } from "@/lib/i18n"
@@ -25,7 +26,7 @@ export function NavbarPrimaryLinks({
   return (
     <>
       {links.map((link) => (
-        <div key={link.name}>
+        <div key={link.name} className="relative">
           <MagneticButton strength={0.1}>
             <Link
               href={localizedHref(link.href)}
@@ -40,6 +41,12 @@ export function NavbarPrimaryLinks({
                   isActive(link.href) ? "w-full" : "w-0 group-hover:w-full"
                 }`}
               />
+              {isActive(link.href) ? (
+                <motion.span
+                  layoutId="nav-indicator"
+                  className="absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-accent"
+                />
+              ) : null}
             </Link>
           </MagneticButton>
         </div>

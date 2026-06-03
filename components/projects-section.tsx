@@ -160,10 +160,19 @@ function ProjectCard({
 
           <div className="absolute inset-0 rounded-2xl border border-border/50 transition-colors duration-300 group-hover:border-accent/35" />
           <div className="accent-line absolute right-0 bottom-0 left-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <div
+            className="absolute right-0 bottom-0 left-0 h-[2px] origin-left transition-transform duration-500 ease-out"
+            style={{
+              background: `linear-gradient(90deg, transparent, ${project.color}, transparent)`,
+              transform: isHovered ? "scaleX(1)" : "scaleX(0)",
+            }}
+          />
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="font-mono text-sm text-muted-foreground">{project.year}</span>
+          <span className="font-mono text-sm text-muted-foreground transition-colors duration-300" style={isHovered ? { color: project.color } : undefined}>
+            {project.year}
+          </span>
           <div className="mx-4 h-px flex-1 bg-border/50" />
           <span className="text-sm text-muted-foreground">{project.category}</span>
         </div>

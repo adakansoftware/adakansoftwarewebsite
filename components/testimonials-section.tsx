@@ -90,13 +90,20 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
                   &ldquo;{testimonials[current].quote}&rdquo;
                 </blockquote>
                 <div className="flex flex-col items-center">
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary/30 to-accent/30">
-                    <span className="text-lg font-bold text-foreground">{testimonials[current].author.charAt(0)}</span>
+                  <div className="relative mb-4">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full border border-accent/30 bg-gradient-to-br from-primary/20 to-accent/20 ring-2 ring-accent/10 ring-offset-2 ring-offset-background">
+                      <span className="text-lg font-bold text-foreground">{testimonials[current].author.charAt(0)}</span>
+                    </div>
+                    <span className="absolute -right-0.5 -bottom-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[8px] font-bold text-white">✓</span>
                   </div>
                   <p className="text-lg font-semibold text-foreground">{testimonials[current].author}</p>
                   <p className="text-muted-foreground">
                     {testimonials[current].role}, {testimonials[current].company}
                   </p>
+                  <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border/40 bg-card/30 px-3 py-1 text-xs text-muted-foreground backdrop-blur-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                    {testimonials[current].company}
+                  </div>
                 </div>
               </motion.div>
             </AnimatePresence>

@@ -119,6 +119,11 @@
   body:has(.mobile-menu-native[open]) {
     overflow: hidden;
   }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display), system-ui, sans-serif;
+  }
   a:focus-visible,
   button:focus-visible,
   summary:focus-visible,
@@ -332,6 +337,42 @@
   .bg-gradient-conic {
     background: conic-gradient(from 180deg, var(--tw-gradient-stops));
   }
+
+  /* Gradient accent line */
+  .accent-glow-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #0066ff 50%, transparent);
+  }
+
+  /* Stagger reveal for lists */
+  .reveal-child > * {
+    animation: slide-up-fade 0.45s ease forwards;
+    opacity: 0;
+  }
+
+  .reveal-child > *:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+
+  .reveal-child > *:nth-child(2) {
+    animation-delay: 0.12s;
+  }
+
+  .reveal-child > *:nth-child(3) {
+    animation-delay: 0.19s;
+  }
+
+  .reveal-child > *:nth-child(4) {
+    animation-delay: 0.26s;
+  }
+
+  .reveal-child > *:nth-child(5) {
+    animation-delay: 0.33s;
+  }
+
+  .reveal-child > *:nth-child(6) {
+    animation-delay: 0.4s;
+  }
 }
 
 /* Performance-optimized CSS animations */
@@ -378,6 +419,17 @@
   }
 }
 
+@keyframes slide-up-fade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .animate-float-slow {
   animation: float-slow 8s ease-in-out infinite;
 }
@@ -418,7 +470,8 @@
   .animate-float-slow,
   .animate-float-slower,
   .animate-bounce-slow,
-  .animate-shimmer {
+  .animate-shimmer,
+  .animate-ping {
     animation: none !important;
   }
 
@@ -426,5 +479,10 @@
     opacity: 1;
     transform: none;
     animation: none;
+  }
+
+  .reveal-child > * {
+    animation: none;
+    opacity: 1;
   }
 }

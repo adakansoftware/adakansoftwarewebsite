@@ -2,7 +2,7 @@
 
 import { useRef } from "react"
 import Link from "next/link"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion, useInView, useReducedMotion, useScroll, useTransform } from "framer-motion"
 import { ArrowUpRight, Code2, Globe, Layout, Palette } from "lucide-react"
 
 import { servicesSectionContent } from "@/lib/home-content"
@@ -59,11 +59,17 @@ export function ServicesSection({ locale = "tr" }: { locale?: Locale }) {
 }
 
 function ServiceCard({ service, index }: { service: Service; index: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const isInView = useInView(ref, { once: true, margin: "-40px" })
+  const prefersReducedMotion = useReducedMotion()
   const Icon = serviceIcons[index] ?? Globe
 
   return (
     <motion.div
-      initial={false}
+      ref={ref}
+      initial={prefersReducedMotion ? false : { opacity: 0, x: -16 }}
+      animate={prefersReducedMotion || isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -16 }}
+      transition={{ duration: prefersReducedMotion ? 0 : 0.5, delay: prefersReducedMotion ? 0 : index * 0.08, ease: [0.22, 1, 0.36, 1] }}
       className="spotlight group"
       onMouseMove={(e) => {
         const rect = e.currentTarget.getBoundingClientRect()

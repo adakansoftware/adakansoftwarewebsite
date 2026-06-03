@@ -14,6 +14,11 @@ export function Footer({ locale }: { locale: Locale }) {
 
   return (
     <footer className="relative border-t border-border/30 py-16">
+      <div
+        aria-hidden="true"
+        className="absolute top-0 right-0 left-0 h-px"
+        style={{ background: "linear-gradient(90deg, transparent, oklch(0.76 0.13 174 / 0.4) 30%, #0066ff 50%, oklch(0.76 0.13 174 / 0.4) 70%, transparent)" }}
+      />
       <div className="container mx-auto px-6">
         <div className="mb-16 grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-5">
@@ -31,6 +36,17 @@ export function Footer({ locale }: { locale: Locale }) {
               />
             </Link>
             <p className="mb-8 max-w-sm leading-relaxed text-muted-foreground">{copy.description}</p>
+
+            <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <a
+                href={`mailto:${siteConfig.email}`}
+                className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/5 px-4 py-2 text-sm text-accent transition-colors hover:bg-accent/10"
+              >
+                <span className="h-1.5 w-1.5 animate-ping rounded-full bg-accent" />
+                {siteConfig.email}
+              </a>
+              <span className="text-xs text-muted-foreground">{locale === "tr" ? "· İstanbul, Türkiye" : "· Istanbul, Turkey"}</span>
+            </div>
 
             <FooterSocialLinks links={socialLinks} />
           </div>

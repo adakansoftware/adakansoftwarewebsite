@@ -2,7 +2,7 @@
 
 import { useRef } from "react"
 import Link from "next/link"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion"
 import { ArrowDownRight, ArrowRight } from "lucide-react"
 
 import { MagneticButton } from "@/components/magnetic-button"
@@ -13,6 +13,7 @@ import { withLocale, type Locale } from "@/lib/i18n"
 export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
   const copy = heroContent[locale]
   const containerRef = useRef<HTMLDivElement>(null)
+  const prefersReducedMotion = useReducedMotion()
   const headlineStyles = [
     "text-[clamp(2.75rem,9vw,7rem)] font-light text-foreground/60",
     "text-[clamp(4rem,12vw,9rem)] font-bold text-accent",
@@ -35,6 +36,11 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
         ref={containerRef}
         className="relative isolate flex min-h-[auto] max-w-full items-start justify-center overflow-hidden px-0 pb-14 pt-24 md:min-h-[100svh] md:items-center md:py-0"
       >
+        <div
+          aria-hidden="true"
+          className="absolute top-0 right-0 left-0 h-px"
+          style={{ background: "linear-gradient(90deg, transparent, #0066ff 40%, oklch(0.76 0.13 174) 60%, transparent)" }}
+        />
       <div className="absolute inset-0">
         <div
           className="absolute left-1/4 top-1/4 h-[500px] w-[500px] rounded-full opacity-50"
@@ -156,8 +162,16 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
           </div>
 
           <div className="grid grid-cols-3 gap-1.5 sm:w-32">
-            <span className="h-1.5 rounded-full bg-accent" />
-            <span className="h-1.5 rounded-full bg-accent" />
+            <motion.span
+              className="h-1.5 rounded-full bg-accent"
+              animate={prefersReducedMotion ? { opacity: 1 } : { opacity: [1, 0.5, 1] }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.span
+              className="h-1.5 rounded-full bg-accent"
+              animate={prefersReducedMotion ? { opacity: 1 } : { opacity: [1, 0.5, 1] }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
+            />
             <span className="h-1.5 rounded-full bg-foreground/35" />
           </div>
         </motion.div>
