@@ -9,10 +9,9 @@ import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { getWhatsAppHref } from "@/lib/contact-links"
-import { switchLocalePath, withLocale, type Locale } from "@/lib/i18n"
+import { getLocaleFromPathname, switchLocalePath, withLocale, type Locale } from "@/lib/i18n"
 
 export function NavbarDesktopActions({
-  locale,
   pathname,
   ctaLabel,
   whatsAppLabel,
@@ -24,12 +23,13 @@ export function NavbarDesktopActions({
   whatsAppLabel: string
   whatsAppShort: string
 }) {
-  const localizedHref = (href: string) => withLocale(href, locale)
+  const activeLocale = getLocaleFromPathname(pathname)
+  const localizedHref = (href: string) => withLocale(href, activeLocale)
   const [isLanguageOpen, setIsLanguageOpen] = useState(false)
 
   useEffect(() => {
     setIsLanguageOpen(false)
-  }, [locale, pathname])
+  }, [activeLocale, pathname])
 
   return (
     <>
@@ -37,7 +37,7 @@ export function NavbarDesktopActions({
         <Tooltip>
           <TooltipTrigger asChild>
             <a
-              href={getWhatsAppHref(locale)}
+              href={getWhatsAppHref(activeLocale)}
               aria-label={whatsAppLabel}
               target="_blank"
               rel="noreferrer"
@@ -55,23 +55,23 @@ export function NavbarDesktopActions({
           <button
             type="button"
             className="inline-flex h-10 items-center gap-2 rounded-full border border-border/50 bg-card/20 px-3 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/45 hover:text-foreground"
-            aria-label={locale === "tr" ? "Dil seçimi" : "Language selector"}
+            aria-label={activeLocale === "tr" ? "Dil seçimi" : "Language selector"}
           >
             <Languages className="h-4 w-4" />
-            {locale.toUpperCase()}
+            {activeLocale.toUpperCase()}
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" sideOffset={12} className="z-[1400] min-w-24 border-border/50 bg-popover/95 backdrop-blur-xl">
           <DropdownMenuItem asChild>
-            <Link href={switchLocalePath(pathname, "tr")} aria-current={locale === "tr" ? "true" : undefined} onClick={() => setIsLanguageOpen(false)}>
+            <Link href={switchLocalePath(pathname, "tr")} aria-current={activeLocale === "tr" ? "true" : undefined} onClick={() => setIsLanguageOpen(false)}>
               TR
-              {locale === "tr" ? <Check className="ml-auto h-4 w-4 text-accent" /> : null}
+              {activeLocale === "tr" ? <Check className="ml-auto h-4 w-4 text-accent" /> : null}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href={switchLocalePath(pathname, "en")} aria-current={locale === "en" ? "true" : undefined} onClick={() => setIsLanguageOpen(false)}>
+            <Link href={switchLocalePath(pathname, "en")} aria-current={activeLocale === "en" ? "true" : undefined} onClick={() => setIsLanguageOpen(false)}>
               EN
-              {locale === "en" ? <Check className="ml-auto h-4 w-4 text-accent" /> : null}
+              {activeLocale === "en" ? <Check className="ml-auto h-4 w-4 text-accent" /> : null}
             </Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
