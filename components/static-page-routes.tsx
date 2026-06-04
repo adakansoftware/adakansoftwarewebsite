@@ -14,7 +14,7 @@ export function BlogPageContent({ locale }: { locale: Locale }) {
     <>
       <PageHeader locale={locale} {...copy} />
       <section className="relative pb-32">
-        <div className="section-shell grid gap-6 md:grid-cols-3">
+        <div className="section-shell grid gap-6 md:grid-cols-3 stagger">
           {copy.posts.map((post) => (
             <Link
               key={post}

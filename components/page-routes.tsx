@@ -5,9 +5,11 @@ import { ArrowRight, ArrowUpRight, MessageCircle } from "lucide-react"
 import { AboutCards } from "@/components/about-cards"
 import { ContactForm } from "@/components/contact-form"
 import { CTASection } from "@/components/cta-section"
+import { LogoServiceCards } from "@/components/logo-service-cards"
 import { MagneticButton } from "@/components/magnetic-button"
 import { PageHeader } from "@/components/page-header"
 import { PhilosophySection } from "@/components/philosophy-section"
+import { ProjectListingCards } from "@/components/project-listing-cards"
 import { ServiceDetailCards } from "@/components/service-detail-cards"
 import { TestimonialsSection } from "@/components/testimonials-section"
 import { Button } from "@/components/ui/button"
@@ -93,74 +95,8 @@ export function ProjectsPageContent({ locale }: { locale: Locale }) {
     <>
       <PageHeader locale={locale} {...content.header} />
       <section className="relative pb-32">
-        <div className="section-shell grid gap-8 md:grid-cols-2">
-          {projects.map((project) => {
-            const isExternalProject = project.href.startsWith("http://") || project.href.startsWith("https://")
-
-            return (
-              <article
-                key={project.title}
-                id={project.href.includes("#") ? project.href.split("#")[1] : undefined}
-                className="group rounded-2xl border border-border/50 bg-card/25 p-6 backdrop-blur-md premium-border"
-              >
-                <div
-                  className="relative mb-6 aspect-[4/3] overflow-hidden rounded-xl"
-                  style={{ background: `linear-gradient(135deg, ${project.color}30, transparent 55%, ${project.color}18)` }}
-                >
-                  {project.coverImage ? (
-                    <>
-                      <Image
-                        src={project.coverImage}
-                        alt={`${project.title} kapak görseli`}
-                        fill
-                        sizes="(min-width: 768px) 50vw, 100vw"
-                        className="object-cover opacity-80 transition-transform duration-700 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/25 to-background/15" />
-                      <div className="absolute inset-0 grid-pattern opacity-10" />
-                    </>
-                  ) : (
-                    <>
-                      <div className="absolute inset-0 grid-pattern opacity-25" />
-                      <div className="absolute inset-x-6 top-8 rounded-xl border border-white/10 bg-background/35 p-5 backdrop-blur-md">
-                        <div className="mb-5 flex gap-2">
-                          <span className="h-2 w-2 rounded-full bg-red-400/80" />
-                          <span className="h-2 w-2 rounded-full bg-amber-300/80" />
-                          <span className="h-2 w-2 rounded-full bg-emerald-300/80" />
-                        </div>
-                        <div className="space-y-3">
-                          <span className="block h-3 w-1/2 rounded-full bg-white/25" />
-                          <span className="block h-10 rounded-lg" style={{ backgroundColor: `${project.color}35` }} />
-                          <span className="block h-3 w-2/3 rounded-full bg-white/15" />
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-                <div className="flex items-start justify-between gap-6">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      {project.category} / {project.year}
-                    </p>
-                    <h2 className="mt-3 text-3xl font-bold">{project.title}</h2>
-                    <p className="mt-4 text-muted-foreground">{project.description}</p>
-                    {isExternalProject ? (
-                      <Link
-                        href={project.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-accent transition-colors hover:text-foreground"
-                      >
-                        {locale === "tr" ? "Canlı siteyi aç" : "Open live site"}
-                        <ArrowUpRight className="h-4 w-4" />
-                      </Link>
-                    ) : null}
-                  </div>
-                  <ArrowUpRight className="mt-2 h-5 w-5 text-primary transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                </div>
-              </article>
-            )
-          })}
+        <div className="section-shell">
+          <ProjectListingCards projects={projects} locale={locale} />
         </div>
 
         <div className="section-shell mt-20">
@@ -294,22 +230,7 @@ export function LogoPageContent({ locale }: { locale: Locale }) {
       <PageHeader locale={locale} {...content.header} />
       <section className="relative pb-32">
         <div className="section-shell">
-          <div className="grid gap-6 md:grid-cols-3">
-            {content.sections.map((section, index) => (
-              <article key={section.title} className="premium-border rounded-2xl border border-border/50 bg-card/25 p-6 backdrop-blur-md">
-                <span className="font-mono text-sm text-accent">{String(index + 1).padStart(2, "0")}</span>
-                <h2 className="mt-5 text-2xl font-bold">{section.title}</h2>
-                <p className="mt-4 leading-relaxed text-muted-foreground">{section.description}</p>
-                <div className="mt-6 flex flex-wrap gap-2">
-                  {section.points.map((point) => (
-                    <span key={point} className="rounded-full border border-border/50 bg-background/35 px-3 py-1.5 text-xs text-muted-foreground">
-                      {point}
-                    </span>
-                  ))}
-                </div>
-              </article>
-            ))}
-          </div>
+          <LogoServiceCards sections={content.sections} />
 
           <div className="mt-12 overflow-hidden rounded-3xl border border-border/50 bg-background/40 p-8 premium-border md:p-10">
             <div className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-center">

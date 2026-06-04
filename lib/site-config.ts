@@ -8,7 +8,7 @@ export const siteConfig = {
     tr: "İstanbul, Türkiye",
     en: "Istanbul, Turkey",
   },
-  defaultOgImage: "/adakan-logo.png",
+  defaultOgImage: "/og",
 } as const satisfies {
   name: string
   url: string

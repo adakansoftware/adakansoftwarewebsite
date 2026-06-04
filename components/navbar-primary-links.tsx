@@ -21,7 +21,10 @@ export function NavbarPrimaryLinks({
   pathname: string
 }) {
   const localizedHref = (href: string) => withLocale(href, locale)
-  const isActive = (href: string) => pathname === localizedHref(href)
+  const isActive = (href: string) => {
+    const localized = localizedHref(href)
+    return pathname === localized || (href !== "/" && pathname.startsWith(`${localized}/`))
+  }
 
   return (
     <>
