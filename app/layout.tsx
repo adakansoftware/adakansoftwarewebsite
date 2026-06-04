@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { AnimatedBackground } from "@/components/animated-background"
 import { ClientShell } from "@/components/client-shell"
 import { Footer } from "@/components/footer"
+import { JsonLd } from "@/components/json-ld"
 import { Navbar } from "@/components/navbar"
 import { WhatsAppButton } from "@/components/whatsapp-button"
 import { getRequestLocale } from "@/lib/request-locale"
@@ -52,10 +53,10 @@ export const metadata: Metadata = {
     description: rootMetadataCopy.tr.openGraphDescription,
     images: [
       {
-        url: siteConfig.defaultOgImage,
-        width: 1600,
-        height: 1200,
-        alt: `${siteConfig.name} logo`,
+        url: `${siteConfig.url}/og`,
+        width: 1200,
+        height: 630,
+        alt: `${siteConfig.name} — Premium Web Tasarımı ve Marka Ajansı`,
       },
     ],
   },
@@ -106,6 +107,7 @@ export default async function RootLayout({
     <html lang={locale} className="bg-background">
       <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
         <ClientShell />
+        <JsonLd locale={locale} />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[4000] focus:rounded-full focus:bg-foreground focus:px-4 focus:py-2 focus:text-background"

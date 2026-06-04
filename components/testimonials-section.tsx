@@ -111,6 +111,9 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
               </motion.div>
             </AnimatePresence>
           </div>
+          <p className="mt-6 text-center text-[11px] text-muted-foreground/50">
+            {locale === "tr" ? "* Müşteri gizliliği nedeniyle bazı bilgiler anonimleştirilmiştir." : "* Some details anonymised at client request."}
+          </p>
 
           <div className="mt-12 flex items-center justify-center gap-4">
             <button

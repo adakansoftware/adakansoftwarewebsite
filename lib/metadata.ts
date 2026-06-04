@@ -6,8 +6,6 @@ import { routeMetadataContent, type RouteMetadataKey } from "@/lib/route-metadat
 
 const siteName = siteConfig.name
 const siteUrl = siteConfig.url
-const defaultImage = siteConfig.defaultOgImage
-
 const localeMap: Record<Locale, { og: string; alternates: string }> = {
   tr: { og: "tr_TR", alternates: "tr-TR" },
   en: { og: "en_US", alternates: "en-US" },
@@ -30,6 +28,7 @@ export function createPageMetadata({
 }: PageMetadataInput): Metadata {
   const canonicalPath = locale === "tr" ? path : `/en${path === "/" ? "" : path}`
   const canonicalUrl = `${siteUrl}${canonicalPath === "/" ? "" : canonicalPath}`
+  const ogImage = `${siteUrl}/og?page=${path.replace("/", "") || "default"}`
 
   return {
     title,
@@ -51,10 +50,10 @@ export function createPageMetadata({
       type: "website",
       images: [
         {
-          url: defaultImage,
-          width: 1600,
-          height: 1200,
-          alt: `${siteName} logo`,
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${title} | ${siteName}`,
         },
       ],
     },
@@ -62,7 +61,7 @@ export function createPageMetadata({
       card: "summary_large_image",
       title: `${title} | ${siteName}`,
       description,
-      images: [defaultImage],
+      images: [ogImage],
     },
   }
 }
