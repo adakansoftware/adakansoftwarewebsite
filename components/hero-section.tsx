@@ -12,6 +12,15 @@ import { withLocale, type Locale } from "@/lib/i18n"
 
 export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
   const copy = heroContent[locale]
+  const now = new Date()
+  const monthNames = {
+    tr: ["Ocak", "Subat", "Mart", "Nisan", "Mayis", "Haziran", "Temmuz", "Agustos", "Eylul", "Ekim", "Kasim", "Aralik"],
+    en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+  } as const
+  const dynamicBadge =
+    locale === "tr"
+      ? `${monthNames.tr[now.getMonth()]} ${now.getFullYear()} için yeni proje görüşmeleri açık`
+      : `Now booking new projects for ${monthNames.en[now.getMonth()]} ${now.getFullYear()}`
   const containerRef = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion()
   const headlineStyles = [
@@ -63,7 +72,7 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
             </span>
-            <span className="min-w-0 text-center text-xs tracking-wide text-muted-foreground sm:text-sm">{copy.badge}</span>
+            <span className="min-w-0 text-center text-xs tracking-wide text-muted-foreground sm:text-sm">{dynamicBadge}</span>
           </div>
         </motion.div>
 

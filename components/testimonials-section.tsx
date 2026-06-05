@@ -88,6 +88,19 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
                 transition={{ x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }}
                 className="absolute w-full text-center"
               >
+                <div className="mb-5 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border/40 bg-card/40 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur-sm">
+                    <span className="h-1.5 w-1.5 rounded-full bg-accent/70" />
+                    {testimonials[current].company}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-accent/80" aria-hidden="true">
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                </div>
                 <Quote className="mx-auto mb-6 h-10 w-10 text-primary/30" />
                 <blockquote className="mb-8 text-lg leading-relaxed font-medium text-foreground md:mb-10 md:text-2xl lg:text-3xl">
                   &ldquo;{testimonials[current].quote}&rdquo;

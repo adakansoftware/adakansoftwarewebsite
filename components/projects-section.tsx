@@ -76,6 +76,7 @@ export function ProjectsSection({ locale = "tr" }: { locale?: Locale }) {
             <ProjectCard
               key={project.title}
               project={project}
+              locale={locale}
               isHovered={hoveredIndex === index}
               onHover={() => setHoveredIndex(index)}
               onLeave={() => setHoveredIndex(null)}
@@ -92,11 +93,13 @@ function ProjectCard({
   isHovered,
   onHover,
   onLeave,
+  locale,
 }: {
   project: Project
   isHovered: boolean
   onHover: () => void
   onLeave: () => void
+  locale: Locale
 }) {
   const isExternalProject = project.href.startsWith("http://") || project.href.startsWith("https://")
   const cardRef = useRef<HTMLDivElement>(null)
@@ -215,6 +218,11 @@ function ProjectCard({
               >
                 {project.description}
               </p>
+              {!isExternalProject && (
+                <p className="mt-2 text-[11px] text-foreground/35 italic">
+                  {locale === "tr" ? "Konsept demo — gerçek proje değil" : "Concept demo — not a live client project"}
+                </p>
+              )}
             </div>
           </div>
 

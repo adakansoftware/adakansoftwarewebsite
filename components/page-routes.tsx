@@ -6,13 +6,11 @@ import { AboutCards } from "@/components/about-cards"
 import { ContactForm } from "@/components/contact-form"
 import { CTASection } from "@/components/cta-section"
 import { LogoServiceCards } from "@/components/logo-service-cards"
-import { MagneticButton } from "@/components/magnetic-button"
 import { PageHeader } from "@/components/page-header"
 import { PhilosophySection } from "@/components/philosophy-section"
 import { ProjectListingCards } from "@/components/project-listing-cards"
 import { ServiceDetailCards } from "@/components/service-detail-cards"
 import { TestimonialsSection } from "@/components/testimonials-section"
-import { Button } from "@/components/ui/button"
 import { getWhatsAppHref } from "@/lib/contact-links"
 import type { Locale } from "@/lib/i18n"
 import {
@@ -271,38 +269,42 @@ export function ContactPageContent({ locale }: { locale: Locale }) {
           <div className="premium-border rounded-2xl border border-border/50 bg-card/25 p-8 backdrop-blur-md lg:col-span-2">
             <h2 className="text-3xl font-bold">{content.noteTitle}</h2>
             <p className="mt-4 text-muted-foreground">{content.noteDescription}</p>
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
-              {content.tags.map((item) => (
-                <span key={item} className="rounded-xl border border-border/50 bg-background/35 px-4 py-3 text-sm">
-                  {item}
-                </span>
-              ))}
-            </div>
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <MagneticButton strength={0.22}>
-                <Button asChild size="lg" className="group rounded-full bg-accent px-8 py-7 text-accent-foreground hover:bg-accent/90 hover:shadow-xl hover:shadow-accent/20">
-                  <a href={content.emailHref}>
-                    {content.emailLabel}
-                    <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-                  </a>
-                </Button>
-              </MagneticButton>
-              <MagneticButton strength={0.18}>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="group rounded-full border-accent/35 bg-accent/5 px-8 py-7 text-accent hover:border-accent/60 hover:bg-accent hover:text-accent-foreground"
-                >
-                  <a href={getWhatsAppHref(locale)} target="_blank" rel="noreferrer">
-                    {content.messagingLabel}
-                    <MessageCircle className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
-                  </a>
-                </Button>
-              </MagneticButton>
-            </div>
-            <div className="mt-10 border-t border-border/30 pt-8">
+
+            <div className="mt-8">
               <ContactForm locale={locale} />
+            </div>
+
+            <div className="mt-8 border-t border-border/30 pt-6">
+              <p className="mb-4 text-sm text-muted-foreground">{locale === "tr" ? "Ya da doğrudan ulaş:" : "Or reach us directly:"}</p>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <a
+                  href={content.emailHref}
+                  className="inline-flex items-center gap-2 rounded-full border border-border/50 px-5 py-2.5 text-sm text-muted-foreground transition-colors hover:border-accent/50 hover:text-accent"
+                >
+                  <ArrowRight className="h-4 w-4" />
+                  {content.emailLabel}
+                </a>
+                <a
+                  href={getWhatsAppHref(locale)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-border/50 px-5 py-2.5 text-sm text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  {content.messagingLabel}
+                </a>
+              </div>
+            </div>
+
+            <div className="mt-8 border-t border-border/30 pt-6">
+              <p className="mb-3 text-xs font-medium uppercase tracking-widest text-muted-foreground/60">{locale === "tr" ? "Kapsam" : "Scope"}</p>
+              <div className="flex flex-wrap gap-2">
+                {content.tags.map((item) => (
+                  <span key={item} className="rounded-full border border-border/40 bg-background/35 px-3 py-1.5 text-xs text-muted-foreground">
+                    {item}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 

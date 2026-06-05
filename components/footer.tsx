@@ -83,6 +83,8 @@ export function Footer({ locale }: { locale: Locale }) {
         <div className="flex flex-col items-center justify-between gap-6 border-t border-border/30 pt-8 md:flex-row">
           <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} Adakan Software. {copy.rights}
+            <span className="mx-2 opacity-30">·</span>
+            <span className="font-mono text-xs opacity-50">UTC+3</span>
           </p>
 
           <div className="flex items-center gap-8">
