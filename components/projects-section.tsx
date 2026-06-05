@@ -179,12 +179,24 @@ function ProjectCard({
               <span className="rounded-full border border-foreground/10 bg-foreground/5 px-4 py-2 text-xs text-foreground/70 backdrop-blur-md transition-colors duration-300 group-hover:border-accent/45 group-hover:bg-accent group-hover:text-accent-foreground">
                 {project.category}
               </span>
-              <div
-                className={`flex h-10 w-10 items-center justify-center rounded-full bg-foreground/10 opacity-100 backdrop-blur-md transition-all duration-300 md:opacity-0 ${
-                  isHovered ? "md:scale-100 md:opacity-100" : "md:scale-75"
-                }`}
-              >
-                <ArrowUpRight className="h-4 w-4 text-foreground" />
+              <div className="flex items-center gap-2">
+                {isExternalProject ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-medium text-emerald-400 backdrop-blur-md">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+                    Canlı
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border/40 bg-background/60 px-2.5 py-1 text-[10px] font-medium text-muted-foreground backdrop-blur-md">
+                    Demo
+                  </span>
+                )}
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-full bg-foreground/10 opacity-100 backdrop-blur-md transition-all duration-300 md:opacity-0 ${
+                    isHovered ? "md:scale-100 md:opacity-100" : "md:scale-75"
+                  }`}
+                >
+                  <ArrowUpRight className="h-4 w-4 text-foreground" />
+                </div>
               </div>
             </div>
 

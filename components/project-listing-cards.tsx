@@ -40,6 +40,18 @@ function ProjectListingCard({ project, index, locale }: { project: Project; inde
         className="relative mb-6 aspect-[4/3] overflow-hidden rounded-xl transition-transform duration-500 group-hover:scale-[1.01]"
         style={{ background: `linear-gradient(135deg, ${project.color}30, transparent 55%, ${project.color}18)` }}
       >
+        <div className="absolute top-3 right-3 z-10">
+          {isExternal ? (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-medium text-emerald-400 backdrop-blur-md">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+              {locale === "tr" ? "Canlı" : "Live"}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-border/40 bg-background/60 px-2.5 py-1 text-[10px] font-medium text-muted-foreground backdrop-blur-md">
+              Demo
+            </span>
+          )}
+        </div>
         {project.coverImage ? (
           <>
             <Image
