@@ -71,9 +71,9 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
           {copy.lines.map((line, index) => (
             <div key={line} className="mb-2 overflow-visible last:mb-0 sm:mb-4">
               <motion.h1
-                initial={false}
-                animate={{ y: 0 }}
-                transition={{ duration: 1, delay: 0.2 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: prefersReducedMotion ? 0 : 0.2 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}
                 className={`mx-auto max-w-full break-words leading-[0.94] tracking-tighter ${
                   index === 1 ? "text-shimmer animate-shimmer" : ""
                 } ${headlineStyles[index]}`}

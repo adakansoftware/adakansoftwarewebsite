@@ -99,12 +99,17 @@ function ProjectCard({
   onLeave: () => void
 }) {
   const isExternalProject = project.href.startsWith("http://") || project.href.startsWith("https://")
+  const cardRef = useRef<HTMLDivElement>(null)
+  const isCardInView = useInView(cardRef, { once: true, margin: "-40px" })
+  const prefersReducedMotion = useReducedMotion()
 
   return (
     <motion.div
-      initial={false}
-      whileHover={{ scale: 1.015 }}
-      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+      ref={cardRef}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+      animate={prefersReducedMotion || isCardInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+      whileHover={{ scale: prefersReducedMotion ? 1 : 1.015 }}
+      transition={{ duration: prefersReducedMotion ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }}
       style={{ willChange: "transform" }}
       className="group"
       onMouseEnter={onHover}

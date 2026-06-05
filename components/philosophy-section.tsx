@@ -9,6 +9,9 @@ import type { Locale } from "@/lib/i18n"
 export function PhilosophySection({ locale = "tr" }: { locale?: Locale }) {
   const sectionCopy = philosophySectionContent[locale]
   const containerRef = useRef<HTMLDivElement>(null)
+  const headingRef = useRef<HTMLDivElement>(null)
+  const isHeadingInView = useInView(headingRef, { once: true, margin: "-60px" })
+  const prefersReducedMotion = useReducedMotion()
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -25,18 +28,33 @@ export function PhilosophySection({ locale = "tr" }: { locale?: Locale }) {
       </motion.div>
 
       <motion.div style={{ y: contentY }} className="container relative z-10 mx-auto px-6">
-        <div className="mb-14 max-w-4xl md:mb-24">
-          <motion.span initial={false} className="mb-6 block text-sm font-medium tracking-widest text-accent uppercase">
+        <div ref={headingRef} className="mb-14 max-w-4xl md:mb-24">
+          <motion.span
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+            animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-6 block text-sm font-medium tracking-widest text-accent uppercase"
+          >
             {sectionCopy.eyebrow}
           </motion.span>
 
-          <motion.h2 initial={false} className="mb-8 text-4xl leading-[1.1] font-bold tracking-tight md:text-6xl lg:text-7xl">
+          <motion.h2
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+            animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.65, delay: prefersReducedMotion ? 0 : 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-8 text-4xl leading-[1.1] font-bold tracking-tight md:text-6xl lg:text-7xl"
+          >
             {sectionCopy.title}
             <br />
             <span className="text-muted-foreground">{sectionCopy.mutedTitle}</span>
           </motion.h2>
 
-          <motion.p initial={false} className="max-w-2xl text-xl leading-relaxed text-muted-foreground">
+          <motion.p
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+            animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.5, delay: prefersReducedMotion ? 0 : 0.15, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-2xl text-xl leading-relaxed text-muted-foreground"
+          >
             {sectionCopy.description}
           </motion.p>
         </div>

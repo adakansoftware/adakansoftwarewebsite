@@ -36,17 +36,32 @@ export function CTASection({ locale = "tr" }: { locale?: Locale }) {
         >
           <div className="accent-line mx-auto mb-10 w-32" />
 
-          <motion.h2 initial={false} className="mb-8 text-4xl font-bold tracking-tight md:text-7xl lg:text-8xl">
+          <motion.h2
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+            animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-8 text-4xl font-bold tracking-tight md:text-7xl lg:text-8xl"
+          >
             {sectionCopy.title}
             <br />
             <span className="text-gradient">{sectionCopy.gradient}</span>
           </motion.h2>
 
-          <motion.p initial={false} className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground md:mb-12 md:text-xl">
+          <motion.p
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+            animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: prefersReducedMotion ? 0 : 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-muted-foreground md:mb-12 md:text-xl"
+          >
             {sectionCopy.description}
           </motion.p>
 
-          <motion.div initial={false} className="flex flex-col items-center justify-center gap-5 sm:flex-row sm:gap-6">
+          <motion.div
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+            animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.5, delay: prefersReducedMotion ? 0 : 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col items-center justify-center gap-5 sm:flex-row sm:gap-6"
+          >
             <MagneticButton strength={0.2}>
               <Button asChild size="lg" className="group rounded-full bg-accent px-10 py-8 text-lg font-medium text-accent-foreground transition-colors duration-300 hover:bg-accent/90 hover:shadow-xl hover:shadow-accent/20">
                 <Link href={withLocale("/contact", locale)}>
@@ -66,7 +81,12 @@ export function CTASection({ locale = "tr" }: { locale?: Locale }) {
             </MagneticButton>
           </motion.div>
 
-          <motion.div initial={false} className="mt-14 grid grid-cols-2 gap-6 border-t border-border/30 pt-10 md:mt-20 md:grid-cols-4 md:gap-8 md:pt-12">
+          <motion.div
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+            animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: prefersReducedMotion ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-14 grid grid-cols-2 gap-6 border-t border-border/30 pt-10 md:mt-20 md:grid-cols-4 md:gap-8 md:pt-12"
+          >
             {sectionCopy.stats.map((stat, index) => (
               <motion.div
                 key={stat.label}

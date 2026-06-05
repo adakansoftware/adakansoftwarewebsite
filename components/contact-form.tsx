@@ -12,11 +12,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import type { Locale } from "@/lib/i18n"
-import { siteConfig } from "@/lib/site-config"
 
 const formSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
+  phone: z.string().optional(),
   project: z.string().min(10),
 })
 
@@ -26,12 +26,15 @@ const copy = {
   tr: {
     name: "Ad Soyad",
     email: "E-posta",
+    phone: "Telefon",
     project: "Projen hakkında kısaca yaz",
     submit: "Gönder",
     sending: "Gönderiliyor...",
     success: "Mesajın ulaştı, en kısa sürede dönüş yapacağız.",
+    error: "Mesaj gönderilemedi. Lütfen tekrar dene veya e-posta ile ulaş.",
     namePlaceholder: "Adın Soyadın",
     emailPlaceholder: "email@ornek.com",
+    phonePlaceholder: "05xx xxx xx xx",
     projectPlaceholder: "Hangi hizmet, ne zaman, ne bekliyorsun...",
     errors: {
       name: "En az 2 karakter",
@@ -42,12 +45,15 @@ const copy = {
   en: {
     name: "Full Name",
     email: "Email",
+    phone: "Phone",
     project: "Tell us about your project",
     submit: "Send",
     sending: "Sending...",
     success: "Message received. We will get back to you shortly.",
+    error: "Message could not be sent. Please try again or contact us by email.",
     namePlaceholder: "Your Name",
     emailPlaceholder: "email@example.com",
+    phonePlaceholder: "+90 5xx xxx xx xx",
     projectPlaceholder: "Which service, timeline, what you need...",
     errors: {
       name: "At least 2 characters",
@@ -60,12 +66,15 @@ const copy = {
   {
     name: string
     email: string
+    phone: string
     project: string
     submit: string
     sending: string
     success: string
+    error: string
     namePlaceholder: string
     emailPlaceholder: string
+    phonePlaceholder: string
     projectPlaceholder: string
     errors: { name: string; email: string; project: string }
   }
@@ -75,6 +84,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
   const t = copy[locale]
   const [submitted, setSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState(false)
   const prefersReducedMotion = useReducedMotion()
 
   const {
@@ -85,12 +95,25 @@ export function ContactForm({ locale }: { locale: Locale }) {
 
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true)
-    const subject = encodeURIComponent(locale === "tr" ? "Yeni proje görüşmesi" : "New project inquiry")
-    const body = encodeURIComponent(`${t.name}: ${data.name}\n${t.email}: ${data.email}\n\n${data.project}`)
-    window.location.href = `mailto:${siteConfig.email}?subject=${subject}&body=${body}`
-    await new Promise((resolve) => window.setTimeout(resolve, 600))
-    setIsSubmitting(false)
-    setSubmitted(true)
+    setSubmitError(false)
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...data, locale }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Contact request failed")
+      }
+
+      setSubmitted(true)
+    } catch {
+      setSubmitError(true)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -138,6 +161,16 @@ export function ContactForm({ locale }: { locale: Locale }) {
               />
               {errors.email ? <p className="text-xs text-destructive">{t.errors.email}</p> : null}
             </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="contact-phone">{t.phone}</Label>
+              <Input
+                id="contact-phone"
+                type="tel"
+                placeholder={t.phonePlaceholder}
+                {...register("phone")}
+                className="rounded-xl border-border/50 bg-card/20 backdrop-blur-sm focus:border-accent/60"
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="contact-project">{t.project}</Label>
@@ -150,6 +183,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
             />
             {errors.project ? <p className="text-xs text-destructive">{t.errors.project}</p> : null}
           </div>
+          {submitError ? <p className="text-sm text-destructive">{t.error}</p> : null}
           <Button
             type="submit"
             disabled={isSubmitting}
