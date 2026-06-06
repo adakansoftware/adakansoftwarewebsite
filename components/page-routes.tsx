@@ -76,6 +76,96 @@ export function ServicesPageContent({ locale }: { locale: Locale }) {
               ))}
             </div>
           </div>
+
+          <div className="mt-6 rounded-2xl border border-border/50 bg-card/25 p-8 backdrop-blur-md">
+            <p className="text-sm font-medium uppercase tracking-widest text-accent">
+              {locale === "tr" ? "Nasıl Çalışırız" : "How We Work"}
+            </p>
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {(locale === "tr"
+                ? [
+                    {
+                      step: "01",
+                      title: "Keşif",
+                      body: "Projenin hedefini, kullanıcıları ve kısıtları anlamak için kısa bir görüşme yapıyoruz.",
+                    },
+                    {
+                      step: "02",
+                      title: "Kapsam",
+                      body: "48 saat içinde yazılı bir kapsam, takvim ve teklif sunuyoruz.",
+                    },
+                    {
+                      step: "03",
+                      title: "Tasarım & Geliştirme",
+                      body: "Haftalar içinde teslim edeceğimiz çalışmaları paylaşıyor, geri bildirim alıyoruz.",
+                    },
+                    {
+                      step: "04",
+                      title: "Yayın",
+                      body: "Teknik kurulum, domain yönlendirme ve yayın sonrası destek dahil teslim yapıyoruz.",
+                    },
+                  ]
+                : [
+                    {
+                      step: "01",
+                      title: "Discovery",
+                      body: "A short call to understand your goals, users, and constraints.",
+                    },
+                    {
+                      step: "02",
+                      title: "Scope",
+                      body: "A written scope, timeline, and proposal delivered within 48 hours.",
+                    },
+                    {
+                      step: "03",
+                      title: "Design & Build",
+                      body: "We share deliverables week by week and collect feedback.",
+                    },
+                    {
+                      step: "04",
+                      title: "Launch",
+                      body: "Delivery includes technical setup, domain routing, and post-launch support.",
+                    },
+                  ]
+              ).map((item) => (
+                <div key={item.step} className="space-y-2">
+                  <span className="font-mono text-xs text-accent">{item.step}</span>
+                  <h3 className="font-bold">{item.title}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{item.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-2xl border border-border/50 bg-card/25 p-8 backdrop-blur-md">
+            <p className="text-sm font-medium uppercase tracking-widest text-accent">
+              {locale === "tr" ? "Yatırım" : "Investment"}
+            </p>
+            <p className="mt-3 max-w-2xl text-muted-foreground">
+              {locale === "tr"
+                ? "Proje kapsamı ve karmaşıklığına göre değişir. Aşağıdaki aralıklar başlangıç noktası olarak kullanılabilir; kesin teklif kapsam görüşmesinin ardından sunulur."
+                : "Varies by scope and complexity. The ranges below are a starting point; exact pricing follows a scope call."}
+            </p>
+            <div className="mt-6 grid gap-4 sm:grid-cols-3">
+              {(locale === "tr"
+                ? [
+                    { service: "Logo & Marka Kimliği", range: "₺15.000 - ₺35.000" },
+                    { service: "Kurumsal Web Sitesi", range: "₺25.000 - ₺75.000" },
+                    { service: "UI/UX & Frontend", range: "₺40.000 - ₺120.000" },
+                  ]
+                : [
+                    { service: "Logo & Brand Identity", range: "€800 - €2.000" },
+                    { service: "Corporate Website", range: "€1.500 - €5.000" },
+                    { service: "UI/UX & Frontend", range: "€3.000 - €10.000" },
+                  ]
+              ).map((item) => (
+                <div key={item.service} className="rounded-xl border border-border/40 bg-background/35 p-5">
+                  <p className="text-sm text-muted-foreground">{item.service}</p>
+                  <p className="mt-2 text-xl font-bold">{item.range}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
       <CTASection locale={locale} />
