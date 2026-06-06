@@ -6,9 +6,14 @@ const checks = [
   { path: "/", status: 200, htmlLang: "tr", includes: ["Hizmetler", "data-mobile-menu"] },
   { path: "/about", status: 200, htmlLang: "tr", includes: ["Hakkımızda"] },
   { path: "/contact", status: 200, htmlLang: "tr", includes: ["WhatsApp", "data-mobile-menu"] },
+  { path: "/privacy", status: 200, htmlLang: "tr", includes: ["Gizlilik"] },
+  { path: "/terms", status: 200, htmlLang: "tr", includes: ["Kullanım"] },
   { path: "/en/about", status: 200, htmlLang: "en", includes: ["About", "/en/services"] },
   { path: "/en/contact", status: 200, htmlLang: "en", includes: ["WhatsApp", "Start a Project"] },
+  { path: "/en/privacy", status: 200, htmlLang: "en", includes: ["Privacy"] },
+  { path: "/en/terms", status: 200, htmlLang: "en", includes: ["Terms"] },
   { path: "/tr/about", status: 307, location: "/about" },
+  { path: "/tr/privacy", status: 307, location: "/privacy" },
 ]
 
 async function request(path) {

@@ -1,9 +1,9 @@
 import { LegalPageContent } from "@/components/static-page-routes"
 import { createRouteMetadata } from "@/lib/metadata"
-import { getLocaleStaticParams, getRouteLocale } from "@/lib/route-locale"
+import { getPrefixedLocaleStaticParams, getPrefixedRouteLocale } from "@/lib/route-locale"
 
 export function generateStaticParams() {
-  return getLocaleStaticParams()
+  return getPrefixedLocaleStaticParams()
 }
 
 export async function generateMetadata({
@@ -11,7 +11,7 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const locale = await getRouteLocale(params)
+  const locale = await getPrefixedRouteLocale(params)
   return createRouteMetadata("privacy", locale, "/privacy")
 }
 
@@ -20,6 +20,6 @@ export default async function PrivacyRoute({
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const locale = await getRouteLocale(params)
+  const locale = await getPrefixedRouteLocale(params)
   return <LegalPageContent locale={locale} type="privacy" />
 }

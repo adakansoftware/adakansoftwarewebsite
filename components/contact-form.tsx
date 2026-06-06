@@ -14,10 +14,11 @@ import { Textarea } from "@/components/ui/textarea"
 import type { Locale } from "@/lib/i18n"
 
 const formSchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  phone: z.string().optional(),
-  project: z.string().min(10),
+  name: z.string().trim().min(2).max(80),
+  email: z.string().trim().email().max(120),
+  phone: z.string().trim().max(40).optional(),
+  project: z.string().trim().min(10).max(4000),
+  website: z.string().optional(),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -91,7 +92,12 @@ export function ContactForm({ locale }: { locale: Locale }) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormValues>({ resolver: zodResolver(formSchema) })
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      website: "",
+    },
+  })
 
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true)
@@ -139,6 +145,13 @@ export function ContactForm({ locale }: { locale: Locale }) {
           className="space-y-5"
           noValidate
         >
+          <input
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="hidden"
+            {...register("website")}
+          />
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="contact-name">{t.name}</Label>
