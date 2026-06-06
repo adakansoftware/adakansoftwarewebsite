@@ -45,6 +45,7 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
     center: { x: 0, opacity: 1 },
     exit: (entryDirection: number) => ({ x: entryDirection < 0 ? 60 : -60, opacity: 0 }),
   }
+  const activeCompanyLabel = testimonials[current].company || testimonials[current].role
 
   return (
     <section id="testimonials" className="relative overflow-hidden py-20 md:py-32">
@@ -91,7 +92,7 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
                 <div className="mb-5 flex items-center justify-between">
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-border/40 bg-card/40 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur-sm">
                     <span className="h-1.5 w-1.5 rounded-full bg-accent/70" />
-                    {testimonials[current].company}
+                    {activeCompanyLabel}
                   </span>
                   <div className="flex items-center gap-1">
                     {[...Array(5)].map((_, i) => (
@@ -114,11 +115,11 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
                   </div>
                   <p className="text-lg font-semibold text-foreground">{testimonials[current].author}</p>
                   <p className="text-muted-foreground">
-                    {testimonials[current].role}, {testimonials[current].company}
+                    {testimonials[current].role}, {activeCompanyLabel}
                   </p>
                   <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border/40 bg-card/30 px-3 py-1 text-xs text-muted-foreground backdrop-blur-sm">
                     <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-                    {testimonials[current].company}
+                    {activeCompanyLabel}
                   </div>
                 </div>
               </motion.div>
