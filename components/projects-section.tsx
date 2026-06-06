@@ -225,7 +225,7 @@ function ProjectCard({
               </p>
               {!isExternalProject && (
                 <p className="mt-2 text-[11px] text-foreground/35 italic">
-                  {locale === "tr" ? "Konsept demo - gercek proje degil" : "Concept demo - not a live client project"}
+                  {locale === "tr" ? "Konsept demo — gerçek müşteri projesi değil" : "Concept demo — not a live client project"}
                 </p>
               )}
             </div>

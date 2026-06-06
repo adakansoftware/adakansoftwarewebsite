@@ -14,7 +14,7 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
   const copy = heroContent[locale]
   const now = new Date()
   const monthNames = {
-    tr: ["Ocak", "Subat", "Mart", "Nisan", "Mayis", "Haziran", "Temmuz", "Agustos", "Eylul", "Ekim", "Kasim", "Aralik"],
+    tr: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
     en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
   } as const
   const dynamicBadge =
