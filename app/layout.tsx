@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     description: rootMetadataCopy.tr.openGraphDescription,
     images: [
       {
-        url: `${siteConfig.url}/og`,
+        url: "/og",
         width: 1200,
         height: 630,
         alt: `${siteConfig.name} — Premium Web Tasarımı ve Marka Ajansı`,
@@ -69,23 +69,6 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-  },
-  icons: {
-    icon: [
-      {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
-      },
-    ],
-    apple: "/apple-icon.png",
   },
 }
 
