@@ -1,6 +1,6 @@
 import type { Locale } from "@/lib/i18n"
 
-export const whatsAppPhoneNumber = "905399416521"
+export const whatsAppPhoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "905399416521"
 
 export const whatsAppCopy = {
   tr: {
