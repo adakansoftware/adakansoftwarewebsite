@@ -22,25 +22,27 @@ export function CTASection({ locale = "tr" }: { locale?: Locale }) {
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-conic from-primary/10 via-accent/5 to-primary/10 opacity-50" />
         <div className="absolute top-0 right-0 h-[500px] w-[500px] rounded-full" style={{ background: "radial-gradient(circle, oklch(0.7 0.15 195 / 0.08) 0%, transparent 70%)" }} />
-        <div className="absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full" style={{ background: "radial-gradient(circle, oklch(0.65 0.2 300 / 0.06) 0%, transparent 70%)" }} />
+        <div className="absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full" style={{ background: "radial-gradient(circle, oklch(0.58 0.18 255 / 0.07) 0%, transparent 70%)" }} />
       </div>
 
       <div className="absolute inset-0 grid-pattern opacity-15" />
 
-      <div ref={sectionRef} className="container relative z-10 mx-auto px-6">
+      <div ref={sectionRef} className="section-shell">
         <motion.div
           initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
           animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
           transition={{ duration: prefersReducedMotion ? 0 : 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto max-w-5xl text-center"
+          className="section-frame mx-auto max-w-5xl px-5 py-8 text-center sm:px-8 lg:px-12 lg:py-12"
         >
-          <div className="accent-line mx-auto mb-10 w-32" />
+          <div className="section-kicker mx-auto mb-8 max-w-max">
+            {locale === "tr" ? "Bir sonraki adim" : "Next step"}
+          </div>
 
           <motion.h2
             initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
             animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
             transition={{ duration: prefersReducedMotion ? 0 : 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-8 text-4xl font-bold tracking-tight md:text-7xl lg:text-8xl"
+            className="mb-8 text-4xl font-bold tracking-tight md:text-7xl lg:text-[5.5rem]"
           >
             {sectionCopy.title}
             <br />
@@ -74,18 +76,29 @@ export function CTASection({ locale = "tr" }: { locale?: Locale }) {
             <MagneticButton strength={0.2}>
               <a
                 href={`mailto:${siteConfig.email}?subject=${locale === "tr" ? "Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi" : "New%20project%20inquiry"}`}
-                className="text-lg font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-lg font-medium text-muted-foreground transition-colors hover:bg-white/8 hover:text-foreground"
               >
                 {siteConfig.email}
               </a>
             </MagneticButton>
           </motion.div>
 
+          <motion.p
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+            animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.45, delay: prefersReducedMotion ? 0 : 0.24 }}
+            className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground"
+          >
+            {locale === "tr"
+              ? "Kapsamı birlikte netleştirir, teslim planını çıkarır ve markanı güçlü bir dijital sisteme dönüştürürüz."
+              : "We clarify the scope together, shape the delivery plan, and turn your brand into a stronger digital system."}
+          </motion.p>
+
           <motion.div
             initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
             animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
             transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: prefersReducedMotion ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-14 grid grid-cols-2 gap-6 border-t border-border/30 pt-10 md:mt-20 md:grid-cols-4 md:gap-8 md:pt-12"
+            className="mt-14 grid grid-cols-2 gap-4 border-t border-white/10 pt-10 md:mt-20 md:grid-cols-4 md:gap-5 md:pt-12"
           >
             {sectionCopy.stats.map((stat, index) => (
               <motion.div
@@ -93,7 +106,7 @@ export function CTASection({ locale = "tr" }: { locale?: Locale }) {
                 initial={prefersReducedMotion ? false : { opacity: 0, y: 18 }}
                 animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
                 transition={{ duration: prefersReducedMotion ? 0 : 0.45, delay: prefersReducedMotion ? 0 : 0.2 + index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="text-center"
+                className="rounded-[1.4rem] border border-white/10 bg-background/35 px-4 py-5 text-center"
               >
                 <div className="mb-2 text-4xl font-bold text-foreground md:text-5xl">{stat.value}</div>
                 <div className="text-sm text-muted-foreground">{stat.label}</div>

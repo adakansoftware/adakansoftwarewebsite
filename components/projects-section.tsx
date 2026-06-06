@@ -35,53 +35,58 @@ export function ProjectsSection({ locale = "tr" }: { locale?: Locale }) {
         <div className="absolute inset-0 bg-gradient-to-l from-primary/10 to-transparent" />
       </motion.div>
 
-      <motion.div style={{ y: contentY }} className="container relative z-10 mx-auto px-6">
-        <div ref={headingRef} className="mb-12 flex flex-col gap-8 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            <motion.span
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
-              animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="mb-6 block text-sm font-medium tracking-widest text-accent uppercase"
-            >
-              {sectionCopy.eyebrow}
-            </motion.span>
+      <motion.div style={{ y: contentY }} className="section-shell">
+        <div className="section-frame px-5 py-8 sm:px-7 lg:px-10 lg:py-10">
+          <div ref={headingRef} className="mb-12 flex flex-col gap-8 lg:mb-16 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <motion.span
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+                animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+                transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="section-kicker mb-6"
+              >
+                {sectionCopy.eyebrow}
+              </motion.span>
 
-            <motion.h2
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
-              animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.65, delay: prefersReducedMotion ? 0 : 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl"
+              <motion.h2
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+                animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+                transition={{ duration: prefersReducedMotion ? 0 : 0.65, delay: prefersReducedMotion ? 0 : 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl"
+              >
+                {sectionCopy.title}
+                <br />
+                <span className="text-gradient">{sectionCopy.gradient}</span>
+              </motion.h2>
+            </div>
+
+            <motion.div
+              initial={prefersReducedMotion ? false : { opacity: 0 }}
+              animate={prefersReducedMotion || isHeadingInView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.5, delay: prefersReducedMotion ? 0 : 0.2 }}
             >
-              {sectionCopy.title}
-              <br />
-              <span className="text-gradient">{sectionCopy.gradient}</span>
-            </motion.h2>
+              <Link
+                href={withLocale("/projects", locale)}
+                className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-white/8 hover:text-foreground"
+              >
+                <span>{sectionCopy.all}</span>
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+              </Link>
+            </motion.div>
           </div>
 
-          <motion.div
-            initial={prefersReducedMotion ? false : { opacity: 0 }}
-            animate={prefersReducedMotion || isHeadingInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: prefersReducedMotion ? 0 : 0.5, delay: prefersReducedMotion ? 0 : 0.2 }}
-          >
-            <Link href={withLocale("/projects", locale)} className="group inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground">
-              <span className="text-sm">{sectionCopy.all}</span>
-              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-            </Link>
-          </motion.div>
-        </div>
-
-        <div className="grid gap-8 md:grid-cols-2">
-          {projects.map((project, index) => (
-            <ProjectCard
-              key={project.title}
-              project={project}
-              locale={locale}
-              isHovered={hoveredIndex === index}
-              onHover={() => setHoveredIndex(index)}
-              onLeave={() => setHoveredIndex(null)}
-            />
-          ))}
+          <div className="grid gap-8 md:grid-cols-2">
+            {projects.map((project, index) => (
+              <ProjectCard
+                key={project.title}
+                project={project}
+                locale={locale}
+                isHovered={hoveredIndex === index}
+                onHover={() => setHoveredIndex(index)}
+                onLeave={() => setHoveredIndex(null)}
+              />
+            ))}
+          </div>
         </div>
       </motion.div>
     </section>
@@ -119,7 +124,7 @@ function ProjectCard({
       onMouseLeave={onLeave}
     >
       <Link href={project.href} className="block" target={isExternalProject ? "_blank" : undefined} rel={isExternalProject ? "noreferrer" : undefined}>
-        <div className="premium-border relative mb-6 aspect-[4/3] overflow-hidden rounded-2xl">
+        <div className="premium-border panel-sheen relative mb-6 aspect-[4/3] overflow-hidden rounded-[1.75rem]">
           <div
             className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
             style={{
@@ -137,7 +142,7 @@ function ProjectCard({
                 className="object-cover opacity-80 transition-transform duration-700 group-hover:scale-105"
                 priority={false}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/35 to-background/20" />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/92 via-background/35 to-background/14" />
             </>
           ) : null}
 
@@ -186,7 +191,7 @@ function ProjectCard({
                 {isExternalProject ? (
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-medium text-emerald-400 backdrop-blur-md">
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-                    Canlı
+                    Canli
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-border/40 bg-background/60 px-2.5 py-1 text-[10px] font-medium text-muted-foreground backdrop-blur-md">
@@ -220,13 +225,13 @@ function ProjectCard({
               </p>
               {!isExternalProject && (
                 <p className="mt-2 text-[11px] text-foreground/35 italic">
-                  {locale === "tr" ? "Konsept demo — gerçek proje değil" : "Concept demo — not a live client project"}
+                  {locale === "tr" ? "Konsept demo - gercek proje degil" : "Concept demo - not a live client project"}
                 </p>
               )}
             </div>
           </div>
 
-          <div className="absolute inset-0 rounded-2xl border border-border/50 transition-colors duration-300 group-hover:border-accent/35" />
+          <div className="absolute inset-0 rounded-[1.75rem] border border-white/10 transition-colors duration-300 group-hover:border-accent/35" />
           <div className="accent-line absolute right-0 bottom-0 left-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           <div
             className="absolute right-0 bottom-0 left-0 h-[2px] origin-left transition-transform duration-500 ease-out"
@@ -237,7 +242,7 @@ function ProjectCard({
           />
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between px-1">
           <span className="font-mono text-sm text-muted-foreground transition-colors duration-300" style={isHovered ? { color: project.color } : undefined}>
             {project.year}
           </span>

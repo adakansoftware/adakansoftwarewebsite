@@ -32,44 +32,46 @@ export function ServicesSection({ locale = "tr" }: { locale?: Locale }) {
     <section ref={containerRef} id="services" className="relative py-20 md:py-32">
       <motion.div style={{ y: backgroundY }} className="absolute inset-0 grid-pattern opacity-20" />
 
-      <motion.div style={{ y: contentY }} className="container relative z-10 mx-auto px-6">
-        <div ref={headingRef} className="mb-12 flex flex-col gap-8 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            <motion.span
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
-              animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="mb-6 block text-sm font-medium tracking-widest text-accent uppercase"
-            >
-              {sectionCopy.eyebrow}
-            </motion.span>
+      <motion.div style={{ y: contentY }} className="section-shell">
+        <div className="section-frame px-5 py-8 sm:px-7 lg:px-10 lg:py-10">
+          <div ref={headingRef} className="mb-12 flex flex-col gap-8 lg:mb-16 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <motion.span
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
+                animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+                transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="section-kicker mb-6"
+              >
+                {sectionCopy.eyebrow}
+              </motion.span>
 
-            <motion.h2
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
-              animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.65, delay: prefersReducedMotion ? 0 : 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl"
+              <motion.h2
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+                animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+                transition={{ duration: prefersReducedMotion ? 0 : 0.65, delay: prefersReducedMotion ? 0 : 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl"
+              >
+                {sectionCopy.title}
+                <br />
+                <span className="text-gradient">{sectionCopy.gradient}</span>
+              </motion.h2>
+            </div>
+
+            <motion.p
+              initial={prefersReducedMotion ? false : { opacity: 0 }}
+              animate={prefersReducedMotion || isHeadingInView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.5, delay: prefersReducedMotion ? 0 : 0.2 }}
+              className="max-w-md text-base leading-relaxed text-muted-foreground md:text-lg"
             >
-              {sectionCopy.title}
-              <br />
-              <span className="text-gradient">{sectionCopy.gradient}</span>
-            </motion.h2>
+              {sectionCopy.description}
+            </motion.p>
           </div>
 
-          <motion.p
-            initial={prefersReducedMotion ? false : { opacity: 0 }}
-            animate={prefersReducedMotion || isHeadingInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: prefersReducedMotion ? 0 : 0.5, delay: prefersReducedMotion ? 0 : 0.2 }}
-            className="max-w-md text-lg leading-relaxed text-muted-foreground"
-          >
-            {sectionCopy.description}
-          </motion.p>
-        </div>
-
-        <div className="space-y-2">
-          {services.map((service, index) => (
-            <ServiceCard key={service.title} service={service} index={index} />
-          ))}
+          <div className="space-y-4">
+            {services.map((service, index) => (
+              <ServiceCard key={service.title} service={service} index={index} />
+            ))}
+          </div>
         </div>
       </motion.div>
     </section>
@@ -95,14 +97,17 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
         e.currentTarget.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`)
       }}
     >
-      <Link href={service.href} className="relative block border-t border-border/50 py-6 transition-[border-color] duration-200 ease-out hover:border-accent md:py-8">
-        <div className="absolute inset-0 bg-gradient-to-r from-accent/8 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-        <ArrowUpRight className="absolute right-0 bottom-6 h-5 w-5 translate-x-[-4px] text-accent opacity-0 transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100 md:bottom-8" />
+      <Link
+        href={service.href}
+        className="panel-sheen relative block overflow-hidden rounded-[1.6rem] border border-white/10 bg-background/35 px-5 py-6 transition-[border-color,transform,background-color] duration-300 ease-out hover:border-accent/35 hover:bg-background/55 md:px-6 md:py-7"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-accent/8 via-accent/4 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <ArrowUpRight className="absolute right-5 top-5 h-5 w-5 translate-x-[-4px] text-accent opacity-0 transition-all duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100" />
 
         <div className="relative grid gap-5 md:grid-cols-12 md:items-center md:gap-6">
           <div className="flex items-center gap-3 md:col-span-1 md:block">
             <span className="font-mono text-sm text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
-            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-border/50 bg-card/30 text-accent transition-colors duration-200 group-hover:border-accent/45 group-hover:bg-accent/10 md:mt-4">
+            <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-card/40 text-accent transition-colors duration-200 group-hover:border-accent/45 group-hover:bg-accent/10 md:mt-4">
               <Icon className="h-4 w-4" />
             </span>
           </div>
@@ -120,14 +125,14 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
               {service.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full border border-border/50 px-3 py-1 text-xs text-muted-foreground transition-colors duration-300 group-hover:border-accent/30 group-hover:text-foreground"
+                  className="rounded-full border border-white/10 bg-white/4 px-3 py-1 text-xs text-muted-foreground transition-colors duration-300 group-hover:border-accent/30 group-hover:text-foreground"
                 >
                   {tag}
                 </span>
               ))}
             </div>
 
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border/50 opacity-100 transition-all duration-300 group-hover:border-accent/50 md:opacity-0 md:group-hover:opacity-100">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 opacity-100 transition-all duration-300 group-hover:border-accent/50 md:opacity-0 md:group-hover:opacity-100">
               <ArrowUpRight className="h-4 w-4 text-accent" />
             </div>
           </div>
