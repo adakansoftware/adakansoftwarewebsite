@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import Link from "next/link"
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion"
-import { ArrowDownRight, ArrowRight, Sparkles } from "lucide-react"
+import { ArrowDownRight, ArrowRight } from "lucide-react"
 
 import { MagneticButton } from "@/components/magnetic-button"
 import { Button } from "@/components/ui/button"
@@ -75,11 +75,6 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
                 </span>
                 <span className="min-w-0 text-xs tracking-wide text-muted-foreground sm:text-sm">{dynamicBadge}</span>
-              </div>
-
-              <div className="section-kicker">
-                <Sparkles className="h-3.5 w-3.5" />
-                {locale === "tr" ? "Premium dijital sistemler" : "Premium digital systems"}
               </div>
             </motion.div>
 
@@ -200,43 +195,6 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
               </motion.aside>
             </div>
           </div>
-
-          <motion.div
-            {...animationProps}
-            transition={{ ...animationTransition, delay: 0.7 }}
-            className="mt-5 grid gap-3 md:grid-cols-3"
-          >
-            <div className="metric-card">
-              <p className="text-[0.7rem] font-medium tracking-[0.24em] text-accent uppercase">
-                {locale === "tr" ? "Pozisyonlama" : "Positioning"}
-              </p>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                {locale === "tr"
-                  ? "Marka tonunu, teklif netliğini ve ilk izlenimi tek bir anlatıda birleştiriyoruz."
-                  : "We bring brand tone, offer clarity, and first impression into one focused story."}
-              </p>
-            </div>
-            <div className="metric-card">
-              <p className="text-[0.7rem] font-medium tracking-[0.24em] text-accent uppercase">
-                {locale === "tr" ? "Tasarım dili" : "Design language"}
-              </p>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                {locale === "tr"
-                  ? "Daha rafine tipografi, kontrollü hareket ve güçlü yüzey kontrastı ile premium algı kuruyoruz."
-                  : "We build a premium feel with refined typography, controlled motion, and stronger surface contrast."}
-              </p>
-            </div>
-            <div className="metric-card">
-              <p className="text-[0.7rem] font-medium tracking-[0.24em] text-accent uppercase">
-                {locale === "tr" ? "Uygulama kalitesi" : "Execution quality"}
-              </p>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                {locale === "tr"
-                  ? "Her bölüm yalnızca güzel görünmek için değil, okunabilirlik ve dönüşüm için kurgulanıyor."
-                  : "Every section is shaped not only to look good, but to improve clarity and conversion."}
-              </p>
-            </div>
-          </motion.div>
 
           <div className="pointer-events-none absolute inset-0 hidden overflow-hidden lg:block">
             <div className="absolute left-[10%] top-[15%] h-20 w-20 animate-float-slow rounded-2xl border border-primary/20" />

@@ -34,10 +34,6 @@ export function CTASection({ locale = "tr" }: { locale?: Locale }) {
           transition={{ duration: prefersReducedMotion ? 0 : 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="section-frame mx-auto max-w-5xl px-5 py-8 text-center sm:px-8 lg:px-12 lg:py-12"
         >
-          <div className="section-kicker mx-auto mb-8 max-w-max">
-            {locale === "tr" ? "Bir sonraki adim" : "Next step"}
-          </div>
-
           <motion.h2
             initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
             animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
@@ -82,17 +78,6 @@ export function CTASection({ locale = "tr" }: { locale?: Locale }) {
               </a>
             </MagneticButton>
           </motion.div>
-
-          <motion.p
-            initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
-            animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-            transition={{ duration: prefersReducedMotion ? 0 : 0.45, delay: prefersReducedMotion ? 0 : 0.24 }}
-            className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground"
-          >
-            {locale === "tr"
-              ? "Kapsamı birlikte netleştirir, teslim planını çıkarır ve markanı güçlü bir dijital sisteme dönüştürürüz."
-              : "We clarify the scope together, shape the delivery plan, and turn your brand into a stronger digital system."}
-          </motion.p>
 
           <motion.div
             initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
