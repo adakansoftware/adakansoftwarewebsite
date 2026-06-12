@@ -19,7 +19,7 @@ const contentSecurityPolicy = [
   "frame-src 'self'",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
-  "upgrade-insecure-requests",
+  ...(isProduction ? ["upgrade-insecure-requests"] : []),
 ].join("; ")
 
 /** @type {import('next').NextConfig} */
