@@ -39,6 +39,7 @@ export function Navbar({ locale: _locale }: { locale: Locale }) {
         initial={false}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        aria-label={activeLocale === "tr" ? "Ana gezinme" : "Primary navigation"}
         className={`fixed top-0 right-0 left-0 z-[70] transition-all duration-500 ${
           isScrolled ? "py-4" : "py-6"
         } ${isScrolled ? "border-b border-white/[0.08] bg-background/80 backdrop-blur-[12px]" : "border-b border-border/20 bg-background/78 backdrop-blur-xl"}`}

@@ -12,7 +12,36 @@ const contactSchema = z.object({
   website: z.string().max(0).optional(),
 })
 
+const RATE_LIMIT_WINDOW_MS = 60_000
+const RATE_LIMIT_MAX_REQUESTS = 4
+const requestTimestampsByIp = new Map<string, number[]>()
+
+function getClientIp(request: Request) {
+  const forwardedFor = request.headers.get("x-forwarded-for")
+  if (forwardedFor) {
+    return forwardedFor.split(",")[0]?.trim() || "unknown"
+  }
+
+  return request.headers.get("x-real-ip")?.trim() || "unknown"
+}
+
+function isRateLimited(ip: string, now: number) {
+  const recentTimestamps = (requestTimestampsByIp.get(ip) ?? []).filter((timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS)
+
+  recentTimestamps.push(now)
+  requestTimestampsByIp.set(ip, recentTimestamps)
+
+  return recentTimestamps.length > RATE_LIMIT_MAX_REQUESTS
+}
+
 export async function POST(request: Request) {
+  const now = Date.now()
+  const clientIp = getClientIp(request)
+
+  if (isRateLimited(clientIp, now)) {
+    return NextResponse.json({ ok: false, error: "Too many requests" }, { status: 429 })
+  }
+
   let body: unknown
 
   try {
@@ -43,20 +72,27 @@ export async function POST(request: Request) {
   const subject = locale === "tr" ? "Yeni proje görüşmesi" : "New project inquiry"
   const text = [`Name: ${name}`, `Email: ${email}`, `Phone: ${phone?.trim() || "-"}`, "", "Project:", project].join("\n")
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${resendApiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: fromAddress,
-      to: [siteConfig.email],
-      reply_to: email,
-      subject,
-      text,
-    }),
-  })
+  let response: Response
+
+  try {
+    response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: fromAddress,
+        to: [siteConfig.email],
+        reply_to: email,
+        subject,
+        text,
+      }),
+      signal: AbortSignal.timeout(8_000),
+    })
+  } catch {
+    return NextResponse.json({ ok: false, error: "Email service unavailable" }, { status: 502 })
+  }
 
   if (!response.ok) {
     return NextResponse.json({ ok: false, error: "Email delivery failed" }, { status: 502 })
