@@ -98,7 +98,7 @@ function ProjectListingCard({ project, index, locale }: { project: Project; inde
               href={project.href}
               target="_blank"
               rel="noreferrer"
-              className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-accent transition-colors hover:text-foreground"
+              className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-accent transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               {locale === "tr" ? "Canlı siteyi aç" : "Open live site"}
               <ArrowUpRight className="h-4 w-4" />

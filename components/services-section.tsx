@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { motion, useInView, useReducedMotion, useScroll, useTransform } from "framer-motion"
 import { ArrowUpRight, Code2, Globe, Layout, Palette } from "lucide-react"
@@ -82,7 +82,23 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-50px" })
   const prefersReducedMotion = useReducedMotion()
+  const [supportsPointerTracking, setSupportsPointerTracking] = useState(false)
   const Icon = serviceIcons[index] ?? Globe
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      setSupportsPointerTracking(false)
+      return
+    }
+
+    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)")
+    const syncPointerTracking = () => setSupportsPointerTracking(mediaQuery.matches)
+
+    syncPointerTracking()
+    mediaQuery.addEventListener("change", syncPointerTracking)
+
+    return () => mediaQuery.removeEventListener("change", syncPointerTracking)
+  }, [prefersReducedMotion])
 
   return (
     <motion.div
@@ -92,6 +108,7 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
       transition={{ duration: prefersReducedMotion ? 0 : 0.55, delay: prefersReducedMotion ? 0 : index * 0.07, ease: [0.22, 1, 0.36, 1] }}
       className="spotlight group"
       onMouseMove={(e) => {
+        if (!supportsPointerTracking) return
         const rect = e.currentTarget.getBoundingClientRect()
         e.currentTarget.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`)
         e.currentTarget.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`)
