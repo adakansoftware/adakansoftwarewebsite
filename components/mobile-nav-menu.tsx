@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useId } from "react"
 import Link from "next/link"
 import { ArrowUpRight, Menu, MessageCircle, X } from "lucide-react"
 
@@ -29,6 +30,7 @@ export function MobileNavMenu({
   whatsAppLabel: string
   whatsAppShort: string
 }) {
+  const menuId = useId()
   const localizedHref = (href: string) => withLocale(href, locale)
   const isActive = (href: string) => {
     const localized = withLocale(href, locale)
@@ -38,14 +40,29 @@ export function MobileNavMenu({
     document.querySelector<HTMLDetailsElement>("[data-mobile-menu]")?.removeAttribute("open")
   }
 
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeNativeMobileMenu()
+      }
+    }
+
+    document.addEventListener("keydown", handleEscape)
+
+    return () => document.removeEventListener("keydown", handleEscape)
+  }, [])
+
   return (
     <details className="mobile-menu-native mobile-nav-shell fixed top-4 right-4 z-[1200] shrink-0 sm:top-5 sm:right-5" data-mobile-menu>
-      <summary className="relative inline-flex h-12 w-12 touch-manipulation items-center justify-center rounded-full border border-white/10 bg-background text-foreground shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
+      <summary
+        aria-controls={menuId}
+        className="relative inline-flex h-12 w-12 touch-manipulation items-center justify-center rounded-full border border-white/10 bg-background text-foreground shadow-[0_18px_50px_rgba(0,0,0,0.35)]"
+      >
         <span className="sr-only">{openMenuLabel}</span>
         <Menu size={24} className="mobile-menu-open-icon" />
         <X size={24} className="mobile-menu-close-icon" />
       </summary>
-      <div id="mobile-navigation" className="fixed inset-0 isolate overflow-hidden bg-background text-foreground" style={{ zIndex: 2147483646 }} role="dialog" aria-modal="true">
+      <div id={menuId} className="fixed inset-0 isolate overflow-hidden bg-background text-foreground" style={{ zIndex: 2147483646 }} role="dialog" aria-modal="true">
         <div className="absolute inset-0 grid-pattern opacity-10" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,oklch(0.76_0.13_174_/_0.16),transparent_34%),radial-gradient(circle_at_80%_15%,oklch(0.78_0.14_74_/_0.12),transparent_32%)]" />
         <div className="relative h-full overflow-y-auto px-5 pt-24 pb-8 sm:px-6 sm:pt-28 sm:pb-10">

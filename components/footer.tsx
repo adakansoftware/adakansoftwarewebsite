@@ -52,31 +52,35 @@ export function Footer({ locale }: { locale: Locale }) {
           </div>
 
           <div className="lg:col-span-3 lg:col-start-7">
-            <h4 className="mb-6 text-sm font-semibold tracking-wider text-foreground uppercase">{copy.companyTitle}</h4>
-            <ul className="space-y-4">
-              {copy.company.map((link) => (
-                <li key={link.name}>
-                  <Link href={localizedHref(link.href)} className="group inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground">
-                    {link.name}
-                    <ArrowUpRight className="h-3 w-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <nav aria-label={copy.companyTitle}>
+              <h4 className="mb-6 text-sm font-semibold tracking-wider text-foreground uppercase">{copy.companyTitle}</h4>
+              <ul className="space-y-4">
+                {copy.company.map((link) => (
+                  <li key={link.name}>
+                    <Link href={localizedHref(link.href)} className="group inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground">
+                      {link.name}
+                      <ArrowUpRight className="h-3 w-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           </div>
 
           <div className="lg:col-span-3">
-            <h4 className="mb-6 text-sm font-semibold tracking-wider text-foreground uppercase">{copy.servicesTitle}</h4>
-            <ul className="space-y-4">
-              {copy.services.map((link) => (
-                <li key={link.name}>
-                  <Link href={localizedHref(link.href)} className="group inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground">
-                    {link.name}
-                    <ArrowUpRight className="h-3 w-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <nav aria-label={copy.servicesTitle}>
+              <h4 className="mb-6 text-sm font-semibold tracking-wider text-foreground uppercase">{copy.servicesTitle}</h4>
+              <ul className="space-y-4">
+                {copy.services.map((link) => (
+                  <li key={link.name}>
+                    <Link href={localizedHref(link.href)} className="group inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground">
+                      {link.name}
+                      <ArrowUpRight className="h-3 w-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           </div>
         </div>
 

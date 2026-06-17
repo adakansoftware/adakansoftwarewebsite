@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useId, useState } from "react"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowRight, CheckCircle } from "lucide-react"
@@ -83,14 +83,16 @@ const copy = {
 
 export function ContactForm({ locale }: { locale: Locale }) {
   const t = copy[locale]
+  const formId = useId()
   const [submitted, setSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitError, setSubmitError] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const prefersReducedMotion = useReducedMotion()
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -101,7 +103,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
 
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true)
-    setSubmitError(false)
+    setSubmitError(null)
 
     try {
       const response = await fetch("/api/contact", {
@@ -111,12 +113,19 @@ export function ContactForm({ locale }: { locale: Locale }) {
       })
 
       if (!response.ok) {
-        throw new Error("Contact request failed")
+        throw new Error(response.status === 429 ? "rate-limited" : "contact-request-failed")
       }
 
+      reset({ name: "", email: "", phone: "", project: "", website: "" })
       setSubmitted(true)
-    } catch {
-      setSubmitError(true)
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error && error.message === "rate-limited"
+          ? locale === "tr"
+            ? "Çok sık deneme algılandı. Lütfen kısa bir süre sonra tekrar deneyin."
+            : "Too many attempts detected. Please try again shortly."
+          : t.error,
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -158,10 +167,17 @@ export function ContactForm({ locale }: { locale: Locale }) {
               <Input
                 id="contact-name"
                 placeholder={t.namePlaceholder}
+                autoComplete="name"
+                aria-invalid={errors.name ? "true" : "false"}
+                aria-describedby={errors.name ? `${formId}-name-error` : undefined}
                 {...register("name")}
                 className="rounded-xl border-border/50 bg-card/20 backdrop-blur-sm focus:border-accent/60"
               />
-              {errors.name ? <p className="text-xs text-destructive">{t.errors.name}</p> : null}
+              {errors.name ? (
+                <p id={`${formId}-name-error`} className="text-xs text-destructive">
+                  {t.errors.name}
+                </p>
+              ) : null}
             </div>
             <div className="space-y-2">
               <Label htmlFor="contact-email">{t.email}</Label>
@@ -169,10 +185,17 @@ export function ContactForm({ locale }: { locale: Locale }) {
                 id="contact-email"
                 type="email"
                 placeholder={t.emailPlaceholder}
+                autoComplete="email"
+                aria-invalid={errors.email ? "true" : "false"}
+                aria-describedby={errors.email ? `${formId}-email-error` : undefined}
                 {...register("email")}
                 className="rounded-xl border-border/50 bg-card/20 backdrop-blur-sm focus:border-accent/60"
               />
-              {errors.email ? <p className="text-xs text-destructive">{t.errors.email}</p> : null}
+              {errors.email ? (
+                <p id={`${formId}-email-error`} className="text-xs text-destructive">
+                  {t.errors.email}
+                </p>
+              ) : null}
             </div>
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="contact-phone">{t.phone}</Label>
@@ -180,6 +203,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
                 id="contact-phone"
                 type="tel"
                 placeholder={t.phonePlaceholder}
+                autoComplete="tel"
                 {...register("phone")}
                 className="rounded-xl border-border/50 bg-card/20 backdrop-blur-sm focus:border-accent/60"
               />
@@ -191,12 +215,22 @@ export function ContactForm({ locale }: { locale: Locale }) {
               id="contact-project"
               rows={5}
               placeholder={t.projectPlaceholder}
+              aria-invalid={errors.project ? "true" : "false"}
+              aria-describedby={errors.project ? `${formId}-project-error` : undefined}
               {...register("project")}
               className="resize-none rounded-xl border-border/50 bg-card/20 backdrop-blur-sm focus:border-accent/60"
             />
-            {errors.project ? <p className="text-xs text-destructive">{t.errors.project}</p> : null}
+            {errors.project ? (
+              <p id={`${formId}-project-error`} className="text-xs text-destructive">
+                {t.errors.project}
+              </p>
+            ) : null}
           </div>
-          {submitError ? <p className="text-sm text-destructive">{t.error}</p> : null}
+          {submitError ? (
+            <p role="alert" aria-live="polite" className="text-sm text-destructive">
+              {submitError}
+            </p>
+          ) : null}
           <Button
             type="submit"
             disabled={isSubmitting}

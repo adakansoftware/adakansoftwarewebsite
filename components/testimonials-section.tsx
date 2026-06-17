@@ -12,6 +12,7 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
   const testimonials = sectionCopy.items
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const headingRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(headingRef, { once: true, margin: "-60px" })
@@ -28,6 +29,10 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
   }
 
   useEffect(() => {
+    if (prefersReducedMotion || isPaused) {
+      return
+    }
+
     intervalRef.current = setInterval(() => {
       if (!document.hidden) {
         setDirection(1)
@@ -38,7 +43,7 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
-  }, [testimonials.length])
+  }, [isPaused, prefersReducedMotion, testimonials.length])
 
   const variants = {
     enter: (entryDirection: number) => ({ x: entryDirection > 0 ? 60 : -60, opacity: 0 }),
@@ -77,7 +82,13 @@ export function TestimonialsSection({ locale = "tr" }: { locale?: Locale }) {
         </div>
 
         <div className="mx-auto max-w-4xl">
-          <div className="relative flex min-h-[430px] items-center justify-center sm:min-h-[360px] md:min-h-[300px]">
+          <div
+            className="relative flex min-h-[430px] items-center justify-center sm:min-h-[360px] md:min-h-[300px]"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            onFocusCapture={() => setIsPaused(true)}
+            onBlurCapture={() => setIsPaused(false)}
+          >
             <AnimatePresence initial={false} custom={direction} mode="wait">
               <motion.div
                 key={current}
