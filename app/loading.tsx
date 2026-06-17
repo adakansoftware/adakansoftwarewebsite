@@ -16,7 +16,7 @@ export default async function Loading() {
       <div className="relative z-10 flex flex-col items-center gap-5">
         <div className="relative h-12 w-12">
           <span className="absolute inset-0 rounded-full border border-primary/30" />
-          <span className="absolute inset-2 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          <span className="absolute inset-2 rounded-full border-2 border-primary border-t-transparent motion-reduce:animate-none animate-spin" />
         </div>
         <div className="text-center">
           <p className="text-sm font-medium uppercase tracking-[0.24em] text-primary">Adakan Software</p>

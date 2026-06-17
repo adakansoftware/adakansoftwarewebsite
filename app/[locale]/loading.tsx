@@ -13,7 +13,7 @@ export default function LocaleLoading() {
       <div className="relative z-10 flex flex-col items-center gap-5">
         <div className="relative h-12 w-12">
           <span className="absolute inset-0 rounded-full border border-primary/30" />
-          <span className="absolute inset-2 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <span className="absolute inset-2 animate-spin rounded-full border-2 border-primary border-t-transparent motion-reduce:animate-none" />
         </div>
         <div className="text-center">
           <p className="text-sm font-medium tracking-[0.24em] text-primary uppercase">Adakan Software</p>

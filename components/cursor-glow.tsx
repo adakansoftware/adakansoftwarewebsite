@@ -1,26 +1,65 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useReducedMotion } from "framer-motion"
+
+const finePointerQuery = "(hover: hover) and (pointer: fine)"
 
 export function CursorGlow() {
   const glowRef = useRef<HTMLDivElement>(null)
   const prefersReduced = useReducedMotion()
+  const [isEnabled, setIsEnabled] = useState(false)
 
   useEffect(() => {
-    if (prefersReduced) return
+    if (prefersReduced) {
+      setIsEnabled(false)
+      return
+    }
+
+    const mediaQuery = window.matchMedia(finePointerQuery)
+    const syncEnabledState = () => setIsEnabled(mediaQuery.matches)
+
+    syncEnabledState()
+    mediaQuery.addEventListener("change", syncEnabledState)
+
+    return () => mediaQuery.removeEventListener("change", syncEnabledState)
+  }, [prefersReduced])
+
+  useEffect(() => {
+    if (!isEnabled) return
+
     const el = glowRef.current
     if (!el) return
 
+    let rafId = 0
+    let nextX = 0
+    let nextY = 0
+
+    const applyPosition = () => {
+      rafId = 0
+      el.style.transform = `translate(${nextX - 200}px, ${nextY - 200}px)`
+    }
+
     const move = (event: MouseEvent) => {
-      el.style.transform = `translate(${event.clientX - 200}px, ${event.clientY - 200}px)`
+      nextX = event.clientX
+      nextY = event.clientY
+
+      if (!rafId) {
+        rafId = window.requestAnimationFrame(applyPosition)
+      }
     }
 
     window.addEventListener("mousemove", move, { passive: true })
-    return () => window.removeEventListener("mousemove", move)
-  }, [prefersReduced])
 
-  if (prefersReduced) return null
+    return () => {
+      window.removeEventListener("mousemove", move)
+      if (rafId) {
+        window.cancelAnimationFrame(rafId)
+      }
+    }
+  }, [isEnabled])
+
+  if (!isEnabled) return null
 
   return (
     <div
