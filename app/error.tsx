@@ -23,7 +23,11 @@ export default function GlobalError({
   }, [error])
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-6">
+    <div
+      role="alert"
+      aria-live="assertive"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-6"
+    >
       <div className="absolute inset-0 grid-pattern opacity-10" />
       <div className="relative z-10 w-full max-w-2xl rounded-3xl border border-border/50 bg-card/30 p-8 text-center backdrop-blur-xl md:p-12">
         <p className="text-sm font-medium uppercase tracking-[0.24em] text-primary">{copy.eyebrow}</p>

@@ -5,7 +5,12 @@ export default async function Loading() {
   const locale = await getRequestLocale()
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background"
+    >
       <div className="absolute inset-0 grid-pattern opacity-10" />
       <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,oklch(0.76_0.13_174_/_0.14),transparent_70%)]" />
       <div className="relative z-10 flex flex-col items-center gap-5">
