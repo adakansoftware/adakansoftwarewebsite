@@ -26,10 +26,10 @@ export function BlogPageContent({ locale }: { locale: Locale }) {
             <h2 className="mt-4 text-2xl font-bold">{bodyText}</h2>
             <a
               href={`mailto:${siteConfig.email}?subject=${subject}`}
-              className="group mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent/90"
+              className="group mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               {buttonLabel}
-              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0" />
             </a>
           </div>
         </div>
@@ -106,10 +106,10 @@ export function CareersPageContent({ locale }: { locale: Locale }) {
             </p>
             <a
               href={`mailto:${siteConfig.email}?subject=${subject}`}
-              className="group mt-6 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/5 px-6 py-3 text-sm font-medium text-accent transition-colors hover:bg-accent/10"
+              className="group mt-6 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/5 px-6 py-3 text-sm font-medium text-accent transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               {locale === "tr" ? "Portfolyonu gönder" : "Send your portfolio"}
-              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0" />
             </a>
           </div>
         </div>

@@ -66,7 +66,7 @@ export function PageHeader({
               >
                 <Link href={primaryHref}>
                   {primaryLabel}
-                  <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0" />
                 </Link>
               </Button>
             </MagneticButton>

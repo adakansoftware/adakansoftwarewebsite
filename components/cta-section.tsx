@@ -64,15 +64,15 @@ export function CTASection({ locale = "tr" }: { locale?: Locale }) {
               <Button asChild size="lg" className="group rounded-full bg-accent px-10 py-8 text-lg font-medium text-accent-foreground transition-colors duration-300 hover:bg-accent/90 hover:shadow-xl hover:shadow-accent/20">
                 <Link href={withLocale("/contact", locale)}>
                   {sectionCopy.cta}
-                  <ArrowRight className="ml-3 h-5 w-5 transition-transform duration-300 group-hover:translate-x-2" />
+                  <ArrowRight className="ml-3 h-5 w-5 transition-transform duration-300 group-hover:translate-x-2 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0" />
                 </Link>
               </Button>
             </MagneticButton>
 
             <MagneticButton strength={0.2}>
               <a
-                href={`mailto:${siteConfig.email}?subject=${locale === "tr" ? "Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi" : "New%20project%20inquiry"}`}
-                className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-lg font-medium text-muted-foreground transition-colors hover:bg-white/8 hover:text-foreground"
+              href={`mailto:${siteConfig.email}?subject=${locale === "tr" ? "Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi" : "New%20project%20inquiry"}`}
+                className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-lg font-medium text-muted-foreground transition-colors hover:bg-white/8 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 {siteConfig.email}
               </a>

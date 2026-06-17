@@ -10,7 +10,13 @@ export function WhatsAppButton({ locale }: { locale: Locale }) {
   const content = whatsAppCopy[locale]
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3 md:bottom-7 md:right-7">
+    <div
+      className="fixed z-50 flex flex-col items-end gap-3"
+      style={{
+        right: "max(1.25rem, calc(env(safe-area-inset-right) + 1rem))",
+        bottom: "max(1.25rem, calc(env(safe-area-inset-bottom) + 1rem))",
+      }}
+    >
       <SocialBubble
         href={instagramHref}
         label="Instagram"
@@ -54,9 +60,10 @@ function SocialBubble({
       <a
         href={href}
         aria-label={ariaLabel}
+        title={label}
         target="_blank"
         rel="noreferrer"
-        className={`relative grid h-12 w-12 place-items-center rounded-full border bg-background/72 shadow-[0_0_26px_rgba(45,212,191,0.12)] backdrop-blur-xl transition-[transform,border-color,background-color,color,box-shadow] duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary md:h-14 md:w-14 ${toneClass}`}
+        className={`relative grid h-12 w-12 place-items-center rounded-full border bg-background/72 shadow-[0_0_26px_rgba(45,212,191,0.12)] backdrop-blur-xl transition-[transform,border-color,background-color,color,box-shadow] duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary motion-reduce:transition-none motion-reduce:hover:translate-y-0 md:h-14 md:w-14 ${toneClass}`}
       >
         <span className="absolute inset-0 rounded-full bg-white/5 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
         <span className="relative">{icon}</span>
