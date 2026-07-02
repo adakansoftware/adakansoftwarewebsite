@@ -24,3 +24,14 @@ export function writeJsonFile(filePath: string, value: unknown) {
 
   return writeQueue
 }
+
+export function updateJsonFile<T>(filePath: string, fallback: T, updater: (currentValue: T) => T | Promise<T>) {
+  writeQueue = writeQueue.then(async () => {
+    const currentValue = await readJsonFile(filePath, fallback)
+    const nextValue = await updater(currentValue)
+    await ensureParentDirectory(filePath)
+    await writeFile(filePath, `${JSON.stringify(nextValue, null, 2)}\n`, "utf8")
+  })
+
+  return writeQueue
+}

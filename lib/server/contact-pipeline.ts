@@ -5,6 +5,7 @@ import type { ContactSubmission } from "@/lib/server/contact-service"
 import { contactPolicy } from "@/lib/server/contact-policy"
 import { deliverContactMessage } from "@/lib/server/contact-service"
 import {
+  claimReplayableContactOutboxEntries,
   enqueueContactOutboxEntry,
   getContactOutboxDiagnostics,
   readContactOutboxEntries,
@@ -131,6 +132,11 @@ function writeReplayRuntimeState(state: ReplayRuntimeState) {
   return replayWriteQueue
 }
 
+function getRetryDelayMs(attempts: number) {
+  const exponentialDelay = contactPolicy.outboxRetryBaseDelayMs * 2 ** Math.max(0, attempts - 1)
+  return Math.min(exponentialDelay, contactPolicy.outboxRetryMaxDelayMs)
+}
+
 async function readReplayAuditEntries() {
   return readJsonFile<ReplayAuditEntry[]>(REPLAY_AUDIT_FILE_PATH, [])
 }
@@ -230,6 +236,9 @@ export async function markContactMessageDelivered(messageId: string, mode: "deli
   await updateContactOutboxEntry(messageId, {
     status: mode,
     lastError: undefined,
+    nextAttemptAt: undefined,
+    leaseOwner: undefined,
+    leaseExpiresAt: undefined,
   })
 
   logServerEvent("info", "contact.outbox.completed", {
@@ -238,10 +247,13 @@ export async function markContactMessageDelivered(messageId: string, mode: "deli
   })
 }
 
-export async function markContactMessageFailed(messageId: string, error: string) {
+export async function markContactMessageFailed(messageId: string, error: string, nextAttemptAt?: number) {
   await updateContactOutboxEntry(messageId, {
     status: "failed",
     lastError: error,
+    nextAttemptAt,
+    leaseOwner: undefined,
+    leaseExpiresAt: undefined,
   })
 
   logServerEvent("error", "contact.outbox.failed", {
@@ -250,13 +262,18 @@ export async function markContactMessageFailed(messageId: string, error: string)
   })
 }
 
-export async function processContactOutboxEntries(limit = contactPolicy.outboxReplayBatchSize) {
+export async function processContactOutboxEntries(
+  limit = contactPolicy.outboxReplayBatchSize,
+  owner = `replay:${Date.now()}`,
+) {
   const now = Date.now()
-  const activeEntries = await reapContactOutboxEntries(now, contactPolicy.outboxRetentionMs)
-  const replayableEntries = activeEntries
-    .filter((entry) => entry.status === "pending" || entry.status === "failed")
-    .sort((left, right) => left.createdAt - right.createdAt)
-    .slice(0, limit)
+  await reapContactOutboxEntries(now, contactPolicy.outboxRetentionMs)
+  const replayableEntries = await claimReplayableContactOutboxEntries({
+    owner,
+    now,
+    limit,
+    leaseMs: contactPolicy.outboxClaimLeaseMs,
+  })
 
   const summary = {
     scanned: replayableEntries.length,
@@ -274,7 +291,7 @@ export async function processContactOutboxEntries(limit = contactPolicy.outboxRe
 
     if (!entry.submission) {
       summary.failed += 1
-      await markContactMessageFailed(entry.id, "legacy-entry-missing-submission")
+      await markContactMessageFailed(entry.id, "legacy-entry-missing-submission", Date.now() + getRetryDelayMs(entry.attempts + 1))
       continue
     }
 
@@ -283,7 +300,7 @@ export async function processContactOutboxEntries(limit = contactPolicy.outboxRe
 
       if (!result.ok) {
         summary.failed += 1
-        await markContactMessageFailed(entry.id, "upstream-delivery-rejected")
+        await markContactMessageFailed(entry.id, "upstream-delivery-rejected", Date.now() + getRetryDelayMs(entry.attempts + 1))
         continue
       }
 
@@ -298,7 +315,7 @@ export async function processContactOutboxEntries(limit = contactPolicy.outboxRe
     } catch (error) {
       summary.failed += 1
       const errorMessage = error instanceof Error ? error.message : "unknown-error"
-      await markContactMessageFailed(entry.id, errorMessage)
+      await markContactMessageFailed(entry.id, errorMessage, Date.now() + getRetryDelayMs(entry.attempts + 1))
     }
   }
 
@@ -360,7 +377,7 @@ export async function runContactOutboxReplay(input: {
   })
 
   try {
-    const replay = await processContactOutboxEntries(input.limit)
+    const replay = await processContactOutboxEntries(input.limit, `replay:${input.requestId}`)
     const completedAt = Date.now()
 
     await writeReplayRuntimeState({
