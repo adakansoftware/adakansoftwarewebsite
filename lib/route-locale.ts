@@ -2,14 +2,15 @@ import { notFound } from "next/navigation"
 
 import { defaultLocale, isLocale, locales, type Locale } from "@/lib/i18n"
 
-type LocaleParamsInput = Promise<{ locale: string }> | { locale: string }
+type LocaleParams = { locale?: string } | undefined
+type LocaleParamsInput = Promise<LocaleParams> | LocaleParams
 
 export const prefixedLocales = locales.filter((locale) => locale !== defaultLocale)
 
 export async function getRouteLocale(params: LocaleParamsInput): Promise<Locale> {
   const resolvedParams = await params
 
-  if (!isLocale(resolvedParams.locale)) {
+  if (!resolvedParams?.locale || !isLocale(resolvedParams.locale)) {
     notFound()
   }
 

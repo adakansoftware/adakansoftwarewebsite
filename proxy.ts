@@ -41,6 +41,16 @@ function applyApiBurstProtection(request: NextRequest) {
   )
 }
 
+function forwardWithLocale(requestHeaders: Headers) {
+  return withSecurityHeaders(
+    NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    }),
+  )
+}
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
@@ -73,22 +83,11 @@ export function proxy(request: NextRequest) {
 
   if (isLocale(firstSegment)) {
     requestHeaders.set(localeHeaderName, firstSegment)
-    return withSecurityHeaders(
-      NextResponse.next({
-        request: {
-          headers: requestHeaders,
-        },
-      }),
-    )
+    return forwardWithLocale(requestHeaders)
   }
 
-  return withSecurityHeaders(
-    NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    }),
-  )
+  requestHeaders.set(localeHeaderName, defaultLocale)
+  return forwardWithLocale(requestHeaders)
 }
 
 export const config = {

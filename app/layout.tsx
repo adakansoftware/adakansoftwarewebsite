@@ -56,7 +56,7 @@ export const metadata: Metadata = {
         url: "/og",
         width: 1200,
         height: 630,
-        alt: `${siteConfig.name} — Premium Web Tasarımı ve Marka Ajansı`,
+        alt: `${siteConfig.name} - Premium Web Tasarımı ve Marka Ajansı`,
       },
     ],
   },
