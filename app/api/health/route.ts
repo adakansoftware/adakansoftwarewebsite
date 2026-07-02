@@ -1,3 +1,4 @@
+import { getContactPipelineDiagnostics } from "@/lib/server/contact-pipeline"
 import { getContactServiceDiagnostics, isContactDeliveryConfigured } from "@/lib/server/contact-service"
 import { getProxyRateLimitDiagnostics } from "@/lib/server/proxy-rate-limit"
 import { createRequestId, emptyResponse, jsonResponse } from "@/lib/server/http"
@@ -35,6 +36,7 @@ export async function GET(request: Request) {
   const requestId = createRequestId(request)
   const diagnostics = getContactServiceDiagnostics()
   const proxyRateLimit = getProxyRateLimitDiagnostics()
+  const pipeline = getContactPipelineDiagnostics()
   const status = process.env.NODE_ENV === "production" && !isContactDeliveryConfigured() ? "degraded" : "ok"
 
   return jsonResponse(
@@ -49,8 +51,11 @@ export async function GET(request: Request) {
         requestId: true,
         originProtection: true,
         duplicateProtection: true,
+        idempotencyProtection: true,
+        outboxTracking: true,
       },
       diagnostics,
+      pipeline,
       proxy: proxyRateLimit,
     },
     {

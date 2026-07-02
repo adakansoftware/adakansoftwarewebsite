@@ -1,5 +1,12 @@
 import { contactPolicy } from "@/lib/server/contact-policy"
 import {
+  createQueuedContactMessage,
+  getIdempotencyReplay,
+  markContactMessageDelivered,
+  markContactMessageFailed,
+  storeIdempotencyReplay,
+} from "@/lib/server/contact-pipeline"
+import {
   deliverContactMessage,
   getContactContentLengthLimit,
   hasSpamTrapValue,
@@ -16,6 +23,7 @@ import {
   isAllowedOrigin,
   jsonResponse,
 } from "@/lib/server/http"
+import { logServerEvent } from "@/lib/server/logger"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -98,37 +106,82 @@ export async function POST(request: Request) {
     return jsonResponse({ ok: false, error: "Invalid request" }, { status: 400, requestId })
   }
 
-  if (isDuplicateSubmission(submission, clientIp, now)) {
-    return jsonResponse({ ok: true, accepted: true, duplicate: true }, { requestId })
+  const replay = getIdempotencyReplay(request, submission, now)
+  if (replay?.conflict) {
+    return jsonResponse({ ok: false, error: "Idempotency conflict" }, { status: 409, requestId })
   }
+
+  if (replay && !replay.conflict) {
+    return jsonResponse(replay.body, { status: replay.status, requestId })
+  }
+
+  if (isDuplicateSubmission(submission, clientIp, now)) {
+    const duplicateResponse = {
+      ok: true,
+      accepted: true,
+      duplicate: true,
+      deliveryConfigured: isContactDeliveryConfigured(),
+      skippedDelivery: true,
+      queued: false,
+    }
+
+    storeIdempotencyReplay(request, submission, {
+      status: 200,
+      body: duplicateResponse,
+    })
+
+    return jsonResponse(duplicateResponse, { requestId })
+  }
+
+  const outboxEntry = createQueuedContactMessage(submission)
 
   try {
     const result = await deliverContactMessage(submission)
 
     if (!result.ok) {
-      console.error("[contact-api] upstream-delivery-rejected", {
+      markContactMessageFailed(outboxEntry.id, "upstream-delivery-rejected")
+
+      logServerEvent("error", "contact.delivery.rejected", {
         requestId,
         clientIp,
+        messageId: outboxEntry.id,
       })
 
       return jsonResponse({ ok: false, error: "Email delivery failed" }, { status: 502, requestId })
     }
 
-    return jsonResponse(
-      {
-        ok: true,
-        accepted: true,
-        deliveryConfigured: isContactDeliveryConfigured(),
-        duplicate: false,
-        skippedDelivery: result.skipped,
+    markContactMessageDelivered(outboxEntry.id, result.skipped ? "skipped" : "delivered")
+
+    const successResponse = {
+      ok: true,
+      accepted: true,
+      deliveryConfigured: isContactDeliveryConfigured(),
+      duplicate: false,
+      skippedDelivery: result.skipped,
+      queued: true,
+      messageId: outboxEntry.id,
+    }
+
+    storeIdempotencyReplay(request, submission, {
+      status: 200,
+      body: successResponse,
+    })
+
+    return jsonResponse(successResponse, {
+      requestId,
+      headers: {
+        "X-Contact-Message-Id": outboxEntry.id,
       },
-      { requestId },
-    )
+    })
   } catch (error) {
-    console.error("[contact-api] delivery-failed", {
+    const errorMessage = error instanceof Error ? error.message : "unknown-error"
+    markContactMessageFailed(outboxEntry.id, errorMessage)
+
+    logServerEvent("error", "contact.delivery.failed", {
       requestId,
       clientIp,
-      error: error instanceof Error ? error.message : "unknown-error",
+      messageId: outboxEntry.id,
+      error: errorMessage,
     })
 
     return jsonResponse({ ok: false, error: "Email service unavailable" }, { status: 502, requestId })

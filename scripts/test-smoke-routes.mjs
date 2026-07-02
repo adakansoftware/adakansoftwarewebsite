@@ -12,7 +12,7 @@ const checks = [
   { path: "/en/contact", status: 200, includes: ["WhatsApp", "Start a Project"] },
   { path: "/en/privacy", status: 200, includes: ["Privacy"] },
   { path: "/en/terms", status: 200, includes: ["Terms"] },
-  { path: "/api/health", status: 200, includes: ['"ok":true', '"service":"adakansoftware-website"'] },
+  { path: "/api/health", status: 200, includes: ['"ok":true', '"service":"adakansoftware-website"', '"pipeline"'] },
 ]
 
 async function request(path, init = {}) {
@@ -41,6 +41,17 @@ async function postJson(path, body, headers = {}) {
     status: response.status,
     headers: response.headers,
     json: await response.json(),
+  }
+}
+
+let clientIpCounter = 10
+
+function withTestClientIp(headers = {}) {
+  clientIpCounter += 1
+
+  return {
+    "X-Real-Ip": `127.0.0.${clientIpCounter}`,
+    ...headers,
   }
 }
 
@@ -86,7 +97,7 @@ const headHealth = await request("/api/health", { method: "HEAD" })
 assert(headHealth.status === 200, `/api/health HEAD: expected 200, received ${headHealth.status}`)
 assert(Boolean(headHealth.headers.get("x-request-id")), "/api/health HEAD: expected x-request-id header")
 
-const invalidContact = await postJson("/api/contact", { email: "bad@example.com" })
+const invalidContact = await postJson("/api/contact", { email: "bad@example.com" }, withTestClientIp())
 assert(invalidContact.status === 400, `/api/contact invalid body: expected 400, received ${invalidContact.status}`)
 assert(Boolean(invalidContact.headers.get("x-request-id")), "/api/contact invalid body: expected x-request-id header")
 
@@ -97,13 +108,43 @@ const invalidOrigin = await postJson(
     email: "origin@example.com",
     project: "Origin validation should reject this request cleanly.",
   },
-  { Origin: "https://evil.example" },
+  withTestClientIp({ Origin: "https://evil.example" }),
 )
 assert(invalidOrigin.status === 403, `/api/contact invalid origin: expected 403, received ${invalidOrigin.status}`)
 
+const idempotentPayload = {
+  name: "Idempotent User",
+  email: "idempotent@example.com",
+  project: "This request verifies idempotent replay for the contact endpoint.",
+}
+
+const firstIdempotent = await postJson("/api/contact", idempotentPayload, {
+  ...withTestClientIp(),
+  "Idempotency-Key": "contact-idempotency-test",
+})
+assert(firstIdempotent.status === 200, `/api/contact idempotent first: expected 200, received ${firstIdempotent.status}`)
+assert(firstIdempotent.json?.queued === true, "/api/contact idempotent first: expected queued=true")
+
+const replayedIdempotent = await postJson("/api/contact", idempotentPayload, {
+  ...withTestClientIp(),
+  "Idempotency-Key": "contact-idempotency-test",
+})
+assert(replayedIdempotent.status === 200, `/api/contact idempotent replay: expected 200, received ${replayedIdempotent.status}`)
+assert(replayedIdempotent.json?.replayed === true, "/api/contact idempotent replay: expected replayed=true")
+
+const conflictingIdempotent = await postJson(
+  "/api/contact",
+  {
+    ...idempotentPayload,
+    project: "This uses the same idempotency key but a different payload and should conflict.",
+  },
+  withTestClientIp({ "Idempotency-Key": "contact-idempotency-test" }),
+)
+assert(conflictingIdempotent.status === 409, `/api/contact idempotent conflict: expected 409, received ${conflictingIdempotent.status}`)
+
 const wrongContentTypeResponse = await request("/api/contact", {
   method: "POST",
-  headers: { "Content-Type": "text/plain" },
+  headers: withTestClientIp({ "Content-Type": "text/plain" }),
   body: "invalid",
 })
 assert(wrongContentTypeResponse.status === 400, `/api/contact wrong content-type: expected 400, received ${wrongContentTypeResponse.status}`)
