@@ -1,4 +1,7 @@
 import { randomUUID } from "node:crypto"
+import { join } from "node:path"
+
+import { readJsonFile, writeJsonFile } from "@/lib/server/json-file-store"
 
 type OutboxStatus = "pending" | "delivered" | "skipped" | "failed"
 
@@ -12,9 +15,17 @@ export type ContactOutboxEntry = {
   lastError?: string
 }
 
-const outbox = new Map<string, ContactOutboxEntry>()
+const OUTBOX_FILE_PATH = join(process.cwd(), ".data", "contact-outbox.json")
 
-export function enqueueContactOutboxEntry(input: { email: string; locale: string }) {
+async function readOutboxEntries() {
+  return readJsonFile<ContactOutboxEntry[]>(OUTBOX_FILE_PATH, [])
+}
+
+async function writeOutboxEntries(entries: ContactOutboxEntry[]) {
+  await writeJsonFile(OUTBOX_FILE_PATH, entries)
+}
+
+export async function enqueueContactOutboxEntry(input: { email: string; locale: string }) {
   const now = Date.now()
   const entry: ContactOutboxEntry = {
     id: randomUUID(),
@@ -25,32 +36,39 @@ export function enqueueContactOutboxEntry(input: { email: string; locale: string
     status: "pending",
   }
 
-  outbox.set(entry.id, entry)
+  const entries = await readOutboxEntries()
+  entries.push(entry)
+  await writeOutboxEntries(entries)
+
   return entry
 }
 
-export function updateContactOutboxEntry(
+export async function updateContactOutboxEntry(
   id: string,
   status: OutboxStatus,
   lastError?: string,
 ) {
-  const entry = outbox.get(id)
-  if (!entry) {
+  const entries = await readOutboxEntries()
+  const index = entries.findIndex((entry) => entry.id === id)
+
+  if (index === -1) {
     return null
   }
 
   const nextEntry: ContactOutboxEntry = {
-    ...entry,
+    ...entries[index],
     status,
     updatedAt: Date.now(),
     lastError,
   }
 
-  outbox.set(id, nextEntry)
+  entries[index] = nextEntry
+  await writeOutboxEntries(entries)
   return nextEntry
 }
 
-export function getContactOutboxDiagnostics() {
+export async function getContactOutboxDiagnostics() {
+  const entries = await readOutboxEntries()
   const counts: Record<OutboxStatus, number> = {
     pending: 0,
     delivered: 0,
@@ -58,12 +76,13 @@ export function getContactOutboxDiagnostics() {
     failed: 0,
   }
 
-  for (const entry of outbox.values()) {
+  for (const entry of entries) {
     counts[entry.status] += 1
   }
 
   return {
-    size: outbox.size,
+    size: entries.length,
     counts,
+    recent: entries.slice(-5).reverse(),
   }
 }

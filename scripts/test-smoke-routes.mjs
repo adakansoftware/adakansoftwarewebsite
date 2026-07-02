@@ -50,6 +50,7 @@ function withTestClientIp(headers = {}) {
   clientIpCounter += 1
 
   return {
+    "X-Forwarded-For": `127.0.0.${clientIpCounter}`,
     "X-Real-Ip": `127.0.0.${clientIpCounter}`,
     ...headers,
   }

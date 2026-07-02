@@ -14,5 +14,7 @@ node_modules
 .next/
 tsconfig.tsbuildinfo
 .DS_Store
+.data/
 dev-server.log
 prod-server.log
+prod-server*.log

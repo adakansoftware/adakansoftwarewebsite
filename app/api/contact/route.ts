@@ -106,7 +106,7 @@ export async function POST(request: Request) {
     return jsonResponse({ ok: false, error: "Invalid request" }, { status: 400, requestId })
   }
 
-  const replay = getIdempotencyReplay(request, submission, now)
+  const replay = await getIdempotencyReplay(request, submission, now)
   if (replay?.conflict) {
     return jsonResponse({ ok: false, error: "Idempotency conflict" }, { status: 409, requestId })
   }
@@ -125,7 +125,7 @@ export async function POST(request: Request) {
       queued: false,
     }
 
-    storeIdempotencyReplay(request, submission, {
+    await storeIdempotencyReplay(request, submission, {
       status: 200,
       body: duplicateResponse,
     })
@@ -133,13 +133,13 @@ export async function POST(request: Request) {
     return jsonResponse(duplicateResponse, { requestId })
   }
 
-  const outboxEntry = createQueuedContactMessage(submission)
+  const outboxEntry = await createQueuedContactMessage(submission)
 
   try {
     const result = await deliverContactMessage(submission)
 
     if (!result.ok) {
-      markContactMessageFailed(outboxEntry.id, "upstream-delivery-rejected")
+      await markContactMessageFailed(outboxEntry.id, "upstream-delivery-rejected")
 
       logServerEvent("error", "contact.delivery.rejected", {
         requestId,
@@ -150,7 +150,7 @@ export async function POST(request: Request) {
       return jsonResponse({ ok: false, error: "Email delivery failed" }, { status: 502, requestId })
     }
 
-    markContactMessageDelivered(outboxEntry.id, result.skipped ? "skipped" : "delivered")
+    await markContactMessageDelivered(outboxEntry.id, result.skipped ? "skipped" : "delivered")
 
     const successResponse = {
       ok: true,
@@ -162,7 +162,7 @@ export async function POST(request: Request) {
       messageId: outboxEntry.id,
     }
 
-    storeIdempotencyReplay(request, submission, {
+    await storeIdempotencyReplay(request, submission, {
       status: 200,
       body: successResponse,
     })
@@ -175,7 +175,7 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "unknown-error"
-    markContactMessageFailed(outboxEntry.id, errorMessage)
+    await markContactMessageFailed(outboxEntry.id, errorMessage)
 
     logServerEvent("error", "contact.delivery.failed", {
       requestId,

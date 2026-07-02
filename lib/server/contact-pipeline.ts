@@ -1,8 +1,10 @@
 import { createHash } from "node:crypto"
+import { join } from "node:path"
 
 import type { ContactSubmission } from "@/lib/server/contact-service"
 import { contactPolicy } from "@/lib/server/contact-policy"
 import { enqueueContactOutboxEntry, getContactOutboxDiagnostics, updateContactOutboxEntry } from "@/lib/server/contact-outbox"
+import { readJsonFile, writeJsonFile } from "@/lib/server/json-file-store"
 import { logServerEvent } from "@/lib/server/logger"
 
 type IdempotencyRecord = {
@@ -13,6 +15,10 @@ type IdempotencyRecord = {
 }
 
 const idempotencyRecords = new Map<string, IdempotencyRecord>()
+const IDEMPOTENCY_FILE_PATH = join(process.cwd(), ".data", "contact-idempotency.json")
+
+let idempotencyLoaded = false
+let idempotencyWriteQueue = Promise.resolve()
 
 function normalizeIdempotencyKey(value: string | null) {
   const normalized = value?.trim()
@@ -37,14 +43,40 @@ function pruneIdempotencyRecords(now: number) {
   }
 }
 
-export function getIdempotencyReplay(request: Request, submission: ContactSubmission, now: number) {
+async function loadIdempotencyRecords(now: number) {
+  if (idempotencyLoaded) {
+    pruneIdempotencyRecords(now)
+    return
+  }
+
+  const storedRecords = await readJsonFile<Array<[string, IdempotencyRecord]>>(IDEMPOTENCY_FILE_PATH, [])
+  for (const [key, record] of storedRecords) {
+    idempotencyRecords.set(key, record)
+  }
+
+  pruneIdempotencyRecords(now)
+  idempotencyLoaded = true
+}
+
+function persistIdempotencyRecords() {
+  idempotencyWriteQueue = idempotencyWriteQueue.then(() =>
+    writeJsonFile(IDEMPOTENCY_FILE_PATH, Array.from(idempotencyRecords.entries())),
+  )
+
+  return idempotencyWriteQueue
+}
+
+export async function getIdempotencyReplay(request: Request, submission: ContactSubmission, now: number) {
   const key = normalizeIdempotencyKey(request.headers.get("idempotency-key"))
   if (!key) {
     return null
   }
 
+  await loadIdempotencyRecords(now)
+
   if (idempotencyRecords.size > 500) {
     pruneIdempotencyRecords(now)
+    await persistIdempotencyRecords()
   }
 
   const existingRecord = idempotencyRecords.get(key)
@@ -71,7 +103,7 @@ export function getIdempotencyReplay(request: Request, submission: ContactSubmis
   }
 }
 
-export function storeIdempotencyReplay(
+export async function storeIdempotencyReplay(
   request: Request,
   submission: ContactSubmission,
   response: { status: number; body: Record<string, unknown> },
@@ -81,6 +113,8 @@ export function storeIdempotencyReplay(
     return null
   }
 
+  await loadIdempotencyRecords(Date.now())
+
   idempotencyRecords.set(key, {
     fingerprint: getSubmissionFingerprint(submission),
     status: response.status,
@@ -88,11 +122,13 @@ export function storeIdempotencyReplay(
     storedAt: Date.now(),
   })
 
+  await persistIdempotencyRecords()
+
   return key
 }
 
-export function createQueuedContactMessage(submission: ContactSubmission) {
-  const outboxEntry = enqueueContactOutboxEntry({
+export async function createQueuedContactMessage(submission: ContactSubmission) {
+  const outboxEntry = await enqueueContactOutboxEntry({
     email: submission.email,
     locale: submission.locale,
   })
@@ -106,8 +142,8 @@ export function createQueuedContactMessage(submission: ContactSubmission) {
   return outboxEntry
 }
 
-export function markContactMessageDelivered(messageId: string, mode: "delivered" | "skipped") {
-  updateContactOutboxEntry(messageId, mode)
+export async function markContactMessageDelivered(messageId: string, mode: "delivered" | "skipped") {
+  await updateContactOutboxEntry(messageId, mode)
 
   logServerEvent("info", "contact.outbox.completed", {
     messageId,
@@ -115,8 +151,8 @@ export function markContactMessageDelivered(messageId: string, mode: "delivered"
   })
 }
 
-export function markContactMessageFailed(messageId: string, error: string) {
-  updateContactOutboxEntry(messageId, "failed", error)
+export async function markContactMessageFailed(messageId: string, error: string) {
+  await updateContactOutboxEntry(messageId, "failed", error)
 
   logServerEvent("error", "contact.outbox.failed", {
     messageId,
@@ -124,9 +160,11 @@ export function markContactMessageFailed(messageId: string, error: string) {
   })
 }
 
-export function getContactPipelineDiagnostics() {
+export async function getContactPipelineDiagnostics() {
+  await loadIdempotencyRecords(Date.now())
+
   return {
-    outbox: getContactOutboxDiagnostics(),
+    outbox: await getContactOutboxDiagnostics(),
     idempotency: {
       size: idempotencyRecords.size,
       windowMs: contactPolicy.idempotencyWindowMs,

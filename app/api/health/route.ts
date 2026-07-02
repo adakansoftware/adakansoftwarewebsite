@@ -36,7 +36,7 @@ export async function GET(request: Request) {
   const requestId = createRequestId(request)
   const diagnostics = getContactServiceDiagnostics()
   const proxyRateLimit = getProxyRateLimitDiagnostics()
-  const pipeline = getContactPipelineDiagnostics()
+  const pipeline = await getContactPipelineDiagnostics()
   const status = process.env.NODE_ENV === "production" && !isContactDeliveryConfigured() ? "degraded" : "ok"
 
   return jsonResponse(
