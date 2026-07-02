@@ -1,7 +1,7 @@
 import { getContactPipelineDiagnostics } from "@/lib/server/contact-pipeline"
 import { getContactServiceDiagnostics, isContactDeliveryConfigured } from "@/lib/server/contact-service"
 import { getProxyRateLimitDiagnostics } from "@/lib/server/proxy-rate-limit"
-import { createRequestId, emptyResponse, jsonResponse } from "@/lib/server/http"
+import { createRequestId, emptyResponse, hasSignedAdminProtection, jsonResponse } from "@/lib/server/http"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -56,6 +56,8 @@ export async function GET(request: Request) {
         idempotencyProtection: true,
         outboxTracking: true,
         replayEndpointProtected: true,
+        signedAdminProtection: hasSignedAdminProtection(),
+        automaticReplayAvailable: Boolean(process.env.CONTACT_CRON_SECRET?.trim()),
         queueHealthy: !hasQueueAlerts,
       },
       diagnostics,

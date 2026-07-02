@@ -1,5 +1,7 @@
 /* global console, fetch, process */
 
+import { createHmac } from "node:crypto"
+
 const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3101"
 
 const checks = [
@@ -56,6 +58,21 @@ function withTestClientIp(headers = {}) {
   }
 }
 
+function createSignedAdminHeaders(path, headers = {}) {
+  const timestamp = String(Date.now())
+  const actor = headers["X-Admin-Actor"] ?? headers["x-admin-actor"] ?? "signed-smoke"
+  const reason = headers["X-Replay-Reason"] ?? headers["x-replay-reason"] ?? ""
+  const payload = `GET\n${path}\n${timestamp}\n${actor}\n${reason}`
+  const signature = createHmac("sha256", "test-admin-signing-secret").update(payload).digest("hex")
+
+  return {
+    "X-Admin-Timestamp": timestamp,
+    "X-Admin-Actor": actor,
+    "X-Admin-Signature": signature,
+    ...headers,
+  }
+}
+
 function assert(condition, message) {
   if (!condition) {
     throw new Error(message)
@@ -90,6 +107,10 @@ assert(optionsContact.headers.get("allow") === "POST, OPTIONS", `/api/contact OP
 const optionsReplay = await request("/api/contact/replay", { method: "OPTIONS" })
 assert(optionsReplay.status === 204, `/api/contact/replay OPTIONS: expected 204, received ${optionsReplay.status}`)
 assert(optionsReplay.headers.get("allow") === "GET, POST, OPTIONS", `/api/contact/replay OPTIONS: expected Allow header`)
+
+const optionsReplayCron = await request("/api/contact/replay/cron", { method: "OPTIONS" })
+assert(optionsReplayCron.status === 204, `/api/contact/replay/cron OPTIONS: expected 204, received ${optionsReplayCron.status}`)
+assert(optionsReplayCron.headers.get("allow") === "POST, OPTIONS", `/api/contact/replay/cron OPTIONS: expected Allow header`)
 
 const getContact = await request("/api/contact")
 assert(getContact.status === 405, `/api/contact GET: expected 405, received ${getContact.status}`)
@@ -159,6 +180,13 @@ const unauthorizedReplay = await request("/api/contact/replay", {
 })
 assert(unauthorizedReplay.status === 401, `/api/contact/replay unauthorized GET: expected 401, received ${unauthorizedReplay.status}`)
 
+const signedReplayDiagnostics = await request("/api/contact/replay", {
+  method: "GET",
+  headers: createSignedAdminHeaders("/api/contact/replay"),
+})
+assert(signedReplayDiagnostics.status === 200, `/api/contact/replay signed diagnostics: expected 200, received ${signedReplayDiagnostics.status}`)
+assert(signedReplayDiagnostics.text.includes('"pipeline"'), "/api/contact/replay signed diagnostics: expected pipeline payload")
+
 const replayDiagnostics = await request("/api/contact/replay", {
   method: "GET",
   headers: {
@@ -191,5 +219,19 @@ assert(adminReplay.text.includes('"replay"'), "/api/contact/replay authorized: e
 assert(adminReplay.text.includes('"lastSummary"'), "/api/contact/replay authorized: expected replay runtime summary")
 assert(adminReplay.text.includes('"audit"'), "/api/contact/replay authorized: expected replay audit trail")
 assert(adminReplay.text.includes('"reason":"smoke test replay"'), "/api/contact/replay authorized: expected replay reason in audit")
+
+const unauthorizedCronReplay = await request("/api/contact/replay/cron", {
+  method: "POST",
+})
+assert(unauthorizedCronReplay.status === 401, `/api/contact/replay/cron unauthorized: expected 401, received ${unauthorizedCronReplay.status}`)
+
+const cronReplay = await request("/api/contact/replay/cron", {
+  method: "POST",
+  headers: {
+    Authorization: "Bearer test-cron-secret",
+  },
+})
+assert(cronReplay.status === 200, `/api/contact/replay/cron authorized: expected 200, received ${cronReplay.status}`)
+assert(cronReplay.text.includes('"ok":true'), "/api/contact/replay/cron authorized: expected ok=true")
 
 console.log(`Smoke checks passed for ${baseUrl}`)
