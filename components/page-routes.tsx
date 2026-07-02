@@ -369,7 +369,7 @@ export function ContactPageContent({ locale }: { locale: Locale }) {
               <div className="flex flex-col gap-3 sm:flex-row">
                 <a
                   href={content.emailHref}
-                  className="inline-flex items-center gap-2 rounded-full border border-border/50 px-5 py-2.5 text-sm text-muted-foreground transition-colors hover:border-accent/50 hover:text-accent"
+                  className="inline-flex items-center gap-2 rounded-full border border-border/50 px-5 py-2.5 text-sm text-muted-foreground transition-colors hover:border-accent/50 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                 >
                   <ArrowRight className="h-4 w-4" />
                   {content.emailLabel}
@@ -378,7 +378,8 @@ export function ContactPageContent({ locale }: { locale: Locale }) {
                   href={getWhatsAppHref(locale)}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-border/50 px-5 py-2.5 text-sm text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
+                  aria-label={content.messagingLabel}
+                  className="inline-flex items-center gap-2 rounded-full border border-border/50 px-5 py-2.5 text-sm text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
                 >
                   <MessageCircle className="h-4 w-4" />
                   {content.messagingLabel}
@@ -403,7 +404,7 @@ export function ContactPageContent({ locale }: { locale: Locale }) {
               <Link
                 key={option.title}
                 href={option.href}
-                className="flex items-center gap-4 rounded-2xl border border-border/50 bg-card/25 p-6 transition-colors hover:border-accent/50"
+                className="flex items-center gap-4 rounded-2xl border border-border/50 bg-card/25 p-6 transition-colors hover:border-accent/50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 <option.icon className="h-5 w-5 text-accent" />
                 <span>

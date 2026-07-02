@@ -137,7 +137,7 @@ export const legalPageContent = {
       primaryHref: "/contact",
       primaryLabel: "Soru Sor",
       paragraphs: [
-        "Bu web sitesindeki metin, görsel ve marka öğeleri Adakan Software’e aittir veya tanıtım amacıyla kullanılır.",
+        "Bu web sitesindeki metin, görsel ve marka öğeleri Adakan Software'e aittir veya tanıtım amacıyla kullanılır.",
         "Site içeriği izinsiz kopyalanamaz, çoğaltılamaz veya yanıltıcı şekilde kullanılamaz.",
         "Proje kapsamı, teklif ve teslim koşulları her müşteri için ayrıca yazılı olarak belirlenir.",
       ],
@@ -157,4 +157,3 @@ export const legalPageContent = {
     },
   },
 } as const
-
