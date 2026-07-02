@@ -172,11 +172,13 @@ const adminReplay = await request("/api/contact/replay", {
   method: "POST",
   headers: {
     Authorization: "Bearer test-admin-key",
+    "X-Admin-Actor": "smoke-test",
   },
 })
 assert(adminReplay.status === 200, `/api/contact/replay authorized: expected 200, received ${adminReplay.status}`)
 assert(adminReplay.text.includes('"ok":true'), "/api/contact/replay authorized: expected ok=true")
 assert(adminReplay.text.includes('"replay"'), "/api/contact/replay authorized: expected replay summary")
 assert(adminReplay.text.includes('"lastSummary"'), "/api/contact/replay authorized: expected replay runtime summary")
+assert(adminReplay.text.includes('"audit"'), "/api/contact/replay authorized: expected replay audit trail")
 
 console.log(`Smoke checks passed for ${baseUrl}`)

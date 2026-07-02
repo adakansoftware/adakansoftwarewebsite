@@ -41,13 +41,27 @@ type ReplayRuntimeState = {
   lastSummary: ReplaySummary | null
 }
 
+type ReplayAuditEntry = {
+  requestId: string
+  actor: string
+  clientIp: string
+  startedAt: number
+  completedAt?: number
+  batchSize: number
+  outcome: "started" | "busy" | "completed" | "failed"
+  replay?: ReplaySummary | null
+  error?: string
+}
+
 const idempotencyRecords = new Map<string, IdempotencyRecord>()
 const IDEMPOTENCY_FILE_PATH = join(process.cwd(), ".data", "contact-idempotency.json")
 const REPLAY_RUNTIME_FILE_PATH = join(process.cwd(), ".data", "contact-replay-runtime.json")
+const REPLAY_AUDIT_FILE_PATH = join(process.cwd(), ".data", "contact-replay-audit.json")
 
 let idempotencyLoaded = false
 let idempotencyWriteQueue = Promise.resolve()
 let replayWriteQueue = Promise.resolve()
+let replayAuditWriteQueue = Promise.resolve()
 
 function normalizeIdempotencyKey(value: string | null) {
   const normalized = value?.trim()
@@ -115,6 +129,26 @@ async function readReplayRuntimeState(now = Date.now()) {
 function writeReplayRuntimeState(state: ReplayRuntimeState) {
   replayWriteQueue = replayWriteQueue.then(() => writeJsonFile(REPLAY_RUNTIME_FILE_PATH, state))
   return replayWriteQueue
+}
+
+async function readReplayAuditEntries() {
+  return readJsonFile<ReplayAuditEntry[]>(REPLAY_AUDIT_FILE_PATH, [])
+}
+
+function writeReplayAuditEntries(entries: ReplayAuditEntry[]) {
+  replayAuditWriteQueue = replayAuditWriteQueue.then(() => writeJsonFile(REPLAY_AUDIT_FILE_PATH, entries))
+  return replayAuditWriteQueue
+}
+
+async function appendReplayAuditEntry(entry: ReplayAuditEntry) {
+  const entries = await readReplayAuditEntries()
+  entries.push(entry)
+
+  if (entries.length > contactPolicy.replayAuditRetention) {
+    entries.splice(0, entries.length - contactPolicy.replayAuditRetention)
+  }
+
+  await writeReplayAuditEntries(entries)
 }
 
 export async function getIdempotencyReplay(request: Request, submission: ContactSubmission, now: number) {
@@ -274,11 +308,28 @@ export async function processContactOutboxEntries(limit = contactPolicy.outboxRe
   }
 }
 
-export async function runContactOutboxReplay(input: { limit?: number; requestId: string }) {
+export async function runContactOutboxReplay(input: {
+  limit?: number
+  requestId: string
+  actor: string
+  clientIp: string
+}) {
   const now = Date.now()
+  const batchSize = input.limit ?? contactPolicy.outboxReplayBatchSize
   const runtimeState = await readReplayRuntimeState(now)
 
   if (runtimeState.activeLock) {
+    await appendReplayAuditEntry({
+      requestId: input.requestId,
+      actor: input.actor,
+      clientIp: input.clientIp,
+      startedAt: now,
+      completedAt: now,
+      batchSize,
+      outcome: "busy",
+      replay: null,
+    })
+
     return {
       ok: false as const,
       busy: true as const,
@@ -298,13 +349,35 @@ export async function runContactOutboxReplay(input: { limit?: number; requestId:
     activeLock: lock,
   })
 
+  await appendReplayAuditEntry({
+    requestId: input.requestId,
+    actor: input.actor,
+    clientIp: input.clientIp,
+    startedAt: now,
+    batchSize,
+    outcome: "started",
+    replay: null,
+  })
+
   try {
     const replay = await processContactOutboxEntries(input.limit)
+    const completedAt = Date.now()
 
     await writeReplayRuntimeState({
       activeLock: null,
-      lastCompletedAt: Date.now(),
+      lastCompletedAt: completedAt,
       lastSummary: replay,
+    })
+
+    await appendReplayAuditEntry({
+      requestId: input.requestId,
+      actor: input.actor,
+      clientIp: input.clientIp,
+      startedAt: now,
+      completedAt,
+      batchSize,
+      outcome: "completed",
+      replay,
     })
 
     return {
@@ -319,6 +392,18 @@ export async function runContactOutboxReplay(input: { limit?: number; requestId:
       activeLock: null,
     })
 
+    await appendReplayAuditEntry({
+      requestId: input.requestId,
+      actor: input.actor,
+      clientIp: input.clientIp,
+      startedAt: now,
+      completedAt: Date.now(),
+      batchSize,
+      outcome: "failed",
+      replay: null,
+      error: error instanceof Error ? error.message : "unknown-error",
+    })
+
     throw error
   }
 }
@@ -326,6 +411,7 @@ export async function runContactOutboxReplay(input: { limit?: number; requestId:
 export async function getContactPipelineDiagnostics() {
   await loadIdempotencyRecords(Date.now())
   const replayRuntime = await readReplayRuntimeState(Date.now())
+  const replayAudit = await readReplayAuditEntries()
 
   return {
     outbox: await getContactOutboxDiagnostics(),
@@ -338,6 +424,7 @@ export async function getContactPipelineDiagnostics() {
       lastCompletedAt: replayRuntime.lastCompletedAt,
       lastSummary: replayRuntime.lastSummary,
       lockWindowMs: contactPolicy.outboxReplayLockMs,
+      audit: replayAudit.slice(-10).reverse(),
     },
   }
 }

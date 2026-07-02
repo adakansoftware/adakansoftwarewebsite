@@ -1,6 +1,6 @@
 import { contactPolicy } from "@/lib/server/contact-policy"
 import { getContactPipelineDiagnostics, runContactOutboxReplay } from "@/lib/server/contact-pipeline"
-import { createRequestId, emptyResponse, isAuthorizedAdminRequest, jsonResponse } from "@/lib/server/http"
+import { createRequestId, emptyResponse, getClientIp, isAuthorizedAdminRequest, jsonResponse } from "@/lib/server/http"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -21,6 +21,7 @@ export async function OPTIONS(request: Request) {
 
 export async function POST(request: Request) {
   const requestId = createRequestId(request)
+  const clientIp = getClientIp(request)
 
   if (!isAuthorizedAdminRequest(request)) {
     return jsonResponse({ ok: false, error: "Unauthorized" }, { status: 401, requestId })
@@ -36,6 +37,8 @@ export async function POST(request: Request) {
   const replayResult = await runContactOutboxReplay({
     limit: batchSize,
     requestId,
+    actor: request.headers.get("x-admin-actor")?.trim() || "unknown-admin",
+    clientIp,
   })
 
   if (!replayResult.ok) {
