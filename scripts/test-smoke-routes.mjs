@@ -168,11 +168,21 @@ const replayDiagnostics = await request("/api/contact/replay", {
 assert(replayDiagnostics.status === 200, `/api/contact/replay diagnostics: expected 200, received ${replayDiagnostics.status}`)
 assert(replayDiagnostics.text.includes('"pipeline"'), "/api/contact/replay diagnostics: expected pipeline payload")
 
+const replayWithoutReason = await request("/api/contact/replay", {
+  method: "POST",
+  headers: {
+    Authorization: "Bearer test-admin-key",
+    "X-Admin-Actor": "smoke-test",
+  },
+})
+assert(replayWithoutReason.status === 400, `/api/contact/replay missing reason: expected 400, received ${replayWithoutReason.status}`)
+
 const adminReplay = await request("/api/contact/replay", {
   method: "POST",
   headers: {
     Authorization: "Bearer test-admin-key",
     "X-Admin-Actor": "smoke-test",
+    "X-Replay-Reason": "smoke test replay",
   },
 })
 assert(adminReplay.status === 200, `/api/contact/replay authorized: expected 200, received ${adminReplay.status}`)
@@ -180,5 +190,6 @@ assert(adminReplay.text.includes('"ok":true'), "/api/contact/replay authorized: 
 assert(adminReplay.text.includes('"replay"'), "/api/contact/replay authorized: expected replay summary")
 assert(adminReplay.text.includes('"lastSummary"'), "/api/contact/replay authorized: expected replay runtime summary")
 assert(adminReplay.text.includes('"audit"'), "/api/contact/replay authorized: expected replay audit trail")
+assert(adminReplay.text.includes('"reason":"smoke test replay"'), "/api/contact/replay authorized: expected replay reason in audit")
 
 console.log(`Smoke checks passed for ${baseUrl}`)

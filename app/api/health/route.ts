@@ -37,7 +37,9 @@ export async function GET(request: Request) {
   const diagnostics = getContactServiceDiagnostics()
   const proxyRateLimit = getProxyRateLimitDiagnostics()
   const pipeline = await getContactPipelineDiagnostics()
-  const status = process.env.NODE_ENV === "production" && !isContactDeliveryConfigured() ? "degraded" : "ok"
+  const hasQueueAlerts = pipeline.alerts.length > 0
+  const status =
+    process.env.NODE_ENV === "production" && (!isContactDeliveryConfigured() || hasQueueAlerts) ? "degraded" : "ok"
 
   return jsonResponse(
     {
@@ -54,6 +56,7 @@ export async function GET(request: Request) {
         idempotencyProtection: true,
         outboxTracking: true,
         replayEndpointProtected: true,
+        queueHealthy: !hasQueueAlerts,
       },
       diagnostics,
       pipeline,

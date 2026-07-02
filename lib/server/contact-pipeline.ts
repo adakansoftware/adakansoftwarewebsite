@@ -45,6 +45,7 @@ type ReplayRuntimeState = {
 type ReplayAuditEntry = {
   requestId: string
   actor: string
+  reason: string
   clientIp: string
   startedAt: number
   completedAt?: number
@@ -329,6 +330,7 @@ export async function runContactOutboxReplay(input: {
   limit?: number
   requestId: string
   actor: string
+  reason: string
   clientIp: string
 }) {
   const now = Date.now()
@@ -339,6 +341,7 @@ export async function runContactOutboxReplay(input: {
     await appendReplayAuditEntry({
       requestId: input.requestId,
       actor: input.actor,
+      reason: input.reason,
       clientIp: input.clientIp,
       startedAt: now,
       completedAt: now,
@@ -369,6 +372,7 @@ export async function runContactOutboxReplay(input: {
   await appendReplayAuditEntry({
     requestId: input.requestId,
     actor: input.actor,
+    reason: input.reason,
     clientIp: input.clientIp,
     startedAt: now,
     batchSize,
@@ -389,6 +393,7 @@ export async function runContactOutboxReplay(input: {
     await appendReplayAuditEntry({
       requestId: input.requestId,
       actor: input.actor,
+      reason: input.reason,
       clientIp: input.clientIp,
       startedAt: now,
       completedAt,
@@ -412,6 +417,7 @@ export async function runContactOutboxReplay(input: {
     await appendReplayAuditEntry({
       requestId: input.requestId,
       actor: input.actor,
+      reason: input.reason,
       clientIp: input.clientIp,
       startedAt: now,
       completedAt: Date.now(),
@@ -430,8 +436,15 @@ export async function getContactPipelineDiagnostics() {
   const replayRuntime = await readReplayRuntimeState(Date.now())
   const replayAudit = await readReplayAuditEntries()
 
+  const outbox = await getContactOutboxDiagnostics()
+  const alerts = [
+    outbox.oldestPendingAgeMs && outbox.oldestPendingAgeMs >= contactPolicy.queueAlertAgeMs ? "pending-queue-aging" : null,
+    outbox.oldestFailedAgeMs && outbox.oldestFailedAgeMs >= contactPolicy.queueAlertAgeMs ? "failed-queue-aging" : null,
+    outbox.claimedCount > 0 ? "leases-active" : null,
+  ].filter((value): value is string => Boolean(value))
+
   return {
-    outbox: await getContactOutboxDiagnostics(),
+    outbox,
     idempotency: {
       size: idempotencyRecords.size,
       windowMs: contactPolicy.idempotencyWindowMs,
@@ -443,5 +456,6 @@ export async function getContactPipelineDiagnostics() {
       lockWindowMs: contactPolicy.outboxReplayLockMs,
       audit: replayAudit.slice(-10).reverse(),
     },
+    alerts,
   }
 }
