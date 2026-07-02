@@ -1,6 +1,8 @@
+import { contactPolicy } from "@/lib/server/contact-policy"
 import {
   deliverContactMessage,
   getContactContentLengthLimit,
+  hasSpamTrapValue,
   isContactDeliveryConfigured,
   isDuplicateSubmission,
   isRateLimited,
@@ -16,6 +18,7 @@ import {
 } from "@/lib/server/http"
 
 export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
 
 const ALLOW_HEADER_VALUE = "POST, OPTIONS"
 
@@ -67,7 +70,7 @@ export async function POST(request: Request) {
         status: 429,
         requestId,
         headers: {
-          "Retry-After": "60",
+          "Retry-After": String(Math.ceil(contactPolicy.rateLimitWindowMs / 1000)),
         },
       },
     )
@@ -86,13 +89,7 @@ export async function POST(request: Request) {
     return jsonResponse({ ok: false, error: "Invalid request" }, { status: 400, requestId })
   }
 
-  if (
-    typeof body === "object" &&
-    body !== null &&
-    "website" in body &&
-    typeof body.website === "string" &&
-    body.website.trim().length > 0
-  ) {
+  if (hasSpamTrapValue(body)) {
     return jsonResponse({ ok: true, accepted: true }, { requestId })
   }
 

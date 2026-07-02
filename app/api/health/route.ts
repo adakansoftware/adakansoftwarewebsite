@@ -1,24 +1,63 @@
-import { isContactDeliveryConfigured } from "@/lib/server/contact-service"
-import { createRequestId, jsonResponse } from "@/lib/server/http"
+import { getContactServiceDiagnostics, isContactDeliveryConfigured } from "@/lib/server/contact-service"
+import { getProxyRateLimitDiagnostics } from "@/lib/server/proxy-rate-limit"
+import { createRequestId, emptyResponse, jsonResponse } from "@/lib/server/http"
 
 export const runtime = "nodejs"
+export const dynamic = "force-dynamic"
+
+const ALLOW_HEADER_VALUE = "GET, HEAD, OPTIONS"
+
+export async function OPTIONS(request: Request) {
+  const requestId = createRequestId(request)
+
+  return emptyResponse({
+    status: 204,
+    requestId,
+    headers: {
+      Allow: ALLOW_HEADER_VALUE,
+    },
+  })
+}
+
+export async function HEAD(request: Request) {
+  const requestId = createRequestId(request)
+
+  return emptyResponse({
+    status: 200,
+    requestId,
+    headers: {
+      Allow: ALLOW_HEADER_VALUE,
+    },
+  })
+}
 
 export async function GET(request: Request) {
   const requestId = createRequestId(request)
+  const diagnostics = getContactServiceDiagnostics()
+  const proxyRateLimit = getProxyRateLimitDiagnostics()
+  const status = process.env.NODE_ENV === "production" && !isContactDeliveryConfigured() ? "degraded" : "ok"
 
   return jsonResponse(
     {
       ok: true,
+      status,
       service: "adakansoftware-website",
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV ?? "development",
       checks: {
-        contactDeliveryConfigured: isContactDeliveryConfigured(),
+        contactDeliveryConfigured: diagnostics.deliveryConfigured,
         requestId: true,
         originProtection: true,
         duplicateProtection: true,
       },
+      diagnostics,
+      proxy: proxyRateLimit,
     },
-    { requestId },
+    {
+      requestId,
+      headers: {
+        Allow: ALLOW_HEADER_VALUE,
+      },
+    },
   )
 }

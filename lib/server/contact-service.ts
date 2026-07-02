@@ -4,6 +4,7 @@ import { z } from "zod"
 
 import type { Locale } from "@/lib/i18n"
 import { siteConfig } from "@/lib/site-config"
+import { contactPolicy, getContactPolicySnapshot } from "@/lib/server/contact-policy"
 import { pruneExpiredBuckets, pruneExpiredEntries } from "@/lib/server/memory-store"
 
 function normalizeWhitespace(value: string) {
@@ -28,18 +29,21 @@ const contactSchema = z.object({
   website: z.preprocess(normalizeOptionalString, z.string().max(200).optional()),
 })
 
-const RATE_LIMIT_WINDOW_MS = 60_000
-const RATE_LIMIT_MAX_REQUESTS = 4
-const DUPLICATE_WINDOW_MS = 10 * 60_000
-const MAX_CONTENT_LENGTH = 12_000
-
 const requestTimestampsByIp = new Map<string, number[]>()
 const recentSubmissionFingerprints = new Map<string, number>()
 
 export type ContactSubmission = z.infer<typeof contactSchema> & { locale: Locale }
 
 export function getContactContentLengthLimit() {
-  return MAX_CONTENT_LENGTH
+  return contactPolicy.maxContentLength
+}
+
+export function hasSpamTrapValue(payload: unknown) {
+  if (typeof payload !== "object" || payload === null || !("website" in payload)) {
+    return false
+  }
+
+  return typeof payload.website === "string" && payload.website.trim().length > 0
 }
 
 export function parseContactPayload(payload: unknown) {
@@ -57,14 +61,17 @@ export function parseContactPayload(payload: unknown) {
 
 export function isRateLimited(ip: string, now: number) {
   if (requestTimestampsByIp.size > 200) {
-    pruneExpiredBuckets(requestTimestampsByIp, now, RATE_LIMIT_WINDOW_MS)
+    pruneExpiredBuckets(requestTimestampsByIp, now, contactPolicy.rateLimitWindowMs)
   }
 
-  const recentTimestamps = (requestTimestampsByIp.get(ip) ?? []).filter((timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS)
+  const recentTimestamps = (requestTimestampsByIp.get(ip) ?? []).filter(
+    (timestamp) => now - timestamp < contactPolicy.rateLimitWindowMs,
+  )
+
   recentTimestamps.push(now)
   requestTimestampsByIp.set(ip, recentTimestamps)
 
-  return recentTimestamps.length > RATE_LIMIT_MAX_REQUESTS
+  return recentTimestamps.length > contactPolicy.rateLimitMaxRequests
 }
 
 function getSubmissionFingerprint(input: { email: string; project: string; locale: Locale; ip: string }) {
@@ -75,7 +82,7 @@ function getSubmissionFingerprint(input: { email: string; project: string; local
 
 export function isDuplicateSubmission(submission: ContactSubmission, ip: string, now: number) {
   if (recentSubmissionFingerprints.size > 500) {
-    pruneExpiredEntries(recentSubmissionFingerprints, now, DUPLICATE_WINDOW_MS)
+    pruneExpiredEntries(recentSubmissionFingerprints, now, contactPolicy.duplicateWindowMs)
   }
 
   const fingerprint = getSubmissionFingerprint({
@@ -86,7 +93,7 @@ export function isDuplicateSubmission(submission: ContactSubmission, ip: string,
   })
 
   const previousTimestamp = recentSubmissionFingerprints.get(fingerprint)
-  if (previousTimestamp && now - previousTimestamp < DUPLICATE_WINDOW_MS) {
+  if (previousTimestamp && now - previousTimestamp < contactPolicy.duplicateWindowMs) {
     recentSubmissionFingerprints.set(fingerprint, now)
     return true
   }
@@ -123,6 +130,15 @@ export function isContactDeliveryConfigured() {
   return Boolean(resendApiKey && resendApiKey !== "re_your_key_here")
 }
 
+export function getContactServiceDiagnostics() {
+  return {
+    deliveryConfigured: isContactDeliveryConfigured(),
+    inMemoryRateLimitBuckets: requestTimestampsByIp.size,
+    inMemoryDuplicateFingerprints: recentSubmissionFingerprints.size,
+    policy: getContactPolicySnapshot(),
+  }
+}
+
 export async function deliverContactMessage(submission: ContactSubmission) {
   const resendApiKey = process.env.RESEND_API_KEY
   if (!resendApiKey || resendApiKey === "re_your_key_here") {
@@ -142,7 +158,7 @@ export async function deliverContactMessage(submission: ContactSubmission) {
       subject: getSubject(submission.locale),
       text: getText(submission),
     }),
-    signal: AbortSignal.timeout(8_000),
+    signal: AbortSignal.timeout(contactPolicy.deliveryTimeoutMs),
   })
 
   return {

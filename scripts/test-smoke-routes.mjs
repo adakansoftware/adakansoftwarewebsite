@@ -78,6 +78,14 @@ assert(optionsContact.headers.get("allow") === "POST, OPTIONS", `/api/contact OP
 const getContact = await request("/api/contact")
 assert(getContact.status === 405, `/api/contact GET: expected 405, received ${getContact.status}`)
 
+const optionsHealth = await request("/api/health", { method: "OPTIONS" })
+assert(optionsHealth.status === 204, `/api/health OPTIONS: expected 204, received ${optionsHealth.status}`)
+assert(optionsHealth.headers.get("allow") === "GET, HEAD, OPTIONS", `/api/health OPTIONS: expected Allow header`)
+
+const headHealth = await request("/api/health", { method: "HEAD" })
+assert(headHealth.status === 200, `/api/health HEAD: expected 200, received ${headHealth.status}`)
+assert(Boolean(headHealth.headers.get("x-request-id")), "/api/health HEAD: expected x-request-id header")
+
 const invalidContact = await postJson("/api/contact", { email: "bad@example.com" })
 assert(invalidContact.status === 400, `/api/contact invalid body: expected 400, received ${invalidContact.status}`)
 assert(Boolean(invalidContact.headers.get("x-request-id")), "/api/contact invalid body: expected x-request-id header")
