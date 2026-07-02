@@ -1,11 +1,11 @@
 import { contactPolicy } from "@/lib/server/contact-policy"
-import { getContactPipelineDiagnostics, processContactOutboxEntries } from "@/lib/server/contact-pipeline"
+import { getContactPipelineDiagnostics, runContactOutboxReplay } from "@/lib/server/contact-pipeline"
 import { createRequestId, emptyResponse, isAuthorizedAdminRequest, jsonResponse } from "@/lib/server/http"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
-const ALLOW_HEADER_VALUE = "POST, OPTIONS"
+const ALLOW_HEADER_VALUE = "GET, POST, OPTIONS"
 
 export async function OPTIONS(request: Request) {
   const requestId = createRequestId(request)
@@ -33,13 +33,46 @@ export async function POST(request: Request) {
       ? Math.min(requestedBatchSize, contactPolicy.outboxReplayBatchSize)
       : contactPolicy.outboxReplayBatchSize
 
-  const replay = await processContactOutboxEntries(batchSize)
+  const replayResult = await runContactOutboxReplay({
+    limit: batchSize,
+    requestId,
+  })
+
+  if (!replayResult.ok) {
+    return jsonResponse(
+      {
+        ok: false,
+        error: "Replay already in progress",
+        lock: replayResult.lock,
+      },
+      { status: 409, requestId },
+    )
+  }
+
   const pipeline = await getContactPipelineDiagnostics()
 
   return jsonResponse(
     {
       ok: true,
-      replay,
+      replay: replayResult.replay,
+      pipeline,
+    },
+    { requestId },
+  )
+}
+
+export async function GET(request: Request) {
+  const requestId = createRequestId(request)
+
+  if (!isAuthorizedAdminRequest(request)) {
+    return jsonResponse({ ok: false, error: "Unauthorized" }, { status: 401, requestId })
+  }
+
+  const pipeline = await getContactPipelineDiagnostics()
+
+  return jsonResponse(
+    {
+      ok: true,
       pipeline,
     },
     { requestId },

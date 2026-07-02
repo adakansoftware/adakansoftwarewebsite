@@ -21,11 +21,33 @@ type IdempotencyRecord = {
   storedAt: number
 }
 
+type ReplayLockState = {
+  requestId: string
+  startedAt: number
+  expiresAt: number
+}
+
+type ReplaySummary = {
+  scanned: number
+  delivered: number
+  skipped: number
+  failed: number
+  remaining: number
+}
+
+type ReplayRuntimeState = {
+  activeLock: ReplayLockState | null
+  lastCompletedAt: number | null
+  lastSummary: ReplaySummary | null
+}
+
 const idempotencyRecords = new Map<string, IdempotencyRecord>()
 const IDEMPOTENCY_FILE_PATH = join(process.cwd(), ".data", "contact-idempotency.json")
+const REPLAY_RUNTIME_FILE_PATH = join(process.cwd(), ".data", "contact-replay-runtime.json")
 
 let idempotencyLoaded = false
 let idempotencyWriteQueue = Promise.resolve()
+let replayWriteQueue = Promise.resolve()
 
 function normalizeIdempotencyKey(value: string | null) {
   const normalized = value?.trim()
@@ -71,6 +93,28 @@ function persistIdempotencyRecords() {
   )
 
   return idempotencyWriteQueue
+}
+
+async function readReplayRuntimeState(now = Date.now()) {
+  const state = await readJsonFile<ReplayRuntimeState>(REPLAY_RUNTIME_FILE_PATH, {
+    activeLock: null,
+    lastCompletedAt: null,
+    lastSummary: null,
+  })
+
+  if (state.activeLock && state.activeLock.expiresAt <= now) {
+    return {
+      ...state,
+      activeLock: null,
+    } satisfies ReplayRuntimeState
+  }
+
+  return state
+}
+
+function writeReplayRuntimeState(state: ReplayRuntimeState) {
+  replayWriteQueue = replayWriteQueue.then(() => writeJsonFile(REPLAY_RUNTIME_FILE_PATH, state))
+  return replayWriteQueue
 }
 
 export async function getIdempotencyReplay(request: Request, submission: ContactSubmission, now: number) {
@@ -230,14 +274,70 @@ export async function processContactOutboxEntries(limit = contactPolicy.outboxRe
   }
 }
 
+export async function runContactOutboxReplay(input: { limit?: number; requestId: string }) {
+  const now = Date.now()
+  const runtimeState = await readReplayRuntimeState(now)
+
+  if (runtimeState.activeLock) {
+    return {
+      ok: false as const,
+      busy: true as const,
+      lock: runtimeState.activeLock,
+      replay: null,
+    }
+  }
+
+  const lock: ReplayLockState = {
+    requestId: input.requestId,
+    startedAt: now,
+    expiresAt: now + contactPolicy.outboxReplayLockMs,
+  }
+
+  await writeReplayRuntimeState({
+    ...runtimeState,
+    activeLock: lock,
+  })
+
+  try {
+    const replay = await processContactOutboxEntries(input.limit)
+
+    await writeReplayRuntimeState({
+      activeLock: null,
+      lastCompletedAt: Date.now(),
+      lastSummary: replay,
+    })
+
+    return {
+      ok: true as const,
+      busy: false as const,
+      lock: null,
+      replay,
+    }
+  } catch (error) {
+    await writeReplayRuntimeState({
+      ...runtimeState,
+      activeLock: null,
+    })
+
+    throw error
+  }
+}
+
 export async function getContactPipelineDiagnostics() {
   await loadIdempotencyRecords(Date.now())
+  const replayRuntime = await readReplayRuntimeState(Date.now())
 
   return {
     outbox: await getContactOutboxDiagnostics(),
     idempotency: {
       size: idempotencyRecords.size,
       windowMs: contactPolicy.idempotencyWindowMs,
+    },
+    replay: {
+      lock: replayRuntime.activeLock,
+      lastCompletedAt: replayRuntime.lastCompletedAt,
+      lastSummary: replayRuntime.lastSummary,
+      lockWindowMs: contactPolicy.outboxReplayLockMs,
     },
   }
 }

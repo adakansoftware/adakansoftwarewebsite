@@ -89,7 +89,7 @@ assert(optionsContact.headers.get("allow") === "POST, OPTIONS", `/api/contact OP
 
 const optionsReplay = await request("/api/contact/replay", { method: "OPTIONS" })
 assert(optionsReplay.status === 204, `/api/contact/replay OPTIONS: expected 204, received ${optionsReplay.status}`)
-assert(optionsReplay.headers.get("allow") === "POST, OPTIONS", `/api/contact/replay OPTIONS: expected Allow header`)
+assert(optionsReplay.headers.get("allow") === "GET, POST, OPTIONS", `/api/contact/replay OPTIONS: expected Allow header`)
 
 const getContact = await request("/api/contact")
 assert(getContact.status === 405, `/api/contact GET: expected 405, received ${getContact.status}`)
@@ -155,9 +155,18 @@ const wrongContentTypeResponse = await request("/api/contact", {
 assert(wrongContentTypeResponse.status === 400, `/api/contact wrong content-type: expected 400, received ${wrongContentTypeResponse.status}`)
 
 const unauthorizedReplay = await request("/api/contact/replay", {
-  method: "POST",
+  method: "GET",
 })
-assert(unauthorizedReplay.status === 401, `/api/contact/replay unauthorized: expected 401, received ${unauthorizedReplay.status}`)
+assert(unauthorizedReplay.status === 401, `/api/contact/replay unauthorized GET: expected 401, received ${unauthorizedReplay.status}`)
+
+const replayDiagnostics = await request("/api/contact/replay", {
+  method: "GET",
+  headers: {
+    Authorization: "Bearer test-admin-key",
+  },
+})
+assert(replayDiagnostics.status === 200, `/api/contact/replay diagnostics: expected 200, received ${replayDiagnostics.status}`)
+assert(replayDiagnostics.text.includes('"pipeline"'), "/api/contact/replay diagnostics: expected pipeline payload")
 
 const adminReplay = await request("/api/contact/replay", {
   method: "POST",
@@ -168,5 +177,6 @@ const adminReplay = await request("/api/contact/replay", {
 assert(adminReplay.status === 200, `/api/contact/replay authorized: expected 200, received ${adminReplay.status}`)
 assert(adminReplay.text.includes('"ok":true'), "/api/contact/replay authorized: expected ok=true")
 assert(adminReplay.text.includes('"replay"'), "/api/contact/replay authorized: expected replay summary")
+assert(adminReplay.text.includes('"lastSummary"'), "/api/contact/replay authorized: expected replay runtime summary")
 
 console.log(`Smoke checks passed for ${baseUrl}`)

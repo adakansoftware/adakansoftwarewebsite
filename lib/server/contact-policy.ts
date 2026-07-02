@@ -7,6 +7,7 @@ type ContactPolicy = {
   deliveryTimeoutMs: number
   outboxRetentionMs: number
   outboxReplayBatchSize: number
+  outboxReplayLockMs: number
 }
 
 function readPositiveInteger(name: string, fallback: number) {
@@ -28,6 +29,7 @@ export const contactPolicy: ContactPolicy = {
   deliveryTimeoutMs: readPositiveInteger("CONTACT_DELIVERY_TIMEOUT_MS", 8_000),
   outboxRetentionMs: readPositiveInteger("CONTACT_OUTBOX_RETENTION_MS", 7 * 24 * 60 * 60_000),
   outboxReplayBatchSize: readPositiveInteger("CONTACT_OUTBOX_REPLAY_BATCH_SIZE", 25),
+  outboxReplayLockMs: readPositiveInteger("CONTACT_OUTBOX_REPLAY_LOCK_MS", 30_000),
 }
 
 export function getContactPolicySnapshot() {
@@ -40,5 +42,6 @@ export function getContactPolicySnapshot() {
     deliveryTimeoutMs: contactPolicy.deliveryTimeoutMs,
     outboxRetentionMs: contactPolicy.outboxRetentionMs,
     outboxReplayBatchSize: contactPolicy.outboxReplayBatchSize,
+    outboxReplayLockMs: contactPolicy.outboxReplayLockMs,
   }
 }

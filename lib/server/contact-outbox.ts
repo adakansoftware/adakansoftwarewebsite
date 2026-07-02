@@ -108,9 +108,19 @@ export async function getContactOutboxDiagnostics() {
     counts[entry.status] += 1
   }
 
+  const now = Date.now()
+  const oldestPendingEntry = entries
+    .filter((entry) => entry.status === "pending")
+    .sort((left, right) => left.createdAt - right.createdAt)[0]
+  const oldestFailedEntry = entries
+    .filter((entry) => entry.status === "failed")
+    .sort((left, right) => left.createdAt - right.createdAt)[0]
+
   return {
     size: entries.length,
     counts,
+    oldestPendingAgeMs: oldestPendingEntry ? now - oldestPendingEntry.createdAt : null,
+    oldestFailedAgeMs: oldestFailedEntry ? now - oldestFailedEntry.createdAt : null,
     recent: entries.slice(-5).reverse(),
   }
 }
