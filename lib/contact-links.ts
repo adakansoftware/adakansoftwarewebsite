@@ -15,6 +15,23 @@ export const whatsAppCopy = {
   },
 } satisfies Record<Locale, { label: string; text: string; short: string }>
 
+export const inquirySubjectCopy = {
+  tr: "Yeni proje görüşmesi",
+  en: "New project inquiry",
+} satisfies Record<Locale, string>
+
+export function createMailtoHref(email: string, subject?: string) {
+  if (!subject) {
+    return `mailto:${email}`
+  }
+
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}`
+}
+
+export function getInquiryMailto(email: string, locale: Locale) {
+  return createMailtoHref(email, inquirySubjectCopy[locale])
+}
+
 export function getWhatsAppHref(locale: Locale) {
   return `https://wa.me/${whatsAppPhoneNumber}?text=${encodeURIComponent(whatsAppCopy[locale].text)}`
 }

@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react"
 
 import { CTASection } from "@/components/cta-section"
 import { PageHeader } from "@/components/page-header"
+import { createMailtoHref } from "@/lib/contact-links"
 import type { Locale } from "@/lib/i18n"
 import { careersPageContent, blogPageContent, legalPageContent } from "@/lib/static-page-content"
 import { siteConfig } from "@/lib/site-config"
@@ -14,7 +15,7 @@ export function BlogPageContent({ locale }: { locale: Locale }) {
       ? "Tasarım, marka ve frontend geliştirme üzerine ara sıra pratik notlar paylaşıyoruz. Haberdar olmak için e-posta bırak."
       : "We occasionally share practical notes on design, brand strategy, and frontend development. Leave your email to stay updated."
   const buttonLabel = locale === "tr" ? "Kayıt Ol" : "Subscribe"
-  const subject = encodeURIComponent(locale === "tr" ? "E-bülten kaydı" : "Newsletter signup")
+  const subject = locale === "tr" ? "E-bülten kaydı" : "Newsletter signup"
 
   return (
     <>
@@ -25,7 +26,7 @@ export function BlogPageContent({ locale }: { locale: Locale }) {
             <span className="text-xs font-medium tracking-widest text-accent uppercase">{label}</span>
             <h2 className="mt-4 text-2xl font-bold">{bodyText}</h2>
             <a
-              href={`mailto:${siteConfig.email}?subject=${subject}`}
+              href={createMailtoHref(siteConfig.email, subject)}
               className="group mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               {buttonLabel}
@@ -77,7 +78,7 @@ export function CareersPageContent({ locale }: { locale: Locale }) {
             body: "Not separate disciplines here. Designers read code, developers question design decisions.",
           },
         ]
-  const subject = encodeURIComponent(locale === "tr" ? "Portfolyo başvurusu" : "Portfolio application")
+  const subject = locale === "tr" ? "Portfolyo başvurusu" : "Portfolio application"
 
   return (
     <>
@@ -105,7 +106,7 @@ export function CareersPageContent({ locale }: { locale: Locale }) {
                 : "But you can always reach out with a strong portfolio. We are always happy to see work in design, frontend, and brand strategy. Applications are reviewed and we follow up."}
             </p>
             <a
-              href={`mailto:${siteConfig.email}?subject=${subject}`}
+              href={createMailtoHref(siteConfig.email, subject)}
               className="group mt-6 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/5 px-6 py-3 text-sm font-medium text-accent transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
             >
               {locale === "tr" ? "Portfolyonu gönder" : "Send your portfolio"}

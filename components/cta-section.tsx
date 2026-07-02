@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react"
 
 import { MagneticButton } from "@/components/magnetic-button"
 import { Button } from "@/components/ui/button"
+import { getInquiryMailto } from "@/lib/contact-links"
 import { ctaContent } from "@/lib/home-content"
 import { withLocale, type Locale } from "@/lib/i18n"
 import { siteConfig } from "@/lib/site-config"
@@ -71,7 +72,7 @@ export function CTASection({ locale = "tr" }: { locale?: Locale }) {
 
             <MagneticButton strength={0.2}>
               <a
-              href={`mailto:${siteConfig.email}?subject=${locale === "tr" ? "Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi" : "New%20project%20inquiry"}`}
+                href={getInquiryMailto(siteConfig.email, locale)}
                 className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-lg font-medium text-muted-foreground transition-colors hover:bg-white/8 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
               >
                 {siteConfig.email}

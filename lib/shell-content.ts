@@ -1,5 +1,6 @@
 import { Mail, MapPin, type LucideIcon } from "lucide-react"
 
+import { getInquiryMailto } from "@/lib/contact-links"
 import type { Locale } from "@/lib/i18n"
 import { siteConfig } from "@/lib/site-config"
 
@@ -153,10 +154,7 @@ export function getContactOptions(locale: Locale): ContactOption[] {
     {
       title: locale === "tr" ? "E-posta" : "Email",
       value: siteConfig.email,
-      href:
-        locale === "tr"
-          ? `mailto:${siteConfig.email}?subject=Yeni%20proje%20g%C3%B6r%C3%BC%C5%9Fmesi`
-          : `mailto:${siteConfig.email}?subject=New%20project%20inquiry`,
+      href: getInquiryMailto(siteConfig.email, locale),
       icon: Mail,
     },
     {
