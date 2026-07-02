@@ -53,6 +53,7 @@ export async function GET(request: Request) {
         duplicateProtection: true,
         idempotencyProtection: true,
         outboxTracking: true,
+        replayEndpointProtected: true,
       },
       diagnostics,
       pipeline,

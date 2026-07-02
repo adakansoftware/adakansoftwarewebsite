@@ -87,6 +87,10 @@ const optionsContact = await request("/api/contact", { method: "OPTIONS" })
 assert(optionsContact.status === 204, `/api/contact OPTIONS: expected 204, received ${optionsContact.status}`)
 assert(optionsContact.headers.get("allow") === "POST, OPTIONS", `/api/contact OPTIONS: expected Allow header`)
 
+const optionsReplay = await request("/api/contact/replay", { method: "OPTIONS" })
+assert(optionsReplay.status === 204, `/api/contact/replay OPTIONS: expected 204, received ${optionsReplay.status}`)
+assert(optionsReplay.headers.get("allow") === "POST, OPTIONS", `/api/contact/replay OPTIONS: expected Allow header`)
+
 const getContact = await request("/api/contact")
 assert(getContact.status === 405, `/api/contact GET: expected 405, received ${getContact.status}`)
 
@@ -149,5 +153,20 @@ const wrongContentTypeResponse = await request("/api/contact", {
   body: "invalid",
 })
 assert(wrongContentTypeResponse.status === 400, `/api/contact wrong content-type: expected 400, received ${wrongContentTypeResponse.status}`)
+
+const unauthorizedReplay = await request("/api/contact/replay", {
+  method: "POST",
+})
+assert(unauthorizedReplay.status === 401, `/api/contact/replay unauthorized: expected 401, received ${unauthorizedReplay.status}`)
+
+const adminReplay = await request("/api/contact/replay", {
+  method: "POST",
+  headers: {
+    Authorization: "Bearer test-admin-key",
+  },
+})
+assert(adminReplay.status === 200, `/api/contact/replay authorized: expected 200, received ${adminReplay.status}`)
+assert(adminReplay.text.includes('"ok":true'), "/api/contact/replay authorized: expected ok=true")
+assert(adminReplay.text.includes('"replay"'), "/api/contact/replay authorized: expected replay summary")
 
 console.log(`Smoke checks passed for ${baseUrl}`)

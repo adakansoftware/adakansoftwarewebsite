@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto"
 import { join } from "node:path"
 
+import type { ContactSubmission } from "@/lib/server/contact-service"
 import { readJsonFile, writeJsonFile } from "@/lib/server/json-file-store"
 
 type OutboxStatus = "pending" | "delivered" | "skipped" | "failed"
@@ -9,8 +10,11 @@ export type ContactOutboxEntry = {
   id: string
   email: string
   locale: string
+  submission?: ContactSubmission
+  attempts: number
   createdAt: number
   updatedAt: number
+  lastAttemptAt?: number
   status: OutboxStatus
   lastError?: string
 }
@@ -18,19 +22,34 @@ export type ContactOutboxEntry = {
 const OUTBOX_FILE_PATH = join(process.cwd(), ".data", "contact-outbox.json")
 
 async function readOutboxEntries() {
-  return readJsonFile<ContactOutboxEntry[]>(OUTBOX_FILE_PATH, [])
+  const entries = await readJsonFile<ContactOutboxEntry[]>(OUTBOX_FILE_PATH, [])
+
+  return entries.map((entry) => ({
+    ...entry,
+    attempts: entry.attempts ?? 0,
+  }))
 }
 
 async function writeOutboxEntries(entries: ContactOutboxEntry[]) {
   await writeJsonFile(OUTBOX_FILE_PATH, entries)
 }
 
-export async function enqueueContactOutboxEntry(input: { email: string; locale: string }) {
+export async function readContactOutboxEntries() {
+  return readOutboxEntries()
+}
+
+export async function writeContactOutboxEntries(entries: ContactOutboxEntry[]) {
+  await writeOutboxEntries(entries)
+}
+
+export async function enqueueContactOutboxEntry(input: { submission: ContactSubmission }) {
   const now = Date.now()
   const entry: ContactOutboxEntry = {
     id: randomUUID(),
-    email: input.email,
-    locale: input.locale,
+    email: input.submission.email,
+    locale: input.submission.locale,
+    submission: input.submission,
+    attempts: 0,
     createdAt: now,
     updatedAt: now,
     status: "pending",
@@ -45,8 +64,7 @@ export async function enqueueContactOutboxEntry(input: { email: string; locale: 
 
 export async function updateContactOutboxEntry(
   id: string,
-  status: OutboxStatus,
-  lastError?: string,
+  updates: Partial<Pick<ContactOutboxEntry, "status" | "lastError" | "attempts" | "lastAttemptAt">>,
 ) {
   const entries = await readOutboxEntries()
   const index = entries.findIndex((entry) => entry.id === id)
@@ -57,14 +75,24 @@ export async function updateContactOutboxEntry(
 
   const nextEntry: ContactOutboxEntry = {
     ...entries[index],
-    status,
+    ...updates,
     updatedAt: Date.now(),
-    lastError,
   }
 
   entries[index] = nextEntry
   await writeOutboxEntries(entries)
   return nextEntry
+}
+
+export async function reapContactOutboxEntries(now: number, retentionMs: number) {
+  const entries = await readOutboxEntries()
+  const filteredEntries = entries.filter((entry) => now - entry.updatedAt < retentionMs)
+
+  if (filteredEntries.length !== entries.length) {
+    await writeOutboxEntries(filteredEntries)
+  }
+
+  return filteredEntries
 }
 
 export async function getContactOutboxDiagnostics() {

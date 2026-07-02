@@ -73,6 +73,18 @@ export function getClientIp(request: Request) {
   return request.headers.get("x-real-ip")?.trim() || "unknown"
 }
 
+export function isAuthorizedAdminRequest(request: Request) {
+  const configuredKey = process.env.CONTACT_ADMIN_KEY?.trim()
+  if (!configuredKey) {
+    return false
+  }
+
+  const bearerToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "").trim()
+  const adminKey = request.headers.get("x-contact-admin-key")?.trim()
+
+  return bearerToken === configuredKey || adminKey === configuredKey
+}
+
 export function isAllowedOrigin(request: Request) {
   const originHeader = request.headers.get("origin")
   if (!originHeader) {

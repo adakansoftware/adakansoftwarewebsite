@@ -3,7 +3,14 @@ import { join } from "node:path"
 
 import type { ContactSubmission } from "@/lib/server/contact-service"
 import { contactPolicy } from "@/lib/server/contact-policy"
-import { enqueueContactOutboxEntry, getContactOutboxDiagnostics, updateContactOutboxEntry } from "@/lib/server/contact-outbox"
+import { deliverContactMessage } from "@/lib/server/contact-service"
+import {
+  enqueueContactOutboxEntry,
+  getContactOutboxDiagnostics,
+  readContactOutboxEntries,
+  reapContactOutboxEntries,
+  updateContactOutboxEntry,
+} from "@/lib/server/contact-outbox"
 import { readJsonFile, writeJsonFile } from "@/lib/server/json-file-store"
 import { logServerEvent } from "@/lib/server/logger"
 
@@ -129,8 +136,7 @@ export async function storeIdempotencyReplay(
 
 export async function createQueuedContactMessage(submission: ContactSubmission) {
   const outboxEntry = await enqueueContactOutboxEntry({
-    email: submission.email,
-    locale: submission.locale,
+    submission,
   })
 
   logServerEvent("info", "contact.outbox.queued", {
@@ -143,7 +149,10 @@ export async function createQueuedContactMessage(submission: ContactSubmission) 
 }
 
 export async function markContactMessageDelivered(messageId: string, mode: "delivered" | "skipped") {
-  await updateContactOutboxEntry(messageId, mode)
+  await updateContactOutboxEntry(messageId, {
+    status: mode,
+    lastError: undefined,
+  })
 
   logServerEvent("info", "contact.outbox.completed", {
     messageId,
@@ -152,12 +161,73 @@ export async function markContactMessageDelivered(messageId: string, mode: "deli
 }
 
 export async function markContactMessageFailed(messageId: string, error: string) {
-  await updateContactOutboxEntry(messageId, "failed", error)
+  await updateContactOutboxEntry(messageId, {
+    status: "failed",
+    lastError: error,
+  })
 
   logServerEvent("error", "contact.outbox.failed", {
     messageId,
     error,
   })
+}
+
+export async function processContactOutboxEntries(limit = contactPolicy.outboxReplayBatchSize) {
+  const now = Date.now()
+  const activeEntries = await reapContactOutboxEntries(now, contactPolicy.outboxRetentionMs)
+  const replayableEntries = activeEntries
+    .filter((entry) => entry.status === "pending" || entry.status === "failed")
+    .sort((left, right) => left.createdAt - right.createdAt)
+    .slice(0, limit)
+
+  const summary = {
+    scanned: replayableEntries.length,
+    delivered: 0,
+    skipped: 0,
+    failed: 0,
+  }
+
+  for (const entry of replayableEntries) {
+    await updateContactOutboxEntry(entry.id, {
+      attempts: entry.attempts + 1,
+      lastAttemptAt: Date.now(),
+      lastError: undefined,
+    })
+
+    if (!entry.submission) {
+      summary.failed += 1
+      await markContactMessageFailed(entry.id, "legacy-entry-missing-submission")
+      continue
+    }
+
+    try {
+      const result = await deliverContactMessage(entry.submission)
+
+      if (!result.ok) {
+        summary.failed += 1
+        await markContactMessageFailed(entry.id, "upstream-delivery-rejected")
+        continue
+      }
+
+      if (result.skipped) {
+        summary.skipped += 1
+        await markContactMessageDelivered(entry.id, "skipped")
+        continue
+      }
+
+      summary.delivered += 1
+      await markContactMessageDelivered(entry.id, "delivered")
+    } catch (error) {
+      summary.failed += 1
+      const errorMessage = error instanceof Error ? error.message : "unknown-error"
+      await markContactMessageFailed(entry.id, errorMessage)
+    }
+  }
+
+  return {
+    ...summary,
+    remaining: (await readContactOutboxEntries()).filter((entry) => entry.status === "pending" || entry.status === "failed").length,
+  }
 }
 
 export async function getContactPipelineDiagnostics() {
