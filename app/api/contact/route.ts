@@ -16,6 +16,16 @@ const RATE_LIMIT_WINDOW_MS = 60_000
 const RATE_LIMIT_MAX_REQUESTS = 4
 const requestTimestampsByIp = new Map<string, number[]>()
 
+function jsonResponse(body: Record<string, unknown>, status = 200, extraHeaders?: HeadersInit) {
+  return NextResponse.json(body, {
+    status,
+    headers: {
+      "Cache-Control": "no-store",
+      ...extraHeaders,
+    },
+  })
+}
+
 function getClientIp(request: Request) {
   const forwardedFor = request.headers.get("x-forwarded-for")
   if (forwardedFor) {
@@ -25,7 +35,24 @@ function getClientIp(request: Request) {
   return request.headers.get("x-real-ip")?.trim() || "unknown"
 }
 
+function cleanupRateLimitEntries(now: number) {
+  for (const [ip, timestamps] of requestTimestampsByIp.entries()) {
+    const recentTimestamps = timestamps.filter((timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS)
+
+    if (recentTimestamps.length === 0) {
+      requestTimestampsByIp.delete(ip)
+      continue
+    }
+
+    requestTimestampsByIp.set(ip, recentTimestamps)
+  }
+}
+
 function isRateLimited(ip: string, now: number) {
+  if (requestTimestampsByIp.size > 200) {
+    cleanupRateLimitEntries(now)
+  }
+
   const recentTimestamps = (requestTimestampsByIp.get(ip) ?? []).filter((timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS)
 
   recentTimestamps.push(now)
@@ -39,7 +66,16 @@ export async function POST(request: Request) {
   const clientIp = getClientIp(request)
 
   if (isRateLimited(clientIp, now)) {
-    return NextResponse.json({ ok: false, error: "Too many requests" }, { status: 429 })
+    return jsonResponse(
+      { ok: false, error: "Too many requests" },
+      429,
+      { "Retry-After": String(Math.ceil(RATE_LIMIT_WINDOW_MS / 1000)) },
+    )
+  }
+
+  const contentType = request.headers.get("content-type") ?? ""
+  if (!contentType.includes("application/json")) {
+    return jsonResponse({ ok: false, error: "Invalid request" }, 400)
   }
 
   let body: unknown
@@ -47,17 +83,17 @@ export async function POST(request: Request) {
   try {
     body = await request.json()
   } catch {
-    return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 })
+    return jsonResponse({ ok: false, error: "Invalid request" }, 400)
   }
 
   const result = contactSchema.safeParse(body)
 
   if (!result.success) {
-    return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 })
+    return jsonResponse({ ok: false, error: "Invalid request" }, 400)
   }
 
   if (result.data.website) {
-    return NextResponse.json({ ok: true })
+    return jsonResponse({ ok: true })
   }
 
   const { name, email, phone, project, locale = "tr" } = result.data
@@ -66,7 +102,7 @@ export async function POST(request: Request) {
   const fromAddress = fromDomain === "resend.dev" ? "Adakan Software <onboarding@resend.dev>" : `Adakan Software Website <noreply@${fromDomain}>`
 
   if (!resendApiKey || resendApiKey === "re_your_key_here") {
-    return NextResponse.json({ ok: true })
+    return jsonResponse({ ok: true })
   }
 
   const subject = locale === "tr" ? "Yeni proje görüşmesi" : "New project inquiry"
@@ -91,12 +127,12 @@ export async function POST(request: Request) {
       signal: AbortSignal.timeout(8_000),
     })
   } catch {
-    return NextResponse.json({ ok: false, error: "Email service unavailable" }, { status: 502 })
+    return jsonResponse({ ok: false, error: "Email service unavailable" }, 502)
   }
 
   if (!response.ok) {
-    return NextResponse.json({ ok: false, error: "Email delivery failed" }, { status: 502 })
+    return jsonResponse({ ok: false, error: "Email delivery failed" }, 502)
   }
 
-  return NextResponse.json({ ok: true })
+  return jsonResponse({ ok: true })
 }

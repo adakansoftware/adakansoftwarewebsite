@@ -27,6 +27,23 @@ async function request(path) {
   }
 }
 
+async function postJson(path, body, headers = {}) {
+  const response = await fetch(`${baseUrl}${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
+    body: JSON.stringify(body),
+  })
+
+  return {
+    status: response.status,
+    headers: response.headers,
+    json: await response.json(),
+  }
+}
+
 function assert(condition, message) {
   if (!condition) {
     throw new Error(message)
@@ -59,5 +76,24 @@ for (const check of checks) {
     }
   }
 }
+
+const invalidContact = await postJson("/api/contact", { email: "bad@example.com" })
+assert(invalidContact.status === 400, `/api/contact invalid body: expected 400, received ${invalidContact.status}`)
+
+const honeypotContact = await postJson("/api/contact", {
+  name: "Bot User",
+  email: "bot@example.com",
+  project: "This should be silently accepted by the honeypot.",
+  website: "https://spam.example",
+})
+assert(honeypotContact.status === 200, `/api/contact honeypot: expected 200, received ${honeypotContact.status}`)
+assert(honeypotContact.json?.ok === true, "/api/contact honeypot: expected ok=true")
+
+const wrongContentTypeResponse = await fetch(`${baseUrl}/api/contact`, {
+  method: "POST",
+  headers: { "Content-Type": "text/plain" },
+  body: "invalid",
+})
+assert(wrongContentTypeResponse.status === 400, `/api/contact wrong content-type: expected 400, received ${wrongContentTypeResponse.status}`)
 
 console.log(`Smoke checks passed for ${baseUrl}`)

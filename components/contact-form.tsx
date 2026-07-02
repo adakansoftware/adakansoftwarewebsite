@@ -42,6 +42,7 @@ const copy = {
       email: "Geçerli bir e-posta gir",
       project: "En az 10 karakter",
     },
+    rateLimited: "Çok sık deneme algılandı. Lütfen kısa bir süre sonra tekrar deneyin.",
   },
   en: {
     name: "Full Name",
@@ -61,6 +62,7 @@ const copy = {
       email: "Enter a valid email",
       project: "At least 10 characters",
     },
+    rateLimited: "Too many attempts detected. Please try again shortly.",
   },
 } as const satisfies Record<
   Locale,
@@ -78,6 +80,7 @@ const copy = {
     phonePlaceholder: string
     projectPlaceholder: string
     errors: { name: string; email: string; project: string }
+    rateLimited: string
   }
 >
 
@@ -121,9 +124,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
     } catch (error) {
       setSubmitError(
         error instanceof Error && error.message === "rate-limited"
-          ? locale === "tr"
-            ? "Çok sık deneme algılandı. Lütfen kısa bir süre sonra tekrar deneyin."
-            : "Too many attempts detected. Please try again shortly."
+          ? t.rateLimited
           : t.error,
       )
     } finally {
