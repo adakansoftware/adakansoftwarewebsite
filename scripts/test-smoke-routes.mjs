@@ -1,6 +1,6 @@
 /* global console, fetch, process */
 
-import { createHmac } from "node:crypto"
+import { createHmac, randomUUID } from "node:crypto"
 
 const baseUrl = process.env.SMOKE_BASE_URL ?? "http://127.0.0.1:3101"
 
@@ -62,12 +62,15 @@ function createSignedAdminHeaders(path, headers = {}) {
   const timestamp = String(Date.now())
   const actor = headers["X-Admin-Actor"] ?? headers["x-admin-actor"] ?? "signed-smoke"
   const reason = headers["X-Replay-Reason"] ?? headers["x-replay-reason"] ?? ""
-  const payload = `GET\n${path}\n${timestamp}\n${actor}\n${reason}`
+  const nonce = headers["X-Admin-Nonce"] ?? headers["x-admin-nonce"] ?? randomUUID()
+  const method = headers["X-Signed-Method"] ?? headers["x-signed-method"] ?? "GET"
+  const payload = `${method}\n${path}\n${timestamp}\n${actor}\n${reason}\n${nonce}`
   const signature = createHmac("sha256", "test-admin-signing-secret").update(payload).digest("hex")
 
   return {
     "X-Admin-Timestamp": timestamp,
     "X-Admin-Actor": actor,
+    "X-Admin-Nonce": nonce,
     "X-Admin-Signature": signature,
     ...headers,
   }
@@ -186,6 +189,19 @@ const signedReplayDiagnostics = await request("/api/contact/replay", {
 })
 assert(signedReplayDiagnostics.status === 200, `/api/contact/replay signed diagnostics: expected 200, received ${signedReplayDiagnostics.status}`)
 assert(signedReplayDiagnostics.text.includes('"pipeline"'), "/api/contact/replay signed diagnostics: expected pipeline payload")
+
+const reusedSignedHeaders = createSignedAdminHeaders("/api/contact/replay")
+const firstNonceReplay = await request("/api/contact/replay", {
+  method: "GET",
+  headers: reusedSignedHeaders,
+})
+assert(firstNonceReplay.status === 200, `/api/contact/replay signed nonce first use: expected 200, received ${firstNonceReplay.status}`)
+
+const repeatedNonceReplay = await request("/api/contact/replay", {
+  method: "GET",
+  headers: reusedSignedHeaders,
+})
+assert(repeatedNonceReplay.status === 401, `/api/contact/replay signed nonce replay: expected 401, received ${repeatedNonceReplay.status}`)
 
 const replayDiagnostics = await request("/api/contact/replay", {
   method: "GET",

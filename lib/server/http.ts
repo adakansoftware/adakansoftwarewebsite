@@ -6,6 +6,7 @@ import { siteConfig } from "@/lib/site-config"
 
 const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "::1"])
 const SIGNED_ADMIN_TOLERANCE_MS = 5 * 60_000
+const usedSignedAdminNonces = new Map<string, number>()
 
 function normalizeConfiguredOrigin(origin: string) {
   try {
@@ -82,8 +83,35 @@ function getSignedAdminPayload(request: Request) {
 
   const actor = request.headers.get("x-admin-actor")?.trim() || ""
   const reason = request.headers.get("x-replay-reason")?.trim() || ""
+  const nonce = request.headers.get("x-admin-nonce")?.trim() || ""
 
-  return `${request.method}\n${new URL(request.url).pathname}\n${timestamp}\n${actor}\n${reason}`
+  return `${request.method}\n${new URL(request.url).pathname}\n${timestamp}\n${actor}\n${reason}\n${nonce}`
+}
+
+function consumeSignedAdminNonce(request: Request) {
+  const nonce = request.headers.get("x-admin-nonce")?.trim()
+  const timestamp = request.headers.get("x-admin-timestamp")?.trim()
+  if (!nonce || !timestamp) {
+    return false
+  }
+
+  const parsedTimestamp = Number.parseInt(timestamp, 10)
+  if (!Number.isFinite(parsedTimestamp)) {
+    return false
+  }
+
+  for (const [storedNonce, storedTimestamp] of usedSignedAdminNonces.entries()) {
+    if (Math.abs(Date.now() - storedTimestamp) > SIGNED_ADMIN_TOLERANCE_MS) {
+      usedSignedAdminNonces.delete(storedNonce)
+    }
+  }
+
+  if (usedSignedAdminNonces.has(nonce)) {
+    return false
+  }
+
+  usedSignedAdminNonces.set(nonce, parsedTimestamp)
+  return true
 }
 
 function hasFreshSignedAdminTimestamp(request: Request) {
@@ -102,6 +130,10 @@ function hasFreshSignedAdminTimestamp(request: Request) {
 
 export function hasSignedAdminProtection() {
   return Boolean(process.env.CONTACT_ADMIN_SIGNING_SECRET?.trim())
+}
+
+export function hasSignedAdminNonceProtection() {
+  return hasSignedAdminProtection()
 }
 
 export function isAuthorizedCronRequest(request: Request) {
@@ -138,6 +170,7 @@ export function isAuthorizedAdminRequest(request: Request) {
 
   return providedSignature.length === expectedSignatureBuffer.length
     && timingSafeEqual(providedSignature, expectedSignatureBuffer)
+    && consumeSignedAdminNonce(request)
 }
 
 export function isAllowedOrigin(request: Request) {
