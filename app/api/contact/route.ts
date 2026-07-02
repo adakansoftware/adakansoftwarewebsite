@@ -1,81 +1,81 @@
-import { NextResponse } from "next/server"
-import { z } from "zod"
+import {
+  deliverContactMessage,
+  getContactContentLengthLimit,
+  isContactDeliveryConfigured,
+  isDuplicateSubmission,
+  isRateLimited,
+  parseContactPayload,
+} from "@/lib/server/contact-service"
+import {
+  createRequestId,
+  emptyResponse,
+  getClientIp,
+  getContentLength,
+  isAllowedOrigin,
+  jsonResponse,
+} from "@/lib/server/http"
 
-import { siteConfig } from "@/lib/site-config"
+export const runtime = "nodejs"
 
-const contactSchema = z.object({
-  name: z.string().trim().min(2).max(80),
-  email: z.string().trim().email().max(120),
-  phone: z.string().trim().max(40).optional(),
-  project: z.string().trim().min(10).max(4000),
-  locale: z.enum(["tr", "en"]).optional(),
-  website: z.string().max(0).optional(),
-})
+const ALLOW_HEADER_VALUE = "POST, OPTIONS"
 
-const RATE_LIMIT_WINDOW_MS = 60_000
-const RATE_LIMIT_MAX_REQUESTS = 4
-const requestTimestampsByIp = new Map<string, number[]>()
+export async function OPTIONS(request: Request) {
+  const requestId = createRequestId(request)
 
-function jsonResponse(body: Record<string, unknown>, status = 200, extraHeaders?: HeadersInit) {
-  return NextResponse.json(body, {
-    status,
+  return emptyResponse({
+    status: 204,
+    requestId,
     headers: {
-      "Cache-Control": "no-store",
-      ...extraHeaders,
+      Allow: ALLOW_HEADER_VALUE,
     },
   })
 }
 
-function getClientIp(request: Request) {
-  const forwardedFor = request.headers.get("x-forwarded-for")
-  if (forwardedFor) {
-    return forwardedFor.split(",")[0]?.trim() || "unknown"
-  }
+export async function GET(request: Request) {
+  const requestId = createRequestId(request)
 
-  return request.headers.get("x-real-ip")?.trim() || "unknown"
-}
-
-function cleanupRateLimitEntries(now: number) {
-  for (const [ip, timestamps] of requestTimestampsByIp.entries()) {
-    const recentTimestamps = timestamps.filter((timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS)
-
-    if (recentTimestamps.length === 0) {
-      requestTimestampsByIp.delete(ip)
-      continue
-    }
-
-    requestTimestampsByIp.set(ip, recentTimestamps)
-  }
-}
-
-function isRateLimited(ip: string, now: number) {
-  if (requestTimestampsByIp.size > 200) {
-    cleanupRateLimitEntries(now)
-  }
-
-  const recentTimestamps = (requestTimestampsByIp.get(ip) ?? []).filter((timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS)
-
-  recentTimestamps.push(now)
-  requestTimestampsByIp.set(ip, recentTimestamps)
-
-  return recentTimestamps.length > RATE_LIMIT_MAX_REQUESTS
+  return jsonResponse(
+    { ok: false, error: "Method not allowed" },
+    {
+      status: 405,
+      requestId,
+      headers: {
+        Allow: ALLOW_HEADER_VALUE,
+      },
+    },
+  )
 }
 
 export async function POST(request: Request) {
+  const requestId = createRequestId(request)
   const now = Date.now()
   const clientIp = getClientIp(request)
+
+  if (!isAllowedOrigin(request)) {
+    return jsonResponse({ ok: false, error: "Origin not allowed" }, { status: 403, requestId })
+  }
+
+  const contentLength = getContentLength(request)
+  if (contentLength !== null && contentLength > getContactContentLengthLimit()) {
+    return jsonResponse({ ok: false, error: "Payload too large" }, { status: 413, requestId })
+  }
 
   if (isRateLimited(clientIp, now)) {
     return jsonResponse(
       { ok: false, error: "Too many requests" },
-      429,
-      { "Retry-After": String(Math.ceil(RATE_LIMIT_WINDOW_MS / 1000)) },
+      {
+        status: 429,
+        requestId,
+        headers: {
+          "Retry-After": "60",
+        },
+      },
     )
   }
 
   const contentType = request.headers.get("content-type") ?? ""
   if (!contentType.includes("application/json")) {
-    return jsonResponse({ ok: false, error: "Invalid request" }, 400)
+    return jsonResponse({ ok: false, error: "Invalid request" }, { status: 400, requestId })
   }
 
   let body: unknown
@@ -83,56 +83,57 @@ export async function POST(request: Request) {
   try {
     body = await request.json()
   } catch {
-    return jsonResponse({ ok: false, error: "Invalid request" }, 400)
+    return jsonResponse({ ok: false, error: "Invalid request" }, { status: 400, requestId })
   }
 
-  const result = contactSchema.safeParse(body)
-
-  if (!result.success) {
-    return jsonResponse({ ok: false, error: "Invalid request" }, 400)
+  if (
+    typeof body === "object" &&
+    body !== null &&
+    "website" in body &&
+    typeof body.website === "string" &&
+    body.website.trim().length > 0
+  ) {
+    return jsonResponse({ ok: true, accepted: true }, { requestId })
   }
 
-  if (result.data.website) {
-    return jsonResponse({ ok: true })
+  const submission = parseContactPayload(body)
+  if (!submission) {
+    return jsonResponse({ ok: false, error: "Invalid request" }, { status: 400, requestId })
   }
 
-  const { name, email, phone, project, locale = "tr" } = result.data
-  const resendApiKey = process.env.RESEND_API_KEY
-  const fromDomain = process.env.RESEND_FROM_DOMAIN ?? "resend.dev"
-  const fromAddress = fromDomain === "resend.dev" ? "Adakan Software <onboarding@resend.dev>" : `Adakan Software Website <noreply@${fromDomain}>`
-
-  if (!resendApiKey || resendApiKey === "re_your_key_here") {
-    return jsonResponse({ ok: true })
+  if (isDuplicateSubmission(submission, clientIp, now)) {
+    return jsonResponse({ ok: true, accepted: true, duplicate: true }, { requestId })
   }
-
-  const subject = locale === "tr" ? "Yeni proje görüşmesi" : "New project inquiry"
-  const text = [`Name: ${name}`, `Email: ${email}`, `Phone: ${phone?.trim() || "-"}`, "", "Project:", project].join("\n")
-
-  let response: Response
 
   try {
-    response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${resendApiKey}`,
-        "Content-Type": "application/json",
+    const result = await deliverContactMessage(submission)
+
+    if (!result.ok) {
+      console.error("[contact-api] upstream-delivery-rejected", {
+        requestId,
+        clientIp,
+      })
+
+      return jsonResponse({ ok: false, error: "Email delivery failed" }, { status: 502, requestId })
+    }
+
+    return jsonResponse(
+      {
+        ok: true,
+        accepted: true,
+        deliveryConfigured: isContactDeliveryConfigured(),
+        duplicate: false,
+        skippedDelivery: result.skipped,
       },
-      body: JSON.stringify({
-        from: fromAddress,
-        to: [siteConfig.email],
-        reply_to: email,
-        subject,
-        text,
-      }),
-      signal: AbortSignal.timeout(8_000),
+      { requestId },
+    )
+  } catch (error) {
+    console.error("[contact-api] delivery-failed", {
+      requestId,
+      clientIp,
+      error: error instanceof Error ? error.message : "unknown-error",
     })
-  } catch {
-    return jsonResponse({ ok: false, error: "Email service unavailable" }, 502)
-  }
 
-  if (!response.ok) {
-    return jsonResponse({ ok: false, error: "Email delivery failed" }, 502)
+    return jsonResponse({ ok: false, error: "Email service unavailable" }, { status: 502, requestId })
   }
-
-  return jsonResponse({ ok: true })
 }
