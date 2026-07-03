@@ -1,4 +1,4 @@
-import { getContactStateStore, getContactStateStoreCapabilities } from "@/lib/server/contact-state-store"
+import { getContactStateStore, getContactStateStoreStatus } from "@/lib/server/contact-state-store"
 import { createRequestId, emptyResponse, isAuthorizedAdminRequest, jsonResponse } from "@/lib/server/http"
 
 export const runtime = "nodejs"
@@ -26,16 +26,18 @@ export async function GET(request: Request) {
   }
 
   const stateStore = getContactStateStore()
-  const worker = await stateStore.readWorkerRuntimeState()
-  const capabilities = getContactStateStoreCapabilities()
+  const stateStatus = await getContactStateStoreStatus()
+  const worker = stateStatus.available ? await stateStore.readWorkerRuntimeState() : null
 
   return jsonResponse(
     {
       ok: true,
       backend: stateStore.backend,
-      capabilities,
+      capabilities: stateStatus.capabilities,
+      available: stateStatus.available,
+      error: stateStatus.error,
       worker,
     },
-    { requestId },
+    { status: stateStatus.available ? 200 : 503, requestId },
   )
 }

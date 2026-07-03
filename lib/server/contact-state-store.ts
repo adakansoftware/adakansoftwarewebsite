@@ -90,6 +90,23 @@ export type ContactStateStore = {
   writeWorkerRuntimeState(state: ContactWorkerRuntimeState): Promise<void>
 }
 
+export type ContactStateStoreCapabilities = {
+  backend: ContactStateBackend
+  sharedStoreReady: boolean
+  distributedStoreConfigured: boolean
+  implementedBackends: readonly ["file", "redis"]
+  requestedBackendImplemented: boolean
+  requestedBackendReady: boolean
+  redisUrlConfigured: boolean
+}
+
+export type ContactStateStoreStatus = {
+  backend: ContactStateBackend
+  capabilities: ContactStateStoreCapabilities
+  available: boolean
+  error: string | null
+}
+
 const DATA_DIRECTORY = join(process.cwd(), ".data")
 const OUTBOX_FILE_PATH = join(DATA_DIRECTORY, "contact-outbox.json")
 const IDEMPOTENCY_FILE_PATH = join(DATA_DIRECTORY, "contact-idempotency.json")
@@ -136,7 +153,14 @@ async function getRedisClient() {
       url: getRedisUrl(),
     })
 
-    redisClientPromise = client.connect().then(() => client)
+    redisClientPromise = client
+      .connect()
+      .then(() => client)
+      .catch((error) => {
+        redisClientPromise = null
+        client.destroy()
+        throw error
+      })
   }
 
   return redisClientPromise
@@ -302,6 +326,7 @@ export function getContactStateStore(): ContactStateStore {
 
 export function getContactStateStoreCapabilities() {
   const backend = getConfiguredContactStateBackend()
+  const redisUrlConfigured = Boolean(process.env.REDIS_URL?.trim())
 
   return {
     backend,
@@ -309,5 +334,57 @@ export function getContactStateStoreCapabilities() {
     distributedStoreConfigured: backend !== "file",
     implementedBackends: ["file", "redis"] as const,
     requestedBackendImplemented: backend === "file" || backend === "redis",
+    requestedBackendReady: backend !== "redis" || redisUrlConfigured,
+    redisUrlConfigured,
+  }
+}
+
+export async function getContactStateStoreStatus(): Promise<ContactStateStoreStatus> {
+  const capabilities = getContactStateStoreCapabilities()
+
+  if (!capabilities.requestedBackendImplemented) {
+    return {
+      backend: capabilities.backend,
+      capabilities,
+      available: false,
+      error: `${capabilities.backend} backend is not implemented`,
+    }
+  }
+
+  if (!capabilities.requestedBackendReady) {
+    return {
+      backend: capabilities.backend,
+      capabilities,
+      available: false,
+      error: "Selected contact state backend is not configured",
+    }
+  }
+
+  if (capabilities.backend === "file") {
+    return {
+      backend: capabilities.backend,
+      capabilities,
+      available: true,
+      error: null,
+    }
+  }
+
+  try {
+    const client = await getRedisClient()
+    await client.ping()
+
+    return {
+      backend: capabilities.backend,
+      capabilities,
+      available: true,
+      error: null,
+    }
+  } catch (error) {
+    return {
+      backend: capabilities.backend,
+      capabilities,
+      available: false,
+      error: error instanceof Error ? error.message : "Unknown contact state backend error",
+    }
   }
 }

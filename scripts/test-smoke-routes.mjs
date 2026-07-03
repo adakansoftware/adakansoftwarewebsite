@@ -227,6 +227,8 @@ assert(stateDiagnostics.text.includes('"backend":"file"'), "/api/contact/state d
 assert(stateDiagnostics.text.includes('"sharedStoreReady":true'), "/api/contact/state diagnostics: expected sharedStoreReady=true")
 assert(stateDiagnostics.text.includes('"implementedBackends":["file","redis"]'), "/api/contact/state diagnostics: expected implemented backends")
 assert(stateDiagnostics.text.includes('"requestedBackendImplemented":true'), "/api/contact/state diagnostics: expected implemented backend")
+assert(stateDiagnostics.text.includes('"requestedBackendReady":true'), "/api/contact/state diagnostics: expected ready backend")
+assert(stateDiagnostics.text.includes('"available":true'), "/api/contact/state diagnostics: expected available backend")
 assert(stateDiagnostics.text.includes('"worker"'), "/api/contact/state diagnostics: expected worker runtime payload")
 
 const replayWithoutReason = await request("/api/contact/replay", {
