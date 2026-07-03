@@ -1,6 +1,8 @@
 import { getContactPipelineDiagnostics } from "@/lib/server/contact-pipeline"
 import { getContactServiceDiagnostics, isContactDeliveryConfigured } from "@/lib/server/contact-service"
+import { contactPolicy } from "@/lib/server/contact-policy"
 import { getProxyRateLimitDiagnostics } from "@/lib/server/proxy-rate-limit"
+import { getContactStateStore } from "@/lib/server/contact-state-store"
 import { createRequestId, emptyResponse, hasSignedAdminNonceProtection, hasSignedAdminProtection, jsonResponse } from "@/lib/server/http"
 
 export const runtime = "nodejs"
@@ -37,9 +39,15 @@ export async function GET(request: Request) {
   const diagnostics = getContactServiceDiagnostics()
   const proxyRateLimit = getProxyRateLimitDiagnostics()
   const pipeline = await getContactPipelineDiagnostics()
+  const workerRuntime = await getContactStateStore().readWorkerRuntimeState()
   const hasQueueAlerts = pipeline.alerts.length > 0
+  const workerHeartbeatAgeMs =
+    workerRuntime.lastHeartbeatAt === null ? null : Date.now() - workerRuntime.lastHeartbeatAt
+  const automaticReplayConfigured = Boolean(process.env.CONTACT_CRON_SECRET?.trim())
+  const workerHealthy = !automaticReplayConfigured
+    || (workerHeartbeatAgeMs !== null && workerHeartbeatAgeMs <= contactPolicy.queueAlertAgeMs)
   const status =
-    process.env.NODE_ENV === "production" && (!isContactDeliveryConfigured() || hasQueueAlerts) ? "degraded" : "ok"
+    process.env.NODE_ENV === "production" && (!isContactDeliveryConfigured() || hasQueueAlerts || !workerHealthy) ? "degraded" : "ok"
 
   return jsonResponse(
     {
@@ -58,11 +66,16 @@ export async function GET(request: Request) {
         replayEndpointProtected: true,
         signedAdminProtection: hasSignedAdminProtection(),
         signedAdminNonceProtection: hasSignedAdminNonceProtection(),
-        automaticReplayAvailable: Boolean(process.env.CONTACT_CRON_SECRET?.trim()),
+        automaticReplayAvailable: automaticReplayConfigured,
+        automaticReplayHealthy: workerHealthy,
         queueHealthy: !hasQueueAlerts,
       },
       diagnostics,
       pipeline,
+      worker: {
+        ...workerRuntime,
+        heartbeatAgeMs: workerHeartbeatAgeMs,
+      },
       proxy: proxyRateLimit,
     },
     {

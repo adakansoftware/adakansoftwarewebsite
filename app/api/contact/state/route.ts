@@ -26,6 +26,7 @@ export async function GET(request: Request) {
   }
 
   const stateStore = getContactStateStore()
+  const worker = await stateStore.readWorkerRuntimeState()
 
   return jsonResponse(
     {
@@ -35,6 +36,7 @@ export async function GET(request: Request) {
         sharedStoreReady: true,
         distributedStoreConfigured: stateStore.backend !== "file",
       },
+      worker,
     },
     { requestId },
   )

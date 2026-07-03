@@ -225,6 +225,7 @@ const stateDiagnostics = await request("/api/contact/state", {
 assert(stateDiagnostics.status === 200, `/api/contact/state diagnostics: expected 200, received ${stateDiagnostics.status}`)
 assert(stateDiagnostics.text.includes('"backend":"file"'), "/api/contact/state diagnostics: expected file backend")
 assert(stateDiagnostics.text.includes('"sharedStoreReady":true'), "/api/contact/state diagnostics: expected sharedStoreReady=true")
+assert(stateDiagnostics.text.includes('"worker"'), "/api/contact/state diagnostics: expected worker runtime payload")
 
 const replayWithoutReason = await request("/api/contact/replay", {
   method: "POST",
@@ -259,6 +260,7 @@ const cronReplay = await request("/api/contact/replay/cron", {
   method: "POST",
   headers: {
     Authorization: "Bearer test-cron-secret",
+    "X-Worker-Id": "smoke-worker",
   },
 })
 assert(cronReplay.status === 200, `/api/contact/replay/cron authorized: expected 200, received ${cronReplay.status}`)

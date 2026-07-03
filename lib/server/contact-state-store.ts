@@ -61,6 +61,15 @@ export type ContactReplayAuditEntry = {
   error?: string
 }
 
+export type ContactWorkerRuntimeState = {
+  workerId: string | null
+  lastHeartbeatAt: number | null
+  lastReplayAt: number | null
+  lastBatchSize: number | null
+  lastOutcome: "idle" | "completed" | "failed" | null
+  lastError: string | null
+}
+
 export type ContactStateStore = {
   backend: "file"
   readOutboxEntries(): Promise<ContactOutboxEntry[]>
@@ -74,6 +83,8 @@ export type ContactStateStore = {
   writeReplayRuntimeState(state: ContactReplayRuntimeState): Promise<void>
   readReplayAuditEntries(): Promise<ContactReplayAuditEntry[]>
   writeReplayAuditEntries(entries: ContactReplayAuditEntry[]): Promise<void>
+  readWorkerRuntimeState(): Promise<ContactWorkerRuntimeState>
+  writeWorkerRuntimeState(state: ContactWorkerRuntimeState): Promise<void>
 }
 
 const DATA_DIRECTORY = join(process.cwd(), ".data")
@@ -81,6 +92,7 @@ const OUTBOX_FILE_PATH = join(DATA_DIRECTORY, "contact-outbox.json")
 const IDEMPOTENCY_FILE_PATH = join(DATA_DIRECTORY, "contact-idempotency.json")
 const REPLAY_RUNTIME_FILE_PATH = join(DATA_DIRECTORY, "contact-replay-runtime.json")
 const REPLAY_AUDIT_FILE_PATH = join(DATA_DIRECTORY, "contact-replay-audit.json")
+const WORKER_RUNTIME_FILE_PATH = join(DATA_DIRECTORY, "contact-worker-runtime.json")
 
 function normalizeOutboxEntries(entries: ContactOutboxEntry[]) {
   return entries.map<ContactOutboxEntry>((entry) => ({
@@ -124,6 +136,19 @@ const fileContactStateStore: ContactStateStore = {
   },
   async writeReplayAuditEntries(entries) {
     await writeJsonFile(REPLAY_AUDIT_FILE_PATH, entries)
+  },
+  async readWorkerRuntimeState() {
+    return readJsonFile<ContactWorkerRuntimeState>(WORKER_RUNTIME_FILE_PATH, {
+      workerId: null,
+      lastHeartbeatAt: null,
+      lastReplayAt: null,
+      lastBatchSize: null,
+      lastOutcome: null,
+      lastError: null,
+    })
+  },
+  async writeWorkerRuntimeState(state) {
+    await writeJsonFile(WORKER_RUNTIME_FILE_PATH, state)
   },
 }
 
