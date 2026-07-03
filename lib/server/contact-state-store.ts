@@ -1,5 +1,7 @@
 import { join } from "node:path"
 
+import { createClient, type RedisClientType } from "redis"
+
 import type { ContactSubmission } from "@/lib/server/contact-service"
 import { readJsonFile, updateJsonFile, writeJsonFile } from "@/lib/server/json-file-store"
 
@@ -95,6 +97,8 @@ const REPLAY_RUNTIME_FILE_PATH = join(DATA_DIRECTORY, "contact-replay-runtime.js
 const REPLAY_AUDIT_FILE_PATH = join(DATA_DIRECTORY, "contact-replay-audit.json")
 const WORKER_RUNTIME_FILE_PATH = join(DATA_DIRECTORY, "contact-worker-runtime.json")
 
+let redisClientPromise: Promise<RedisClientType> | null = null
+
 function getConfiguredContactStateBackend(): ContactStateBackend {
   const configuredBackend = process.env.CONTACT_STATE_BACKEND?.trim().toLowerCase()
 
@@ -107,6 +111,72 @@ function getConfiguredContactStateBackend(): ContactStateBackend {
   }
 
   throw new Error(`Unsupported CONTACT_STATE_BACKEND value: ${configuredBackend}`)
+}
+
+function getRedisUrl() {
+  const redisUrl = process.env.REDIS_URL?.trim()
+  if (!redisUrl) {
+    throw new Error("REDIS_URL is required when CONTACT_STATE_BACKEND=redis")
+  }
+
+  return redisUrl
+}
+
+function getRedisNamespace() {
+  return process.env.CONTACT_STATE_REDIS_PREFIX?.trim() || "contact-state"
+}
+
+function getRedisKey(name: string) {
+  return `${getRedisNamespace()}:${name}`
+}
+
+async function getRedisClient() {
+  if (!redisClientPromise) {
+    const client = createClient({
+      url: getRedisUrl(),
+    })
+
+    redisClientPromise = client.connect().then(() => client)
+  }
+
+  return redisClientPromise
+}
+
+async function readRedisJson<T>(name: string, fallback: T) {
+  const client = await getRedisClient()
+  const rawValue = await client.get(getRedisKey(name))
+
+  if (!rawValue) {
+    return fallback
+  }
+
+  return JSON.parse(rawValue) as T
+}
+
+async function writeRedisJson(name: string, value: unknown) {
+  const client = await getRedisClient()
+  await client.set(getRedisKey(name), JSON.stringify(value))
+}
+
+async function updateRedisJson<T>(name: string, fallback: T, updater: (value: T) => T | Promise<T>) {
+  const client = await getRedisClient()
+  const key = getRedisKey(name)
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    await client.watch(key)
+    const currentRawValue = await client.get(key)
+    const currentValue = currentRawValue ? (JSON.parse(currentRawValue) as T) : fallback
+    const nextValue = await updater(currentValue)
+    const transaction = client.multi()
+    transaction.set(key, JSON.stringify(nextValue))
+    const result = await transaction.exec()
+
+    if (result !== null) {
+      return
+    }
+  }
+
+  throw new Error(`Redis update conflict for ${key}`)
 }
 
 function normalizeOutboxEntries(entries: ContactOutboxEntry[]) {
@@ -167,6 +237,55 @@ const fileContactStateStore: ContactStateStore = {
   },
 }
 
+const redisContactStateStore: ContactStateStore = {
+  backend: "redis",
+  async readOutboxEntries() {
+    const entries = await readRedisJson<ContactOutboxEntry[]>("outbox", [])
+    return normalizeOutboxEntries(entries)
+  },
+  async writeOutboxEntries(entries) {
+    await writeRedisJson("outbox", entries)
+  },
+  async updateOutboxEntries(updater) {
+    await updateRedisJson<ContactOutboxEntry[]>("outbox", [], async (entries) => updater(normalizeOutboxEntries(entries)))
+  },
+  async readIdempotencyRecords() {
+    return readRedisJson<Array<[string, ContactIdempotencyRecord]>>("idempotency", [])
+  },
+  async writeIdempotencyRecords(records) {
+    await writeRedisJson("idempotency", records)
+  },
+  async readReplayRuntimeState() {
+    return readRedisJson<ContactReplayRuntimeState>("replay-runtime", {
+      activeLock: null,
+      lastCompletedAt: null,
+      lastSummary: null,
+    })
+  },
+  async writeReplayRuntimeState(state) {
+    await writeRedisJson("replay-runtime", state)
+  },
+  async readReplayAuditEntries() {
+    return readRedisJson<ContactReplayAuditEntry[]>("replay-audit", [])
+  },
+  async writeReplayAuditEntries(entries) {
+    await writeRedisJson("replay-audit", entries)
+  },
+  async readWorkerRuntimeState() {
+    return readRedisJson<ContactWorkerRuntimeState>("worker-runtime", {
+      workerId: null,
+      lastHeartbeatAt: null,
+      lastReplayAt: null,
+      lastBatchSize: null,
+      lastOutcome: null,
+      lastError: null,
+    })
+  },
+  async writeWorkerRuntimeState(state) {
+    await writeRedisJson("worker-runtime", state)
+  },
+}
+
 export function getContactStateStore(): ContactStateStore {
   const backend = getConfiguredContactStateBackend()
 
@@ -174,9 +293,11 @@ export function getContactStateStore(): ContactStateStore {
     return fileContactStateStore
   }
 
-  throw new Error(
-    `CONTACT_STATE_BACKEND=${backend} is configured, but the ${backend} ContactStateStore adapter is not implemented yet.`,
-  )
+  if (backend === "redis") {
+    return redisContactStateStore
+  }
+
+  throw new Error(`CONTACT_STATE_BACKEND=${backend} is configured, but the ${backend} ContactStateStore adapter is not implemented yet.`)
 }
 
 export function getContactStateStoreCapabilities() {
@@ -186,7 +307,7 @@ export function getContactStateStoreCapabilities() {
     backend,
     sharedStoreReady: true,
     distributedStoreConfigured: backend !== "file",
-    implementedBackends: ["file"] as const,
-    requestedBackendImplemented: backend === "file",
+    implementedBackends: ["file", "redis"] as const,
+    requestedBackendImplemented: backend === "file" || backend === "redis",
   }
 }
