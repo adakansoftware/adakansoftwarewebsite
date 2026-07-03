@@ -115,6 +115,10 @@ const optionsReplayCron = await request("/api/contact/replay/cron", { method: "O
 assert(optionsReplayCron.status === 204, `/api/contact/replay/cron OPTIONS: expected 204, received ${optionsReplayCron.status}`)
 assert(optionsReplayCron.headers.get("allow") === "POST, OPTIONS", `/api/contact/replay/cron OPTIONS: expected Allow header`)
 
+const optionsState = await request("/api/contact/state", { method: "OPTIONS" })
+assert(optionsState.status === 204, `/api/contact/state OPTIONS: expected 204, received ${optionsState.status}`)
+assert(optionsState.headers.get("allow") === "GET, OPTIONS", `/api/contact/state OPTIONS: expected Allow header`)
+
 const getContact = await request("/api/contact")
 assert(getContact.status === 405, `/api/contact GET: expected 405, received ${getContact.status}`)
 
@@ -211,6 +215,16 @@ const replayDiagnostics = await request("/api/contact/replay", {
 })
 assert(replayDiagnostics.status === 200, `/api/contact/replay diagnostics: expected 200, received ${replayDiagnostics.status}`)
 assert(replayDiagnostics.text.includes('"pipeline"'), "/api/contact/replay diagnostics: expected pipeline payload")
+
+const stateDiagnostics = await request("/api/contact/state", {
+  method: "GET",
+  headers: {
+    Authorization: "Bearer test-admin-key",
+  },
+})
+assert(stateDiagnostics.status === 200, `/api/contact/state diagnostics: expected 200, received ${stateDiagnostics.status}`)
+assert(stateDiagnostics.text.includes('"backend":"file"'), "/api/contact/state diagnostics: expected file backend")
+assert(stateDiagnostics.text.includes('"sharedStoreReady":true'), "/api/contact/state diagnostics: expected sharedStoreReady=true")
 
 const replayWithoutReason = await request("/api/contact/replay", {
   method: "POST",

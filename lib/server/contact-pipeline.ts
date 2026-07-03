@@ -1,5 +1,4 @@
 import { createHash } from "node:crypto"
-import { join } from "node:path"
 
 import type { ContactSubmission } from "@/lib/server/contact-service"
 import { contactPolicy } from "@/lib/server/contact-policy"
@@ -12,58 +11,19 @@ import {
   reapContactOutboxEntries,
   updateContactOutboxEntry,
 } from "@/lib/server/contact-outbox"
-import { readJsonFile, writeJsonFile } from "@/lib/server/json-file-store"
+import {
+  getContactStateStore,
+  type ContactIdempotencyRecord,
+  type ContactReplayAuditEntry,
+  type ContactReplayLockState,
+  type ContactReplayRuntimeState,
+} from "@/lib/server/contact-state-store"
 import { logServerEvent } from "@/lib/server/logger"
 
-type IdempotencyRecord = {
-  fingerprint: string
-  status: number
-  body: Record<string, unknown>
-  storedAt: number
-}
-
-type ReplayLockState = {
-  requestId: string
-  startedAt: number
-  expiresAt: number
-}
-
-type ReplaySummary = {
-  scanned: number
-  delivered: number
-  skipped: number
-  failed: number
-  remaining: number
-}
-
-type ReplayRuntimeState = {
-  activeLock: ReplayLockState | null
-  lastCompletedAt: number | null
-  lastSummary: ReplaySummary | null
-}
-
-type ReplayAuditEntry = {
-  requestId: string
-  actor: string
-  reason: string
-  clientIp: string
-  startedAt: number
-  completedAt?: number
-  batchSize: number
-  outcome: "started" | "busy" | "completed" | "failed"
-  replay?: ReplaySummary | null
-  error?: string
-}
-
-const idempotencyRecords = new Map<string, IdempotencyRecord>()
-const IDEMPOTENCY_FILE_PATH = join(process.cwd(), ".data", "contact-idempotency.json")
-const REPLAY_RUNTIME_FILE_PATH = join(process.cwd(), ".data", "contact-replay-runtime.json")
-const REPLAY_AUDIT_FILE_PATH = join(process.cwd(), ".data", "contact-replay-audit.json")
+const idempotencyRecords = new Map<string, ContactIdempotencyRecord>()
+const contactStateStore = getContactStateStore()
 
 let idempotencyLoaded = false
-let idempotencyWriteQueue = Promise.resolve()
-let replayWriteQueue = Promise.resolve()
-let replayAuditWriteQueue = Promise.resolve()
 
 function normalizeIdempotencyKey(value: string | null) {
   const normalized = value?.trim()
@@ -94,7 +54,7 @@ async function loadIdempotencyRecords(now: number) {
     return
   }
 
-  const storedRecords = await readJsonFile<Array<[string, IdempotencyRecord]>>(IDEMPOTENCY_FILE_PATH, [])
+  const storedRecords = await contactStateStore.readIdempotencyRecords()
   for (const [key, record] of storedRecords) {
     idempotencyRecords.set(key, record)
   }
@@ -104,33 +64,24 @@ async function loadIdempotencyRecords(now: number) {
 }
 
 function persistIdempotencyRecords() {
-  idempotencyWriteQueue = idempotencyWriteQueue.then(() =>
-    writeJsonFile(IDEMPOTENCY_FILE_PATH, Array.from(idempotencyRecords.entries())),
-  )
-
-  return idempotencyWriteQueue
+  return contactStateStore.writeIdempotencyRecords(Array.from(idempotencyRecords.entries()))
 }
 
 async function readReplayRuntimeState(now = Date.now()) {
-  const state = await readJsonFile<ReplayRuntimeState>(REPLAY_RUNTIME_FILE_PATH, {
-    activeLock: null,
-    lastCompletedAt: null,
-    lastSummary: null,
-  })
+  const state = await contactStateStore.readReplayRuntimeState()
 
   if (state.activeLock && state.activeLock.expiresAt <= now) {
     return {
       ...state,
       activeLock: null,
-    } satisfies ReplayRuntimeState
+    } satisfies ContactReplayRuntimeState
   }
 
   return state
 }
 
-function writeReplayRuntimeState(state: ReplayRuntimeState) {
-  replayWriteQueue = replayWriteQueue.then(() => writeJsonFile(REPLAY_RUNTIME_FILE_PATH, state))
-  return replayWriteQueue
+function writeReplayRuntimeState(state: ContactReplayRuntimeState) {
+  return contactStateStore.writeReplayRuntimeState(state)
 }
 
 function getRetryDelayMs(attempts: number) {
@@ -139,15 +90,14 @@ function getRetryDelayMs(attempts: number) {
 }
 
 async function readReplayAuditEntries() {
-  return readJsonFile<ReplayAuditEntry[]>(REPLAY_AUDIT_FILE_PATH, [])
+  return contactStateStore.readReplayAuditEntries()
 }
 
-function writeReplayAuditEntries(entries: ReplayAuditEntry[]) {
-  replayAuditWriteQueue = replayAuditWriteQueue.then(() => writeJsonFile(REPLAY_AUDIT_FILE_PATH, entries))
-  return replayAuditWriteQueue
+function writeReplayAuditEntries(entries: ContactReplayAuditEntry[]) {
+  return contactStateStore.writeReplayAuditEntries(entries)
 }
 
-async function appendReplayAuditEntry(entry: ReplayAuditEntry) {
+async function appendReplayAuditEntry(entry: ContactReplayAuditEntry) {
   const entries = await readReplayAuditEntries()
   entries.push(entry)
 
@@ -358,7 +308,7 @@ export async function runContactOutboxReplay(input: {
     }
   }
 
-  const lock: ReplayLockState = {
+  const lock: ContactReplayLockState = {
     requestId: input.requestId,
     startedAt: now,
     expiresAt: now + contactPolicy.outboxReplayLockMs,
