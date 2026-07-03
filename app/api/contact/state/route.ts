@@ -1,4 +1,4 @@
-import { getContactStateStore } from "@/lib/server/contact-state-store"
+import { getContactStateStore, getContactStateStoreCapabilities } from "@/lib/server/contact-state-store"
 import { createRequestId, emptyResponse, isAuthorizedAdminRequest, jsonResponse } from "@/lib/server/http"
 
 export const runtime = "nodejs"
@@ -27,15 +27,13 @@ export async function GET(request: Request) {
 
   const stateStore = getContactStateStore()
   const worker = await stateStore.readWorkerRuntimeState()
+  const capabilities = getContactStateStoreCapabilities()
 
   return jsonResponse(
     {
       ok: true,
       backend: stateStore.backend,
-      capabilities: {
-        sharedStoreReady: true,
-        distributedStoreConfigured: stateStore.backend !== "file",
-      },
+      capabilities,
       worker,
     },
     { requestId },

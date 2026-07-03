@@ -4,6 +4,7 @@ import type { ContactSubmission } from "@/lib/server/contact-service"
 import { readJsonFile, updateJsonFile, writeJsonFile } from "@/lib/server/json-file-store"
 
 export type ContactOutboxStatus = "pending" | "delivered" | "skipped" | "failed"
+export type ContactStateBackend = "file" | "redis" | "postgres"
 
 export type ContactOutboxEntry = {
   id: string
@@ -71,7 +72,7 @@ export type ContactWorkerRuntimeState = {
 }
 
 export type ContactStateStore = {
-  backend: "file"
+  backend: ContactStateBackend
   readOutboxEntries(): Promise<ContactOutboxEntry[]>
   writeOutboxEntries(entries: ContactOutboxEntry[]): Promise<void>
   updateOutboxEntries(
@@ -93,6 +94,20 @@ const IDEMPOTENCY_FILE_PATH = join(DATA_DIRECTORY, "contact-idempotency.json")
 const REPLAY_RUNTIME_FILE_PATH = join(DATA_DIRECTORY, "contact-replay-runtime.json")
 const REPLAY_AUDIT_FILE_PATH = join(DATA_DIRECTORY, "contact-replay-audit.json")
 const WORKER_RUNTIME_FILE_PATH = join(DATA_DIRECTORY, "contact-worker-runtime.json")
+
+function getConfiguredContactStateBackend(): ContactStateBackend {
+  const configuredBackend = process.env.CONTACT_STATE_BACKEND?.trim().toLowerCase()
+
+  if (!configuredBackend || configuredBackend === "file") {
+    return "file"
+  }
+
+  if (configuredBackend === "redis" || configuredBackend === "postgres") {
+    return configuredBackend
+  }
+
+  throw new Error(`Unsupported CONTACT_STATE_BACKEND value: ${configuredBackend}`)
+}
 
 function normalizeOutboxEntries(entries: ContactOutboxEntry[]) {
   return entries.map<ContactOutboxEntry>((entry) => ({
@@ -153,5 +168,25 @@ const fileContactStateStore: ContactStateStore = {
 }
 
 export function getContactStateStore(): ContactStateStore {
-  return fileContactStateStore
+  const backend = getConfiguredContactStateBackend()
+
+  if (backend === "file") {
+    return fileContactStateStore
+  }
+
+  throw new Error(
+    `CONTACT_STATE_BACKEND=${backend} is configured, but the ${backend} ContactStateStore adapter is not implemented yet.`,
+  )
+}
+
+export function getContactStateStoreCapabilities() {
+  const backend = getConfiguredContactStateBackend()
+
+  return {
+    backend,
+    sharedStoreReady: true,
+    distributedStoreConfigured: backend !== "file",
+    implementedBackends: ["file"] as const,
+    requestedBackendImplemented: backend === "file",
+  }
 }

@@ -2,7 +2,7 @@ import { getContactPipelineDiagnostics } from "@/lib/server/contact-pipeline"
 import { getContactServiceDiagnostics, isContactDeliveryConfigured } from "@/lib/server/contact-service"
 import { contactPolicy } from "@/lib/server/contact-policy"
 import { getProxyRateLimitDiagnostics } from "@/lib/server/proxy-rate-limit"
-import { getContactStateStore } from "@/lib/server/contact-state-store"
+import { getContactStateStore, getContactStateStoreCapabilities } from "@/lib/server/contact-state-store"
 import { createRequestId, emptyResponse, hasSignedAdminNonceProtection, hasSignedAdminProtection, jsonResponse } from "@/lib/server/http"
 
 export const runtime = "nodejs"
@@ -40,6 +40,7 @@ export async function GET(request: Request) {
   const proxyRateLimit = getProxyRateLimitDiagnostics()
   const pipeline = await getContactPipelineDiagnostics()
   const workerRuntime = await getContactStateStore().readWorkerRuntimeState()
+  const stateCapabilities = getContactStateStoreCapabilities()
   const hasQueueAlerts = pipeline.alerts.length > 0
   const workerHeartbeatAgeMs =
     workerRuntime.lastHeartbeatAt === null ? null : Date.now() - workerRuntime.lastHeartbeatAt
@@ -68,10 +69,12 @@ export async function GET(request: Request) {
         signedAdminNonceProtection: hasSignedAdminNonceProtection(),
         automaticReplayAvailable: automaticReplayConfigured,
         automaticReplayHealthy: workerHealthy,
+        requestedStateBackendImplemented: stateCapabilities.requestedBackendImplemented,
         queueHealthy: !hasQueueAlerts,
       },
       diagnostics,
       pipeline,
+      state: stateCapabilities,
       worker: {
         ...workerRuntime,
         heartbeatAgeMs: workerHeartbeatAgeMs,
