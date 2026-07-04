@@ -82,12 +82,32 @@ export type ContactStateStore = {
   ): Promise<void>
   readIdempotencyRecords(): Promise<Array<[string, ContactIdempotencyRecord]>>
   writeIdempotencyRecords(records: Array<[string, ContactIdempotencyRecord]>): Promise<void>
+  updateIdempotencyRecords(
+    updater: (
+      records: Array<[string, ContactIdempotencyRecord]>,
+    ) => Array<[string, ContactIdempotencyRecord]> | Promise<Array<[string, ContactIdempotencyRecord]>>,
+  ): Promise<void>
   readReplayRuntimeState(): Promise<ContactReplayRuntimeState>
   writeReplayRuntimeState(state: ContactReplayRuntimeState): Promise<void>
+  updateReplayRuntimeState(
+    updater: (
+      state: ContactReplayRuntimeState,
+    ) => ContactReplayRuntimeState | Promise<ContactReplayRuntimeState>,
+  ): Promise<void>
   readReplayAuditEntries(): Promise<ContactReplayAuditEntry[]>
   writeReplayAuditEntries(entries: ContactReplayAuditEntry[]): Promise<void>
+  updateReplayAuditEntries(
+    updater: (
+      entries: ContactReplayAuditEntry[],
+    ) => ContactReplayAuditEntry[] | Promise<ContactReplayAuditEntry[]>,
+  ): Promise<void>
   readWorkerRuntimeState(): Promise<ContactWorkerRuntimeState>
   writeWorkerRuntimeState(state: ContactWorkerRuntimeState): Promise<void>
+  updateWorkerRuntimeState(
+    updater: (
+      state: ContactWorkerRuntimeState,
+    ) => ContactWorkerRuntimeState | Promise<ContactWorkerRuntimeState>,
+  ): Promise<void>
 }
 
 export type ContactStateStoreCapabilities = {
@@ -230,6 +250,9 @@ const fileContactStateStore: ContactStateStore = {
   async writeIdempotencyRecords(records) {
     await writeJsonFile(IDEMPOTENCY_FILE_PATH, records)
   },
+  async updateIdempotencyRecords(updater) {
+    await updateJsonFile<Array<[string, ContactIdempotencyRecord]>>(IDEMPOTENCY_FILE_PATH, [], updater)
+  },
   async readReplayRuntimeState() {
     return readJsonFile<ContactReplayRuntimeState>(REPLAY_RUNTIME_FILE_PATH, {
       activeLock: null,
@@ -240,11 +263,25 @@ const fileContactStateStore: ContactStateStore = {
   async writeReplayRuntimeState(state) {
     await writeJsonFile(REPLAY_RUNTIME_FILE_PATH, state)
   },
+  async updateReplayRuntimeState(updater) {
+    await updateJsonFile<ContactReplayRuntimeState>(
+      REPLAY_RUNTIME_FILE_PATH,
+      {
+        activeLock: null,
+        lastCompletedAt: null,
+        lastSummary: null,
+      },
+      updater,
+    )
+  },
   async readReplayAuditEntries() {
     return readJsonFile<ContactReplayAuditEntry[]>(REPLAY_AUDIT_FILE_PATH, [])
   },
   async writeReplayAuditEntries(entries) {
     await writeJsonFile(REPLAY_AUDIT_FILE_PATH, entries)
+  },
+  async updateReplayAuditEntries(updater) {
+    await updateJsonFile<ContactReplayAuditEntry[]>(REPLAY_AUDIT_FILE_PATH, [], updater)
   },
   async readWorkerRuntimeState() {
     return readJsonFile<ContactWorkerRuntimeState>(WORKER_RUNTIME_FILE_PATH, {
@@ -258,6 +295,20 @@ const fileContactStateStore: ContactStateStore = {
   },
   async writeWorkerRuntimeState(state) {
     await writeJsonFile(WORKER_RUNTIME_FILE_PATH, state)
+  },
+  async updateWorkerRuntimeState(updater) {
+    await updateJsonFile<ContactWorkerRuntimeState>(
+      WORKER_RUNTIME_FILE_PATH,
+      {
+        workerId: null,
+        lastHeartbeatAt: null,
+        lastReplayAt: null,
+        lastBatchSize: null,
+        lastOutcome: null,
+        lastError: null,
+      },
+      updater,
+    )
   },
 }
 
@@ -279,6 +330,9 @@ const redisContactStateStore: ContactStateStore = {
   async writeIdempotencyRecords(records) {
     await writeRedisJson("idempotency", records)
   },
+  async updateIdempotencyRecords(updater) {
+    await updateRedisJson<Array<[string, ContactIdempotencyRecord]>>("idempotency", [], updater)
+  },
   async readReplayRuntimeState() {
     return readRedisJson<ContactReplayRuntimeState>("replay-runtime", {
       activeLock: null,
@@ -289,11 +343,25 @@ const redisContactStateStore: ContactStateStore = {
   async writeReplayRuntimeState(state) {
     await writeRedisJson("replay-runtime", state)
   },
+  async updateReplayRuntimeState(updater) {
+    await updateRedisJson<ContactReplayRuntimeState>(
+      "replay-runtime",
+      {
+        activeLock: null,
+        lastCompletedAt: null,
+        lastSummary: null,
+      },
+      updater,
+    )
+  },
   async readReplayAuditEntries() {
     return readRedisJson<ContactReplayAuditEntry[]>("replay-audit", [])
   },
   async writeReplayAuditEntries(entries) {
     await writeRedisJson("replay-audit", entries)
+  },
+  async updateReplayAuditEntries(updater) {
+    await updateRedisJson<ContactReplayAuditEntry[]>("replay-audit", [], updater)
   },
   async readWorkerRuntimeState() {
     return readRedisJson<ContactWorkerRuntimeState>("worker-runtime", {
@@ -307,6 +375,20 @@ const redisContactStateStore: ContactStateStore = {
   },
   async writeWorkerRuntimeState(state) {
     await writeRedisJson("worker-runtime", state)
+  },
+  async updateWorkerRuntimeState(updater) {
+    await updateRedisJson<ContactWorkerRuntimeState>(
+      "worker-runtime",
+      {
+        workerId: null,
+        lastHeartbeatAt: null,
+        lastReplayAt: null,
+        lastBatchSize: null,
+        lastOutcome: null,
+        lastError: null,
+      },
+      updater,
+    )
   },
 }
 

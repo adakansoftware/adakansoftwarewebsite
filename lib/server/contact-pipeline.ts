@@ -20,10 +20,7 @@ import {
 } from "@/lib/server/contact-state-store"
 import { logServerEvent } from "@/lib/server/logger"
 
-const idempotencyRecords = new Map<string, ContactIdempotencyRecord>()
 const contactStateStore = getContactStateStore()
-
-let idempotencyLoaded = false
 
 function normalizeIdempotencyKey(value: string | null) {
   const normalized = value?.trim()
@@ -40,31 +37,28 @@ function getSubmissionFingerprint(submission: ContactSubmission) {
     .digest("hex")
 }
 
-function pruneIdempotencyRecords(now: number) {
-  for (const [key, record] of idempotencyRecords.entries()) {
+function pruneIdempotencyRecords(records: Map<string, ContactIdempotencyRecord>, now: number) {
+  let changed = false
+
+  for (const [key, record] of records.entries()) {
     if (now - record.storedAt >= contactPolicy.idempotencyWindowMs) {
-      idempotencyRecords.delete(key)
+      records.delete(key)
+      changed = true
     }
   }
+
+  return changed
 }
 
 async function loadIdempotencyRecords(now: number) {
-  if (idempotencyLoaded) {
-    pruneIdempotencyRecords(now)
-    return
+  const records = new Map<string, ContactIdempotencyRecord>(await contactStateStore.readIdempotencyRecords())
+  const changed = pruneIdempotencyRecords(records, now)
+
+  if (changed) {
+    await contactStateStore.writeIdempotencyRecords(Array.from(records.entries()))
   }
 
-  const storedRecords = await contactStateStore.readIdempotencyRecords()
-  for (const [key, record] of storedRecords) {
-    idempotencyRecords.set(key, record)
-  }
-
-  pruneIdempotencyRecords(now)
-  idempotencyLoaded = true
-}
-
-function persistIdempotencyRecords() {
-  return contactStateStore.writeIdempotencyRecords(Array.from(idempotencyRecords.entries()))
+  return records
 }
 
 async function readReplayRuntimeState(now = Date.now()) {
@@ -80,10 +74,6 @@ async function readReplayRuntimeState(now = Date.now()) {
   return state
 }
 
-function writeReplayRuntimeState(state: ContactReplayRuntimeState) {
-  return contactStateStore.writeReplayRuntimeState(state)
-}
-
 function getRetryDelayMs(attempts: number) {
   const exponentialDelay = contactPolicy.outboxRetryBaseDelayMs * 2 ** Math.max(0, attempts - 1)
   return Math.min(exponentialDelay, contactPolicy.outboxRetryMaxDelayMs)
@@ -93,19 +83,16 @@ async function readReplayAuditEntries() {
   return contactStateStore.readReplayAuditEntries()
 }
 
-function writeReplayAuditEntries(entries: ContactReplayAuditEntry[]) {
-  return contactStateStore.writeReplayAuditEntries(entries)
-}
-
 async function appendReplayAuditEntry(entry: ContactReplayAuditEntry) {
-  const entries = await readReplayAuditEntries()
-  entries.push(entry)
+  await contactStateStore.updateReplayAuditEntries((entries) => {
+    const nextEntries = [...entries, entry]
 
-  if (entries.length > contactPolicy.replayAuditRetention) {
-    entries.splice(0, entries.length - contactPolicy.replayAuditRetention)
-  }
+    if (nextEntries.length > contactPolicy.replayAuditRetention) {
+      nextEntries.splice(0, nextEntries.length - contactPolicy.replayAuditRetention)
+    }
 
-  await writeReplayAuditEntries(entries)
+    return nextEntries
+  })
 }
 
 export async function getIdempotencyReplay(request: Request, submission: ContactSubmission, now: number) {
@@ -114,12 +101,7 @@ export async function getIdempotencyReplay(request: Request, submission: Contact
     return null
   }
 
-  await loadIdempotencyRecords(now)
-
-  if (idempotencyRecords.size > 500) {
-    pruneIdempotencyRecords(now)
-    await persistIdempotencyRecords()
-  }
+  const idempotencyRecords = await loadIdempotencyRecords(now)
 
   const existingRecord = idempotencyRecords.get(key)
   if (!existingRecord) {
@@ -155,16 +137,20 @@ export async function storeIdempotencyReplay(
     return null
   }
 
-  await loadIdempotencyRecords(Date.now())
+  const storedAt = Date.now()
 
-  idempotencyRecords.set(key, {
-    fingerprint: getSubmissionFingerprint(submission),
-    status: response.status,
-    body: response.body,
-    storedAt: Date.now(),
+  await contactStateStore.updateIdempotencyRecords((storedRecords) => {
+    const idempotencyRecords = new Map<string, ContactIdempotencyRecord>(storedRecords)
+    pruneIdempotencyRecords(idempotencyRecords, storedAt)
+    idempotencyRecords.set(key, {
+      fingerprint: getSubmissionFingerprint(submission),
+      status: response.status,
+      body: response.body,
+      storedAt,
+    })
+
+    return Array.from(idempotencyRecords.entries())
   })
-
-  await persistIdempotencyRecords()
 
   return key
 }
@@ -285,9 +271,28 @@ export async function runContactOutboxReplay(input: {
 }) {
   const now = Date.now()
   const batchSize = input.limit ?? contactPolicy.outboxReplayBatchSize
-  const runtimeState = await readReplayRuntimeState(now)
+  const lock: ContactReplayLockState = {
+    requestId: input.requestId,
+    startedAt: now,
+    expiresAt: now + contactPolicy.outboxReplayLockMs,
+  }
+  let activeLock: ContactReplayLockState | null = null
 
-  if (runtimeState.activeLock) {
+  await contactStateStore.updateReplayRuntimeState((state) => {
+    const currentLock = state.activeLock && state.activeLock.expiresAt > now ? state.activeLock : null
+
+    if (currentLock) {
+      activeLock = currentLock
+      return currentLock === state.activeLock ? state : { ...state, activeLock: currentLock }
+    }
+
+    return {
+      ...state,
+      activeLock: lock,
+    }
+  })
+
+  if (activeLock) {
     await appendReplayAuditEntry({
       requestId: input.requestId,
       actor: input.actor,
@@ -303,21 +308,10 @@ export async function runContactOutboxReplay(input: {
     return {
       ok: false as const,
       busy: true as const,
-      lock: runtimeState.activeLock,
+      lock: activeLock,
       replay: null,
     }
   }
-
-  const lock: ContactReplayLockState = {
-    requestId: input.requestId,
-    startedAt: now,
-    expiresAt: now + contactPolicy.outboxReplayLockMs,
-  }
-
-  await writeReplayRuntimeState({
-    ...runtimeState,
-    activeLock: lock,
-  })
 
   await appendReplayAuditEntry({
     requestId: input.requestId,
@@ -334,11 +328,12 @@ export async function runContactOutboxReplay(input: {
     const replay = await processContactOutboxEntries(input.limit, `replay:${input.requestId}`)
     const completedAt = Date.now()
 
-    await writeReplayRuntimeState({
-      activeLock: null,
+    await contactStateStore.updateReplayRuntimeState((state) => ({
+      ...state,
+      activeLock: state.activeLock?.requestId === input.requestId ? null : state.activeLock,
       lastCompletedAt: completedAt,
       lastSummary: replay,
-    })
+    }))
 
     await appendReplayAuditEntry({
       requestId: input.requestId,
@@ -359,10 +354,10 @@ export async function runContactOutboxReplay(input: {
       replay,
     }
   } catch (error) {
-    await writeReplayRuntimeState({
-      ...runtimeState,
-      activeLock: null,
-    })
+    await contactStateStore.updateReplayRuntimeState((state) => ({
+      ...state,
+      activeLock: state.activeLock?.requestId === input.requestId ? null : state.activeLock,
+    }))
 
     await appendReplayAuditEntry({
       requestId: input.requestId,
@@ -382,7 +377,7 @@ export async function runContactOutboxReplay(input: {
 }
 
 export async function getContactPipelineDiagnostics() {
-  await loadIdempotencyRecords(Date.now())
+  const idempotencyRecords = await loadIdempotencyRecords(Date.now())
   const replayRuntime = await readReplayRuntimeState(Date.now())
   const replayAudit = await readReplayAuditEntries()
 
