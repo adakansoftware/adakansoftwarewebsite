@@ -242,7 +242,7 @@ export async function processContactOutboxEntries(
 
       if (!result.ok) {
         summary.failed += 1
-        await markContactMessageFailed(entry.id, "upstream-delivery-rejected", Date.now() + getRetryDelayMs(entry.attempts + 1), entry.attempts + 1)
+        await markContactMessageFailed(entry.id, result.failure ?? "upstream-delivery-rejected", Date.now() + getRetryDelayMs(entry.attempts + 1), entry.attempts + 1)
         continue
       }
 

@@ -142,7 +142,7 @@ export function getContactServiceDiagnostics() {
 export async function deliverContactMessage(submission: ContactSubmission) {
   const resendApiKey = process.env.RESEND_API_KEY
   if (!resendApiKey || resendApiKey === "re_your_key_here") {
-    return { ok: true, skipped: true } as const
+    return { ok: true, skipped: true, failure: null } as const
   }
 
   const response = await fetch("https://api.resend.com/emails", {
@@ -164,5 +164,10 @@ export async function deliverContactMessage(submission: ContactSubmission) {
   return {
     ok: response.ok,
     skipped: false,
+    failure: response.ok
+      ? null
+      : response.status === 429 || response.status >= 500
+        ? `resend-retryable-${response.status}`
+        : `resend-rejected-${response.status}`,
   } as const
 }

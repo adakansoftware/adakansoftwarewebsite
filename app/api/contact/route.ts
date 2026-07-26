@@ -152,12 +152,13 @@ export async function POST(request: Request) {
     const result = await deliverContactMessage(submission)
 
     if (!result.ok) {
-      await markContactMessageFailed(outboxEntry.id, "upstream-delivery-rejected")
+      await markContactMessageFailed(outboxEntry.id, result.failure ?? "upstream-delivery-rejected")
 
       logServerEvent("error", "contact.delivery.rejected", {
         requestId,
         clientIp,
         messageId: outboxEntry.id,
+        reason: result.failure,
       })
 
       return jsonResponse({ ok: false, error: "Email delivery failed" }, { status: 502, requestId })
