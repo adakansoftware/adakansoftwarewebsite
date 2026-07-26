@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start --hostname 0.0.0.0",
     "lint": "eslint .",
-    "test:smoke": "node scripts/test-smoke-routes.mjs",
+    "test:smoke": "node scripts/run-smoke-routes.mjs",
     "ops:contact:worker": "node scripts/contact-replay-worker.mjs"
   },
   "dependencies": {

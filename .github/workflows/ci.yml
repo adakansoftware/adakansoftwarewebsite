@@ -30,9 +30,4 @@ jobs:
         run: npm run build
 
       - name: Smoke test routes
-        run: |
-          npm run start -- --hostname 127.0.0.1 --port 3101 &
-          SERVER_PID=$!
-          trap "kill $SERVER_PID" EXIT
-          sleep 5
-          npm run test:smoke
+        run: npm run test:smoke
