@@ -1,4 +1,5 @@
 import { contactPolicy } from "@/lib/server/contact-policy"
+import { isContactRuntimeConfigurationValid } from "@/lib/server/contact-runtime-config"
 import {
   createQueuedContactMessage,
   getIdempotencyReplay,
@@ -61,6 +62,13 @@ export async function POST(request: Request) {
   const requestId = createRequestId(request)
   const now = Date.now()
   const clientIp = getClientIp(request)
+
+  if (!isContactRuntimeConfigurationValid()) {
+    return jsonResponse(
+      { ok: false, error: "Contact service is unavailable" },
+      { status: 503, requestId },
+    )
+  }
 
   if (!isAllowedOrigin(request)) {
     return jsonResponse({ ok: false, error: "Origin not allowed" }, { status: 403, requestId })

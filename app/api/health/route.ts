@@ -1,6 +1,7 @@
 import { getContactPipelineDiagnostics } from "@/lib/server/contact-pipeline"
 import { getContactServiceDiagnostics, isContactDeliveryConfigured } from "@/lib/server/contact-service"
 import { contactPolicy } from "@/lib/server/contact-policy"
+import { getContactRuntimeConfigurationIssues } from "@/lib/server/contact-runtime-config"
 import { getProxyRateLimitDiagnostics } from "@/lib/server/proxy-rate-limit"
 import { getContactStateStore, getContactStateStoreStatus } from "@/lib/server/contact-state-store"
 import {
@@ -45,6 +46,7 @@ export async function GET(request: Request) {
   const requestId = createRequestId(request)
   const includeDiagnostics = isAuthorizedAdminRequest(request)
   const diagnostics = getContactServiceDiagnostics()
+  const contactConfigurationIssues = getContactRuntimeConfigurationIssues()
   const proxyRateLimit = getProxyRateLimitDiagnostics()
   const pipeline = await getContactPipelineDiagnostics()
   const stateStatus = await getContactStateStoreStatus()
@@ -67,7 +69,13 @@ export async function GET(request: Request) {
     || (workerHeartbeatAgeMs !== null && workerHeartbeatAgeMs <= contactPolicy.queueAlertAgeMs)
   const status =
     process.env.NODE_ENV === "production"
-      && (!isContactDeliveryConfigured() || hasQueueAlerts || !workerHealthy || !stateStatus.available)
+      && (
+        !isContactDeliveryConfigured()
+        || contactConfigurationIssues.length > 0
+        || hasQueueAlerts
+        || !workerHealthy
+        || !stateStatus.available
+      )
       ? "degraded"
       : "ok"
 
@@ -80,6 +88,7 @@ export async function GET(request: Request) {
       environment: process.env.NODE_ENV ?? "development",
       checks: {
         contactDeliveryConfigured: diagnostics.deliveryConfigured,
+        contactRuntimeConfigurationValid: contactConfigurationIssues.length === 0,
         requestId: true,
         originProtection: true,
         duplicateProtection: true,
@@ -98,6 +107,7 @@ export async function GET(request: Request) {
       ...(includeDiagnostics
         ? {
             diagnostics,
+            contactConfigurationIssues,
             pipeline,
             state: {
               ...stateCapabilities,
