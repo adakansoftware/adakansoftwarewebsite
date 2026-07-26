@@ -203,21 +203,30 @@ async function writeRedisJson(name: string, value: unknown) {
 }
 
 async function updateRedisJson<T>(name: string, fallback: T, updater: (value: T) => T | Promise<T>) {
-  const client = await getRedisClient()
   const key = getRedisKey(name)
+  // WATCH state is scoped to a Redis connection. A dedicated connection prevents
+  // concurrent requests from clearing each other's optimistic transaction state.
+  const sharedClient = await getRedisClient()
+  const client = sharedClient.duplicate()
 
-  for (let attempt = 0; attempt < 5; attempt += 1) {
-    await client.watch(key)
-    const currentRawValue = await client.get(key)
-    const currentValue = currentRawValue ? (JSON.parse(currentRawValue) as T) : fallback
-    const nextValue = await updater(currentValue)
-    const transaction = client.multi()
-    transaction.set(key, JSON.stringify(nextValue))
-    const result = await transaction.exec()
+  await client.connect()
 
-    if (result !== null) {
-      return
+  try {
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      await client.watch(key)
+      const currentRawValue = await client.get(key)
+      const currentValue = currentRawValue ? (JSON.parse(currentRawValue) as T) : fallback
+      const nextValue = await updater(currentValue)
+      const transaction = client.multi()
+      transaction.set(key, JSON.stringify(nextValue))
+      const result = await transaction.exec()
+
+      if (result !== null) {
+        return
+      }
     }
+  } finally {
+    await client.quit()
   }
 
   throw new Error(`Redis update conflict for ${key}`)
