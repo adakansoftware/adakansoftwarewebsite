@@ -17,6 +17,9 @@ Bearer token. Review `/api/health` with an admin credential for detailed queue
 and worker diagnostics. Public health responses intentionally contain only a
 safe readiness summary.
 
+Signed admin request nonces are stored in the configured contact state backend;
+production Redis is therefore also required for replay-protection across instances.
+
 ## Failed deliveries
 
 Failed deliveries use exponential retry and become `dead-letter` entries after
