@@ -17,6 +17,13 @@ Bearer token. Review `/api/health` with an admin credential for detailed queue
 and worker diagnostics. Public health responses intentionally contain only a
 safe readiness summary.
 
+## Failed deliveries
+
+Failed deliveries use exponential retry and become `dead-letter` entries after
+`CONTACT_OUTBOX_MAX_ATTEMPTS` attempts. Inspect the authenticated health
+diagnostics before manually resolving the upstream configuration or replaying
+messages; do not edit the state store files directly.
+
 ## Verification
 
 Before deployment run:
