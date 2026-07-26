@@ -129,7 +129,7 @@ function getText(submission: ContactSubmission) {
 
 export function isContactDeliveryConfigured() {
   const resendApiKey = process.env.RESEND_API_KEY
-  return Boolean(resendApiKey && resendApiKey !== "re_your_key_here")
+  return Boolean(resendApiKey?.trim() && /^re_[A-Za-z0-9_-]+$/.test(resendApiKey.trim()))
 }
 
 export function getContactServiceDiagnostics() {
