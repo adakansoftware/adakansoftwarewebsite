@@ -28,7 +28,7 @@ export function createPageMetadata({
 }: PageMetadataInput): Metadata {
   const canonicalPath = locale === "tr" ? path : `/en${path === "/" ? "" : path}`
   const canonicalUrl = `${siteUrl}${canonicalPath === "/" ? "" : canonicalPath}`
-  const ogImage = `/og?page=${path.replace("/", "") || "default"}`
+  const ogImage = new URL(`/og?page=${path.replace("/", "") || "default"}`, siteUrl).toString()
 
   return {
     title,
