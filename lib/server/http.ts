@@ -201,5 +201,5 @@ export function getContentLength(request: Request) {
   }
 
   const parsed = Number.parseInt(rawValue, 10)
-  return Number.isFinite(parsed) ? parsed : null
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : -1
 }

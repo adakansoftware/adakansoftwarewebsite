@@ -75,7 +75,7 @@ export async function POST(request: Request) {
   }
 
   const contentLength = getContentLength(request)
-  if (contentLength !== null && contentLength > getContactContentLengthLimit()) {
+  if (contentLength !== null && (contentLength < 0 || contentLength > getContactContentLengthLimit())) {
     return jsonResponse({ ok: false, error: "Payload too large" }, { status: 413, requestId })
   }
 
