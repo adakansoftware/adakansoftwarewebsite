@@ -14,7 +14,7 @@ const checks = [
   { path: "/en/contact", status: 200, includes: ["WhatsApp", "Start a Project"] },
   { path: "/en/privacy", status: 200, includes: ["Privacy"] },
   { path: "/en/terms", status: 200, includes: ["Terms"] },
-  { path: "/api/health", status: 200, includes: ['"ok":true', '"service":"adakansoftware-website"', '"pipeline"'] },
+  { path: "/api/health", status: 200, includes: ['"ok":true', '"service":"adakansoftware-website"'] },
 ]
 
 async function request(path, init = {}) {
@@ -129,6 +129,18 @@ assert(optionsHealth.headers.get("allow") === "GET, HEAD, OPTIONS", `/api/health
 const headHealth = await request("/api/health", { method: "HEAD" })
 assert(headHealth.status === 200, `/api/health HEAD: expected 200, received ${headHealth.status}`)
 assert(Boolean(headHealth.headers.get("x-request-id")), "/api/health HEAD: expected x-request-id header")
+
+const publicHealth = await request("/api/health")
+assert(!publicHealth.text.includes('"pipeline"'), "/api/health public: must not expose pipeline diagnostics")
+assert(!publicHealth.text.includes('"worker"'), "/api/health public: must not expose worker diagnostics")
+
+const adminHealth = await request("/api/health", {
+  headers: {
+    Authorization: "Bearer test-admin-key",
+  },
+})
+assert(adminHealth.status === 200, `/api/health admin: expected 200, received ${adminHealth.status}`)
+assert(adminHealth.text.includes('"pipeline"'), "/api/health admin: expected pipeline diagnostics")
 
 const invalidContact = await postJson("/api/contact", { email: "bad@example.com" }, withTestClientIp())
 assert(invalidContact.status === 400, `/api/contact invalid body: expected 400, received ${invalidContact.status}`)

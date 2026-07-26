@@ -3,7 +3,14 @@ import { getContactServiceDiagnostics, isContactDeliveryConfigured } from "@/lib
 import { contactPolicy } from "@/lib/server/contact-policy"
 import { getProxyRateLimitDiagnostics } from "@/lib/server/proxy-rate-limit"
 import { getContactStateStore, getContactStateStoreStatus } from "@/lib/server/contact-state-store"
-import { createRequestId, emptyResponse, hasSignedAdminNonceProtection, hasSignedAdminProtection, jsonResponse } from "@/lib/server/http"
+import {
+  createRequestId,
+  emptyResponse,
+  hasSignedAdminNonceProtection,
+  hasSignedAdminProtection,
+  isAuthorizedAdminRequest,
+  jsonResponse,
+} from "@/lib/server/http"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -36,6 +43,7 @@ export async function HEAD(request: Request) {
 
 export async function GET(request: Request) {
   const requestId = createRequestId(request)
+  const includeDiagnostics = isAuthorizedAdminRequest(request)
   const diagnostics = getContactServiceDiagnostics()
   const proxyRateLimit = getProxyRateLimitDiagnostics()
   const pipeline = await getContactPipelineDiagnostics()
@@ -87,18 +95,22 @@ export async function GET(request: Request) {
         stateBackendAvailable: stateStatus.available,
         queueHealthy: !hasQueueAlerts,
       },
-      diagnostics,
-      pipeline,
-      state: {
-        ...stateCapabilities,
-        available: stateStatus.available,
-        error: stateStatus.error,
-      },
-      worker: {
-        ...workerRuntime,
-        heartbeatAgeMs: workerHeartbeatAgeMs,
-      },
-      proxy: proxyRateLimit,
+      ...(includeDiagnostics
+        ? {
+            diagnostics,
+            pipeline,
+            state: {
+              ...stateCapabilities,
+              available: stateStatus.available,
+              error: stateStatus.error,
+            },
+            worker: {
+              ...workerRuntime,
+              heartbeatAgeMs: workerHeartbeatAgeMs,
+            },
+            proxy: proxyRateLimit,
+          }
+        : {}),
     },
     {
       requestId,
