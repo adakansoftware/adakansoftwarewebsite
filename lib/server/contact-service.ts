@@ -27,7 +27,7 @@ const contactSchema = z.object({
   project: z.string().trim().min(10).max(4000).transform(normalizeWhitespace),
   locale: z.enum(["tr", "en"]).optional(),
   website: z.preprocess(normalizeOptionalString, z.string().max(200).optional()),
-})
+}).strict()
 
 const requestTimestampsByIp = new Map<string, number[]>()
 const recentSubmissionFingerprints = new Map<string, number>()
