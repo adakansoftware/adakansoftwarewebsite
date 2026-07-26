@@ -11,8 +11,12 @@ export async function readJsonFile<T>(filePath: string, fallback: T) {
   try {
     const content = await readFile(filePath, "utf8")
     return JSON.parse(content) as T
-  } catch {
-    return fallback
+  } catch (error) {
+    if (typeof error === "object" && error !== null && "code" in error && error.code === "ENOENT") {
+      return fallback
+    }
+
+    throw error
   }
 }
 
