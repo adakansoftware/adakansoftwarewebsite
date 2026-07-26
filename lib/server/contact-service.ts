@@ -5,6 +5,7 @@ import { z } from "zod"
 import type { Locale } from "@/lib/i18n"
 import { siteConfig } from "@/lib/site-config"
 import { contactPolicy, getContactPolicySnapshot } from "@/lib/server/contact-policy"
+import { isValidContactFromDomain } from "@/lib/server/contact-runtime-config"
 import { pruneExpiredBuckets, pruneExpiredEntries } from "@/lib/server/memory-store"
 
 function normalizeWhitespace(value: string) {
@@ -103,7 +104,8 @@ export function isDuplicateSubmission(submission: ContactSubmission, ip: string,
 }
 
 function getFromAddress() {
-  const fromDomain = process.env.RESEND_FROM_DOMAIN ?? "resend.dev"
+  const configuredDomain = process.env.RESEND_FROM_DOMAIN?.trim()
+  const fromDomain = isValidContactFromDomain(configuredDomain) ? configuredDomain : "resend.dev"
   return fromDomain === "resend.dev"
     ? "Adakan Software <onboarding@resend.dev>"
     : `Adakan Software Website <noreply@${fromDomain}>`

@@ -10,6 +10,10 @@ function isPlaceholderValue(value: string | undefined) {
   return !normalized || PLACEHOLDER_VALUE_PATTERNS.some((pattern) => pattern.test(normalized))
 }
 
+export function isValidContactFromDomain(value: string | undefined) {
+  return Boolean(value?.trim() && /^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/i.test(value.trim()))
+}
+
 export function getContactRuntimeConfigurationIssues(environment = process.env.NODE_ENV) {
   if (environment !== "production") {
     return []
@@ -23,6 +27,8 @@ export function getContactRuntimeConfigurationIssues(environment = process.env.N
 
   if (isPlaceholderValue(process.env.RESEND_FROM_DOMAIN)) {
     issues.push("RESEND_FROM_DOMAIN is required for production contact delivery")
+  } else if (!isValidContactFromDomain(process.env.RESEND_FROM_DOMAIN)) {
+    issues.push("RESEND_FROM_DOMAIN must be a valid domain name")
   }
 
   const adminKeyConfigured = !isPlaceholderValue(process.env.CONTACT_ADMIN_KEY)
