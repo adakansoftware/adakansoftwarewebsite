@@ -97,6 +97,7 @@ export async function GET(request: Request) {
         replayEndpointProtected: true,
         signedAdminProtection: hasSignedAdminProtection(),
         signedAdminNonceProtection: hasSignedAdminNonceProtection(),
+        sharedAdminNonceProtection: hasSignedAdminNonceProtection() && stateStatus.available,
         automaticReplayAvailable: automaticReplayConfigured,
         automaticReplayHealthy: workerHealthy,
         requestedStateBackendImplemented: stateCapabilities.requestedBackendImplemented,
