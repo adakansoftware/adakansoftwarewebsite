@@ -44,7 +44,7 @@ export async function HEAD(request: Request) {
 
 export async function GET(request: Request) {
   const requestId = createRequestId(request)
-  const includeDiagnostics = isAuthorizedAdminRequest(request)
+  const includeDiagnostics = await isAuthorizedAdminRequest(request)
   const diagnostics = getContactServiceDiagnostics()
   const contactConfigurationIssues = getContactRuntimeConfigurationIssues()
   const proxyRateLimit = getProxyRateLimitDiagnostics()

@@ -108,6 +108,7 @@ export type ContactStateStore = {
       state: ContactWorkerRuntimeState,
     ) => ContactWorkerRuntimeState | Promise<ContactWorkerRuntimeState>,
   ): Promise<void>
+  consumeAdminNonce(nonce: string, expiresAt: number): Promise<boolean>
 }
 
 export type ContactStateStoreCapabilities = {
@@ -133,6 +134,7 @@ const IDEMPOTENCY_FILE_PATH = join(DATA_DIRECTORY, "contact-idempotency.json")
 const REPLAY_RUNTIME_FILE_PATH = join(DATA_DIRECTORY, "contact-replay-runtime.json")
 const REPLAY_AUDIT_FILE_PATH = join(DATA_DIRECTORY, "contact-replay-audit.json")
 const WORKER_RUNTIME_FILE_PATH = join(DATA_DIRECTORY, "contact-worker-runtime.json")
+const ADMIN_NONCES_FILE_PATH = join(DATA_DIRECTORY, "contact-admin-nonces.json")
 
 let redisClientPromise: Promise<RedisClientType> | null = null
 
@@ -319,6 +321,17 @@ const fileContactStateStore: ContactStateStore = {
       updater,
     )
   },
+  async consumeAdminNonce(nonce, expiresAt) {
+    let accepted = false
+    await updateJsonFile<Record<string, number>>(ADMIN_NONCES_FILE_PATH, {}, (nonces) => {
+      const now = Date.now()
+      const active = Object.fromEntries(Object.entries(nonces).filter(([, expiry]) => expiry > now))
+      if (active[nonce]) return active
+      accepted = true
+      return { ...active, [nonce]: expiresAt }
+    })
+    return accepted
+  },
 }
 
 const redisContactStateStore: ContactStateStore = {
@@ -398,6 +411,11 @@ const redisContactStateStore: ContactStateStore = {
       },
       updater,
     )
+  },
+  async consumeAdminNonce(nonce, expiresAt) {
+    const client = await getRedisClient()
+    const result = await client.set(getRedisKey(`admin-nonce:${nonce}`), "1", { NX: true, PX: Math.max(1, expiresAt - Date.now()) })
+    return result === "OK"
   },
 }
 

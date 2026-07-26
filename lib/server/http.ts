@@ -4,10 +4,10 @@ import { NextResponse } from "next/server"
 
 import { siteConfig } from "@/lib/site-config"
 import { getTrustedClientIp } from "@/lib/server/client-ip"
+import { getContactStateStore } from "@/lib/server/contact-state-store"
 
 const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "::1"])
 const SIGNED_ADMIN_TOLERANCE_MS = 5 * 60_000
-const usedSignedAdminNonces = new Map<string, number>()
 
 function matchesSecret(candidate: string | null | undefined, secret: string | undefined) {
   if (!candidate || !secret) return false
@@ -92,7 +92,7 @@ function getSignedAdminPayload(request: Request) {
   return `${request.method}\n${new URL(request.url).pathname}\n${timestamp}\n${actor}\n${reason}\n${nonce}`
 }
 
-function consumeSignedAdminNonce(request: Request) {
+async function consumeSignedAdminNonce(request: Request) {
   const nonce = request.headers.get("x-admin-nonce")?.trim()
   const timestamp = request.headers.get("x-admin-timestamp")?.trim()
   if (!nonce || !timestamp) {
@@ -104,18 +104,7 @@ function consumeSignedAdminNonce(request: Request) {
     return false
   }
 
-  for (const [storedNonce, storedTimestamp] of usedSignedAdminNonces.entries()) {
-    if (Math.abs(Date.now() - storedTimestamp) > SIGNED_ADMIN_TOLERANCE_MS) {
-      usedSignedAdminNonces.delete(storedNonce)
-    }
-  }
-
-  if (usedSignedAdminNonces.has(nonce)) {
-    return false
-  }
-
-  usedSignedAdminNonces.set(nonce, parsedTimestamp)
-  return true
+  return getContactStateStore().consumeAdminNonce(nonce, parsedTimestamp + SIGNED_ADMIN_TOLERANCE_MS)
 }
 
 function hasFreshSignedAdminTimestamp(request: Request) {
@@ -152,7 +141,7 @@ export function isAuthorizedCronRequest(request: Request) {
   return matchesSecret(bearerToken, configuredSecret) || matchesSecret(cronSecret, configuredSecret)
 }
 
-export function isAuthorizedAdminRequest(request: Request) {
+export async function isAuthorizedAdminRequest(request: Request) {
   const configuredKey = process.env.CONTACT_ADMIN_KEY?.trim()
   const bearerToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "").trim()
   const adminKey = request.headers.get("x-contact-admin-key")?.trim()
@@ -174,7 +163,7 @@ export function isAuthorizedAdminRequest(request: Request) {
 
   return providedSignature.length === expectedSignatureBuffer.length
     && timingSafeEqual(providedSignature, expectedSignatureBuffer)
-    && consumeSignedAdminNonce(request)
+    && await consumeSignedAdminNonce(request)
 }
 
 export function isAllowedOrigin(request: Request) {

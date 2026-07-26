@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   const requestId = createRequestId(request)
   const clientIp = getClientIp(request)
 
-  if (!isAuthorizedAdminRequest(request)) {
+  if (!(await isAuthorizedAdminRequest(request))) {
     return jsonResponse({ ok: false, error: "Unauthorized" }, { status: 401, requestId })
   }
 
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   const requestId = createRequestId(request)
 
-  if (!isAuthorizedAdminRequest(request)) {
+  if (!(await isAuthorizedAdminRequest(request))) {
     return jsonResponse({ ok: false, error: "Unauthorized" }, { status: 401, requestId })
   }
 
