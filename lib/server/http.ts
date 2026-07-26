@@ -9,6 +9,14 @@ const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "::1"])
 const SIGNED_ADMIN_TOLERANCE_MS = 5 * 60_000
 const usedSignedAdminNonces = new Map<string, number>()
 
+function matchesSecret(candidate: string | null | undefined, secret: string | undefined) {
+  if (!candidate || !secret) return false
+
+  const candidateBuffer = Buffer.from(candidate)
+  const secretBuffer = Buffer.from(secret)
+  return candidateBuffer.length === secretBuffer.length && timingSafeEqual(candidateBuffer, secretBuffer)
+}
+
 function normalizeConfiguredOrigin(origin: string) {
   try {
     return new URL(origin).origin
@@ -141,7 +149,7 @@ export function isAuthorizedCronRequest(request: Request) {
   const bearerToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "").trim()
   const cronSecret = request.headers.get("x-cron-secret")?.trim()
 
-  return bearerToken === configuredSecret || cronSecret === configuredSecret
+  return matchesSecret(bearerToken, configuredSecret) || matchesSecret(cronSecret, configuredSecret)
 }
 
 export function isAuthorizedAdminRequest(request: Request) {
@@ -149,7 +157,7 @@ export function isAuthorizedAdminRequest(request: Request) {
   const bearerToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "").trim()
   const adminKey = request.headers.get("x-contact-admin-key")?.trim()
 
-  if (configuredKey && (bearerToken === configuredKey || adminKey === configuredKey)) {
+  if (matchesSecret(bearerToken, configuredKey) || matchesSecret(adminKey, configuredKey)) {
     return true
   }
 
