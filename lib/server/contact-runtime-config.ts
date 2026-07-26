@@ -36,6 +36,14 @@ export function getContactRuntimeConfigurationIssues(environment = process.env.N
     issues.push("CONTACT_CRON_SECRET cannot use a placeholder value in production")
   }
 
+  if (process.env.CONTACT_STATE_BACKEND?.trim().toLowerCase() !== "redis") {
+    issues.push("CONTACT_STATE_BACKEND=redis is required in production")
+  }
+
+  if (isPlaceholderValue(process.env.REDIS_URL)) {
+    issues.push("REDIS_URL is required for the production contact state backend")
+  }
+
   return issues
 }
 
