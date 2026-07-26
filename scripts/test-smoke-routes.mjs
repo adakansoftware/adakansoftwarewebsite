@@ -143,6 +143,12 @@ const adminHealth = await request("/api/health", {
 assert(adminHealth.status === 200, `/api/health admin: expected 200, received ${adminHealth.status}`)
 assert(adminHealth.text.includes('"pipeline"'), "/api/health admin: expected pipeline diagnostics")
 
+const signedHealth = await request("/api/health", {
+  headers: createSignedAdminHeaders("/api/health"),
+})
+assert(signedHealth.status === 200, `/api/health signed: expected 200, received ${signedHealth.status}`)
+assert(signedHealth.text.includes('"pipeline"'), "/api/health signed: expected diagnostics")
+
 const invalidContact = await postJson("/api/contact", { email: "bad@example.com" }, withTestClientIp())
 assert(invalidContact.status === 400, `/api/contact invalid body: expected 400, received ${invalidContact.status}`)
 assert(Boolean(invalidContact.headers.get("x-request-id")), "/api/contact invalid body: expected x-request-id header")
