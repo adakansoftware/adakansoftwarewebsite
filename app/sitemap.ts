@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next"
 
+import { siteConfig } from "@/lib/site-config"
+
 const routes = [
   "",
   "/about",
@@ -16,19 +18,14 @@ const routes = [
 ]
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://adakansoftware.com"
-  const now = new Date()
-
   return routes.flatMap((route) => [
     {
-      url: `${baseUrl}${route}`,
-      lastModified: now,
+      url: `${siteConfig.url}${route}`,
       changeFrequency: route === "" ? "weekly" : "monthly",
       priority: route === "" ? 1 : 0.8,
     },
     {
-      url: `${baseUrl}/en${route}`,
-      lastModified: now,
+      url: `${siteConfig.url}/en${route}`,
       changeFrequency: route === "" ? "weekly" : "monthly",
       priority: route === "" ? 0.95 : 0.75,
     },

@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next"
 
+import { siteConfig } from "@/lib/site-config"
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
@@ -7,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/"],
     },
-    sitemap: "https://adakansoftware.com/sitemap.xml",
-    host: "https://adakansoftware.com",
+    sitemap: `${siteConfig.url}/sitemap.xml`,
+    host: siteConfig.url,
   }
 }
