@@ -162,7 +162,6 @@ export async function createQueuedContactMessage(submission: ContactSubmission) 
 
   logServerEvent("info", "contact.outbox.queued", {
     messageId: outboxEntry.id,
-    email: submission.email,
     locale: submission.locale,
   })
 
