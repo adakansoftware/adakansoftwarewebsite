@@ -128,6 +128,7 @@ export async function getContactOutboxDiagnostics() {
     delivered: 0,
     skipped: 0,
     failed: 0,
+    "dead-letter": 0,
   }
 
   for (const entry of entries) {

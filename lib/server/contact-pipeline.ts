@@ -184,18 +184,24 @@ export async function markContactMessageDelivered(messageId: string, mode: "deli
   })
 }
 
-export async function markContactMessageFailed(messageId: string, error: string, nextAttemptAt?: number) {
+export async function markContactMessageFailed(
+  messageId: string,
+  error: string,
+  nextAttemptAt?: number,
+  attempts = 0,
+) {
+  const deadLettered = attempts >= contactPolicy.outboxMaxAttempts
   await updateContactOutboxEntry(messageId, {
-    status: "failed",
+    status: deadLettered ? "dead-letter" : "failed",
     lastError: error,
-    nextAttemptAt,
+    nextAttemptAt: deadLettered ? undefined : nextAttemptAt,
     leaseOwner: undefined,
     leaseExpiresAt: undefined,
   })
 
   logServerEvent("error", "contact.outbox.failed", {
     messageId,
-    error,
+    error: deadLettered ? `dead-letter:${error}` : error,
   })
 }
 
@@ -228,7 +234,7 @@ export async function processContactOutboxEntries(
 
     if (!entry.submission) {
       summary.failed += 1
-      await markContactMessageFailed(entry.id, "legacy-entry-missing-submission", Date.now() + getRetryDelayMs(entry.attempts + 1))
+      await markContactMessageFailed(entry.id, "legacy-entry-missing-submission", Date.now() + getRetryDelayMs(entry.attempts + 1), entry.attempts + 1)
       continue
     }
 
@@ -237,7 +243,7 @@ export async function processContactOutboxEntries(
 
       if (!result.ok) {
         summary.failed += 1
-        await markContactMessageFailed(entry.id, "upstream-delivery-rejected", Date.now() + getRetryDelayMs(entry.attempts + 1))
+        await markContactMessageFailed(entry.id, "upstream-delivery-rejected", Date.now() + getRetryDelayMs(entry.attempts + 1), entry.attempts + 1)
         continue
       }
 
@@ -252,7 +258,7 @@ export async function processContactOutboxEntries(
     } catch (error) {
       summary.failed += 1
       const errorMessage = error instanceof Error ? error.message : "unknown-error"
-      await markContactMessageFailed(entry.id, errorMessage, Date.now() + getRetryDelayMs(entry.attempts + 1))
+      await markContactMessageFailed(entry.id, errorMessage, Date.now() + getRetryDelayMs(entry.attempts + 1), entry.attempts + 1)
     }
   }
 
@@ -385,6 +391,7 @@ export async function getContactPipelineDiagnostics() {
   const alerts = [
     outbox.oldestPendingAgeMs && outbox.oldestPendingAgeMs >= contactPolicy.queueAlertAgeMs ? "pending-queue-aging" : null,
     outbox.oldestFailedAgeMs && outbox.oldestFailedAgeMs >= contactPolicy.queueAlertAgeMs ? "failed-queue-aging" : null,
+    outbox.counts["dead-letter"] > 0 ? "dead-letter-entries" : null,
     outbox.claimedCount > 0 ? "leases-active" : null,
   ].filter((value): value is string => Boolean(value))
 

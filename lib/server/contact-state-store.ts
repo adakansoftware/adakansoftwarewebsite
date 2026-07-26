@@ -5,7 +5,7 @@ import { createClient, type RedisClientType } from "redis"
 import type { ContactSubmission } from "@/lib/server/contact-service"
 import { readJsonFile, updateJsonFile, writeJsonFile } from "@/lib/server/json-file-store"
 
-export type ContactOutboxStatus = "pending" | "delivered" | "skipped" | "failed"
+export type ContactOutboxStatus = "pending" | "delivered" | "skipped" | "failed" | "dead-letter"
 export type ContactStateBackend = "file" | "redis" | "postgres"
 
 export type ContactOutboxEntry = {

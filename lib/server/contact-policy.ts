@@ -12,6 +12,7 @@ type ContactPolicy = {
   outboxClaimLeaseMs: number
   outboxRetryBaseDelayMs: number
   outboxRetryMaxDelayMs: number
+  outboxMaxAttempts: number
   queueAlertAgeMs: number
 }
 
@@ -39,6 +40,7 @@ export const contactPolicy: ContactPolicy = {
   outboxClaimLeaseMs: readPositiveInteger("CONTACT_OUTBOX_CLAIM_LEASE_MS", 45_000),
   outboxRetryBaseDelayMs: readPositiveInteger("CONTACT_OUTBOX_RETRY_BASE_DELAY_MS", 30_000),
   outboxRetryMaxDelayMs: readPositiveInteger("CONTACT_OUTBOX_RETRY_MAX_DELAY_MS", 15 * 60_000),
+  outboxMaxAttempts: readPositiveInteger("CONTACT_OUTBOX_MAX_ATTEMPTS", 8),
   queueAlertAgeMs: readPositiveInteger("CONTACT_QUEUE_ALERT_AGE_MS", 30 * 60_000),
 }
 
@@ -57,6 +59,7 @@ export function getContactPolicySnapshot() {
     outboxClaimLeaseMs: contactPolicy.outboxClaimLeaseMs,
     outboxRetryBaseDelayMs: contactPolicy.outboxRetryBaseDelayMs,
     outboxRetryMaxDelayMs: contactPolicy.outboxRetryMaxDelayMs,
+    outboxMaxAttempts: contactPolicy.outboxMaxAttempts,
     queueAlertAgeMs: contactPolicy.queueAlertAgeMs,
   }
 }
