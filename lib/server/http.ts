@@ -3,6 +3,7 @@ import { createHmac, randomUUID, timingSafeEqual } from "node:crypto"
 import { NextResponse } from "next/server"
 
 import { siteConfig } from "@/lib/site-config"
+import { getTrustedClientIp } from "@/lib/server/client-ip"
 
 const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "::1"])
 const SIGNED_ADMIN_TOLERANCE_MS = 5 * 60_000
@@ -67,12 +68,7 @@ export function emptyResponse({
 }
 
 export function getClientIp(request: Request) {
-  const forwardedFor = request.headers.get("x-forwarded-for")
-  if (forwardedFor) {
-    return forwardedFor.split(",")[0]?.trim() || "unknown"
-  }
-
-  return request.headers.get("x-real-ip")?.trim() || "unknown"
+  return getTrustedClientIp(request.headers)
 }
 
 function getSignedAdminPayload(request: Request) {

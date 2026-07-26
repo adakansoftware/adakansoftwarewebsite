@@ -3,17 +3,9 @@ import { NextResponse } from "next/server"
 
 import { defaultLocale, isLocale, localeHeaderName, stripLocalePrefix } from "@/lib/i18n"
 import { getProxyRateLimitPolicy, isProxyRateLimited } from "@/lib/server/proxy-rate-limit"
+import { getTrustedClientIp } from "@/lib/server/client-ip"
 
 const PUBLIC_FILE = /\.[^/]+$/
-
-function getClientIp(request: NextRequest) {
-  const forwardedFor = request.headers.get("x-forwarded-for")
-  if (forwardedFor) {
-    return forwardedFor.split(",")[0]?.trim() || "unknown"
-  }
-
-  return request.headers.get("x-real-ip")?.trim() || "unknown"
-}
 
 function withSecurityHeaders(response: NextResponse) {
   response.headers.set("X-Proxy-Cache", "bypass")
@@ -22,7 +14,7 @@ function withSecurityHeaders(response: NextResponse) {
 
 function applyApiBurstProtection(request: NextRequest) {
   const policy = getProxyRateLimitPolicy()
-  const key = `${getClientIp(request)}:${request.nextUrl.pathname}`
+  const key = `${getTrustedClientIp(request.headers)}:${request.nextUrl.pathname}`
   const now = Date.now()
 
   if (!isProxyRateLimited(key, now)) {
