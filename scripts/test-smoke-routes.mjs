@@ -113,7 +113,7 @@ assert(optionsReplay.headers.get("allow") === "GET, POST, OPTIONS", `/api/contac
 
 const optionsReplayCron = await request("/api/contact/replay/cron", { method: "OPTIONS" })
 assert(optionsReplayCron.status === 204, `/api/contact/replay/cron OPTIONS: expected 204, received ${optionsReplayCron.status}`)
-assert(optionsReplayCron.headers.get("allow") === "POST, OPTIONS", `/api/contact/replay/cron OPTIONS: expected Allow header`)
+assert(optionsReplayCron.headers.get("allow") === "GET, POST, OPTIONS", `/api/contact/replay/cron OPTIONS: expected Allow header`)
 
 const optionsState = await request("/api/contact/state", { method: "OPTIONS" })
 assert(optionsState.status === 204, `/api/contact/state OPTIONS: expected 204, received ${optionsState.status}`)

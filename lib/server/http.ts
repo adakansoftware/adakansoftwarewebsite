@@ -133,7 +133,7 @@ export function hasSignedAdminNonceProtection() {
 }
 
 export function isAuthorizedCronRequest(request: Request) {
-  const configuredSecret = process.env.CONTACT_CRON_SECRET?.trim()
+  const configuredSecret = process.env.CONTACT_CRON_SECRET?.trim() || process.env.CRON_SECRET?.trim()
   if (!configuredSecret) {
     return false
   }

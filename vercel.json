@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/contact/replay/cron",
+      "schedule": "0 * * * *"
+    }
+  ]
+}

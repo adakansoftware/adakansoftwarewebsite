@@ -31,7 +31,7 @@ export function getContactRuntimeConfigurationIssues(environment = process.env.N
     issues.push("A non-placeholder contact admin credential is required in production")
   }
 
-  const cronSecret = process.env.CONTACT_CRON_SECRET?.trim()
+  const cronSecret = process.env.CONTACT_CRON_SECRET?.trim() || process.env.CRON_SECRET?.trim()
   if (cronSecret && isPlaceholderValue(cronSecret)) {
     issues.push("CONTACT_CRON_SECRET cannot use a placeholder value in production")
   }

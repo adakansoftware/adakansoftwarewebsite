@@ -6,7 +6,7 @@ import { createRequestId, emptyResponse, getClientIp, isAuthorizedCronRequest, j
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
-const ALLOW_HEADER_VALUE = "POST, OPTIONS"
+const ALLOW_HEADER_VALUE = "GET, POST, OPTIONS"
 
 export async function OPTIONS(request: Request) {
   const requestId = createRequestId(request)
@@ -92,4 +92,9 @@ export async function POST(request: Request) {
     },
     { requestId },
   )
+}
+
+// Vercel Cron invokes configured paths with GET and an Authorization bearer token.
+export async function GET(request: Request) {
+  return POST(request)
 }
