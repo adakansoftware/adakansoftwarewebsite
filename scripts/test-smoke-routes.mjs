@@ -133,6 +133,7 @@ assert(Boolean(headHealth.headers.get("x-request-id")), "/api/health HEAD: expec
 const publicHealth = await request("/api/health")
 assert(!publicHealth.text.includes('"pipeline"'), "/api/health public: must not expose pipeline diagnostics")
 assert(!publicHealth.text.includes('"worker"'), "/api/health public: must not expose worker diagnostics")
+assert(!publicHealth.text.includes('"outbox"'), "/api/health public: must not expose outbox diagnostics")
 
 const adminHealth = await request("/api/health", {
   headers: {
@@ -281,5 +282,15 @@ const cronReplay = await request("/api/contact/replay/cron", {
 })
 assert(cronReplay.status === 200, `/api/contact/replay/cron authorized: expected 200, received ${cronReplay.status}`)
 assert(cronReplay.text.includes('"ok":true'), "/api/contact/replay/cron authorized: expected ok=true")
+
+const vercelCronReplay = await request("/api/contact/replay/cron", {
+  method: "GET",
+  headers: {
+    Authorization: "Bearer test-cron-secret",
+    "X-Worker-Id": "vercel-smoke-worker",
+  },
+})
+assert(vercelCronReplay.status === 200, `/api/contact/replay/cron GET: expected 200, received ${vercelCronReplay.status}`)
+assert(vercelCronReplay.text.includes('"ok":true'), "/api/contact/replay/cron GET: expected ok=true")
 
 console.log(`Smoke checks passed for ${baseUrl}`)
