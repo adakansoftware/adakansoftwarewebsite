@@ -6,6 +6,8 @@ Set a verified `RESEND_API_KEY`, `RESEND_FROM_DOMAIN`, and either
 `CONTACT_ADMIN_KEY` or `CONTACT_ADMIN_SIGNING_SECRET`. Placeholder values are
 rejected in production.
 
+`RESEND_API_KEY` must use Resend's `re_` key format.
+
 Use `CONTACT_STATE_BACKEND=redis` and set `REDIS_URL`. The file backend is only
 for local development because it is not shared between production instances.
 
