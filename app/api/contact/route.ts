@@ -100,7 +100,12 @@ export async function POST(request: Request) {
   let body: unknown
 
   try {
-    body = await request.json()
+    const rawBody = await request.text()
+    if (new TextEncoder().encode(rawBody).byteLength > getContactContentLengthLimit()) {
+      return jsonResponse({ ok: false, error: "Payload too large" }, { status: 413, requestId })
+    }
+
+    body = JSON.parse(rawBody) as unknown
   } catch {
     return jsonResponse({ ok: false, error: "Invalid request" }, { status: 400, requestId })
   }
