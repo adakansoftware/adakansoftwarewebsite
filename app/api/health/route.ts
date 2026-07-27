@@ -64,7 +64,7 @@ export async function GET(request: Request) {
   const hasQueueAlerts = pipeline?.alerts.length ? pipeline.alerts.length > 0 : false
   const workerHeartbeatAgeMs =
     workerRuntime.lastHeartbeatAt === null ? null : Date.now() - workerRuntime.lastHeartbeatAt
-  const automaticReplayConfigured = Boolean(process.env.CONTACT_CRON_SECRET?.trim())
+  const automaticReplayConfigured = Boolean(process.env.CONTACT_CRON_SECRET?.trim() || process.env.CRON_SECRET?.trim())
   const workerHealthy = !automaticReplayConfigured
     || (workerHeartbeatAgeMs !== null && workerHeartbeatAgeMs <= contactPolicy.queueAlertAgeMs)
   const status =

@@ -3,10 +3,10 @@
 import { randomUUID } from "node:crypto"
 
 const baseUrl = process.env.CONTACT_WORKER_BASE_URL ?? "http://127.0.0.1:3000"
-const cronSecret = process.env.CONTACT_CRON_SECRET
+const cronSecret = process.env.CONTACT_CRON_SECRET ?? process.env.CRON_SECRET
 
 if (!cronSecret) {
-  throw new Error("CONTACT_CRON_SECRET is required")
+  throw new Error("CONTACT_CRON_SECRET or CRON_SECRET is required")
 }
 
 const batchSize = process.env.CONTACT_WORKER_BATCH_SIZE?.trim()
