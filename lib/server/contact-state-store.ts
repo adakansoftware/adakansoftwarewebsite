@@ -138,6 +138,7 @@ const REPLAY_AUDIT_FILE_PATH = join(DATA_DIRECTORY, "contact-replay-audit.json")
 const WORKER_RUNTIME_FILE_PATH = join(DATA_DIRECTORY, "contact-worker-runtime.json")
 const ADMIN_NONCES_FILE_PATH = join(DATA_DIRECTORY, "contact-admin-nonces.json")
 const RATE_LIMIT_FILE_PATH = join(DATA_DIRECTORY, "contact-rate-limits.json")
+const DUPLICATE_FILE_PATH = join(DATA_DIRECTORY, "contact-duplicates.json")
 
 let redisClientPromise: Promise<RedisClientType> | null = null
 
@@ -348,7 +349,7 @@ const fileContactStateStore: ContactStateStore = {
   },
   async consumeDuplicate(key, windowMs) {
     let duplicate = false
-    await updateJsonFile<Record<string, number>>(RATE_LIMIT_FILE_PATH, {}, (entries) => {
+    await updateJsonFile<Record<string, number>>(DUPLICATE_FILE_PATH, {}, (entries) => {
       const now = Date.now()
       const active = Object.fromEntries(Object.entries(entries).filter(([, expiry]) => expiry > now))
       duplicate = Boolean(active[key])
