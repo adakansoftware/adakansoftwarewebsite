@@ -81,7 +81,7 @@ export async function GET(request: Request) {
 
   return jsonResponse(
     {
-      ok: true,
+      ok: status === "ok",
       status,
       service: "adakansoftware-website",
       timestamp: new Date().toISOString(),
