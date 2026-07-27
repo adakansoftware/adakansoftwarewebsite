@@ -5,6 +5,11 @@ import { getContactStateStore, type ContactOutboxEntry } from "@/lib/server/cont
 
 type OutboxStatus = ContactOutboxEntry["status"]
 
+function maskEmail(email: string) {
+  const [local, domain] = email.split("@")
+  return local && domain ? `${local.slice(0, 2)}***@${domain}` : "***"
+}
+
 const contactStateStore = getContactStateStore()
 
 export async function readContactOutboxEntries() {
@@ -157,6 +162,9 @@ export async function getContactOutboxDiagnostics() {
     readyCount,
     oldestPendingAgeMs: oldestPendingEntry ? now - oldestPendingEntry.createdAt : null,
     oldestFailedAgeMs: oldestFailedEntry ? now - oldestFailedEntry.createdAt : null,
-    recent: entries.slice(-5).reverse(),
+    recent: entries.slice(-5).reverse().map(({ submission: _submission, email, ...entry }) => ({
+      ...entry,
+      email: maskEmail(email),
+    })),
   }
 }
