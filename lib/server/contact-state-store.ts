@@ -110,6 +110,7 @@ export type ContactStateStore = {
   ): Promise<void>
   consumeAdminNonce(nonce: string, expiresAt: number): Promise<boolean>
   consumeRateLimit(key: string, windowMs: number, maxRequests: number): Promise<boolean>
+  consumeDuplicate(key: string, windowMs: number): Promise<boolean>
 }
 
 export type ContactStateStoreCapabilities = {
@@ -345,6 +346,16 @@ const fileContactStateStore: ContactStateStore = {
     })
     return limited
   },
+  async consumeDuplicate(key, windowMs) {
+    let duplicate = false
+    await updateJsonFile<Record<string, number>>(RATE_LIMIT_FILE_PATH, {}, (entries) => {
+      const now = Date.now()
+      const active = Object.fromEntries(Object.entries(entries).filter(([, expiry]) => expiry > now))
+      duplicate = Boolean(active[key])
+      return duplicate ? active : { ...active, [key]: now + windowMs }
+    })
+    return duplicate
+  },
 }
 
 const redisContactStateStore: ContactStateStore = {
@@ -436,6 +447,11 @@ const redisContactStateStore: ContactStateStore = {
     const count = await client.incr(redisKey)
     if (count === 1) await client.pExpire(redisKey, windowMs)
     return count > maxRequests
+  },
+  async consumeDuplicate(key, windowMs) {
+    const client = await getRedisClient()
+    const result = await client.set(getRedisKey(`duplicate:${key}`), "1", { NX: true, PX: windowMs })
+    return result !== "OK"
   },
 }
 

@@ -85,7 +85,7 @@ function getSubmissionFingerprint(input: { email: string; project: string; local
     .digest("hex")
 }
 
-export function isDuplicateSubmission(submission: ContactSubmission, ip: string, now: number) {
+export async function isDuplicateSubmission(submission: ContactSubmission, ip: string, now: number) {
   if (recentSubmissionFingerprints.size > 500) {
     pruneExpiredEntries(recentSubmissionFingerprints, now, contactPolicy.duplicateWindowMs)
   }
@@ -96,6 +96,10 @@ export function isDuplicateSubmission(submission: ContactSubmission, ip: string,
     locale: submission.locale,
     ip,
   })
+
+  if (process.env.CONTACT_STATE_BACKEND?.trim().toLowerCase() === "redis") {
+    return getContactStateStore().consumeDuplicate(fingerprint, contactPolicy.duplicateWindowMs)
+  }
 
   const previousTimestamp = recentSubmissionFingerprints.get(fingerprint)
   if (previousTimestamp && now - previousTimestamp < contactPolicy.duplicateWindowMs) {

@@ -128,7 +128,7 @@ export async function POST(request: Request) {
     return jsonResponse(replay.body, { status: replay.status, requestId })
   }
 
-  if (isDuplicateSubmission(submission, clientIp, now)) {
+  if (await isDuplicateSubmission(submission, clientIp, now)) {
     const duplicateResponse = {
       ok: true,
       accepted: true,
