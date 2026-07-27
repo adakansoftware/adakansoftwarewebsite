@@ -6,6 +6,7 @@ import type { Locale } from "@/lib/i18n"
 import { siteConfig } from "@/lib/site-config"
 import { contactPolicy, getContactPolicySnapshot } from "@/lib/server/contact-policy"
 import { isValidContactFromDomain } from "@/lib/server/contact-runtime-config"
+import { getContactStateStore } from "@/lib/server/contact-state-store"
 import { pruneExpiredBuckets, pruneExpiredEntries } from "@/lib/server/memory-store"
 
 function normalizeWhitespace(value: string) {
@@ -60,7 +61,10 @@ export function parseContactPayload(payload: unknown) {
   } satisfies ContactSubmission
 }
 
-export function isRateLimited(ip: string, now: number) {
+export async function isRateLimited(ip: string, now: number) {
+  if (process.env.CONTACT_STATE_BACKEND?.trim().toLowerCase() === "redis") {
+    return getContactStateStore().consumeRateLimit(`contact:${ip}`, contactPolicy.rateLimitWindowMs, contactPolicy.rateLimitMaxRequests)
+  }
   if (requestTimestampsByIp.size > 200) {
     pruneExpiredBuckets(requestTimestampsByIp, now, contactPolicy.rateLimitWindowMs)
   }

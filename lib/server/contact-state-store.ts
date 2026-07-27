@@ -109,6 +109,7 @@ export type ContactStateStore = {
     ) => ContactWorkerRuntimeState | Promise<ContactWorkerRuntimeState>,
   ): Promise<void>
   consumeAdminNonce(nonce: string, expiresAt: number): Promise<boolean>
+  consumeRateLimit(key: string, windowMs: number, maxRequests: number): Promise<boolean>
 }
 
 export type ContactStateStoreCapabilities = {
@@ -135,6 +136,7 @@ const REPLAY_RUNTIME_FILE_PATH = join(DATA_DIRECTORY, "contact-replay-runtime.js
 const REPLAY_AUDIT_FILE_PATH = join(DATA_DIRECTORY, "contact-replay-audit.json")
 const WORKER_RUNTIME_FILE_PATH = join(DATA_DIRECTORY, "contact-worker-runtime.json")
 const ADMIN_NONCES_FILE_PATH = join(DATA_DIRECTORY, "contact-admin-nonces.json")
+const RATE_LIMIT_FILE_PATH = join(DATA_DIRECTORY, "contact-rate-limits.json")
 
 let redisClientPromise: Promise<RedisClientType> | null = null
 
@@ -332,6 +334,17 @@ const fileContactStateStore: ContactStateStore = {
     })
     return accepted
   },
+  async consumeRateLimit(key, windowMs, maxRequests) {
+    let limited = false
+    await updateJsonFile<Record<string, number[]>>(RATE_LIMIT_FILE_PATH, {}, (entries) => {
+      const now = Date.now()
+      const recent = (entries[key] ?? []).filter((timestamp) => now - timestamp < windowMs)
+      recent.push(now)
+      limited = recent.length > maxRequests
+      return { ...entries, [key]: recent }
+    })
+    return limited
+  },
 }
 
 const redisContactStateStore: ContactStateStore = {
@@ -416,6 +429,13 @@ const redisContactStateStore: ContactStateStore = {
     const client = await getRedisClient()
     const result = await client.set(getRedisKey(`admin-nonce:${nonce}`), "1", { NX: true, PX: Math.max(1, expiresAt - Date.now()) })
     return result === "OK"
+  },
+  async consumeRateLimit(key, windowMs, maxRequests) {
+    const client = await getRedisClient()
+    const redisKey = getRedisKey(`rate-limit:${key}`)
+    const count = await client.incr(redisKey)
+    if (count === 1) await client.pExpire(redisKey, windowMs)
+    return count > maxRequests
   },
 }
 

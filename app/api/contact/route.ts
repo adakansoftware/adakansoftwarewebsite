@@ -79,7 +79,7 @@ export async function POST(request: Request) {
     return jsonResponse({ ok: false, error: "Payload too large" }, { status: 413, requestId })
   }
 
-  if (isRateLimited(clientIp, now)) {
+  if (await isRateLimited(clientIp, now)) {
     return jsonResponse(
       { ok: false, error: "Too many requests" },
       {
