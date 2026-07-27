@@ -47,8 +47,8 @@ export async function GET(request: Request) {
   const includeDiagnostics = await isAuthorizedAdminRequest(request)
   const diagnostics = getContactServiceDiagnostics()
   const contactConfigurationIssues = getContactRuntimeConfigurationIssues()
-  const proxyRateLimit = getProxyRateLimitDiagnostics()
-  const pipeline = await getContactPipelineDiagnostics()
+  const proxyRateLimit = includeDiagnostics ? getProxyRateLimitDiagnostics() : null
+  const pipeline = includeDiagnostics ? await getContactPipelineDiagnostics() : null
   const stateStatus = await getContactStateStoreStatus()
   const workerRuntime = stateStatus.available
     ? await getContactStateStore().readWorkerRuntimeState()
@@ -61,7 +61,7 @@ export async function GET(request: Request) {
       lastError: stateStatus.error,
     }
   const stateCapabilities = stateStatus.capabilities
-  const hasQueueAlerts = pipeline.alerts.length > 0
+  const hasQueueAlerts = pipeline?.alerts.length ? pipeline.alerts.length > 0 : false
   const workerHeartbeatAgeMs =
     workerRuntime.lastHeartbeatAt === null ? null : Date.now() - workerRuntime.lastHeartbeatAt
   const automaticReplayConfigured = Boolean(process.env.CONTACT_CRON_SECRET?.trim())
