@@ -124,7 +124,11 @@ export async function POST(request: Request) {
     return jsonResponse({ ok: false, error: "Idempotency conflict" }, { status: 409, requestId })
   }
 
-  if (replay && !replay.conflict) {
+  if (replay && !replay.conflict && replay.pending) {
+    return jsonResponse({ ok: false, error: "Idempotency request in progress" }, { status: 409, requestId })
+  }
+
+  if (replay && !replay.conflict && !replay.pending) {
     return jsonResponse(replay.body, { status: replay.status, requestId })
   }
 

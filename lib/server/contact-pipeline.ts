@@ -105,6 +105,15 @@ export async function getIdempotencyReplay(request: Request, submission: Contact
 
   const existingRecord = idempotencyRecords.get(key)
   if (!existingRecord) {
+    const inProgress = await contactStateStore.consumeDuplicate(
+      `idempotency:${key}`,
+      contactPolicy.idempotencyWindowMs,
+    )
+
+    if (inProgress) {
+      return { key, conflict: false as const, pending: true as const }
+    }
+
     return null
   }
 
@@ -119,6 +128,7 @@ export async function getIdempotencyReplay(request: Request, submission: Contact
   return {
     key,
     conflict: false as const,
+    pending: false as const,
     status: existingRecord.status,
     body: {
       ...existingRecord.body,
