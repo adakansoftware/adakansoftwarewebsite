@@ -20,7 +20,9 @@ import {
 } from "@/lib/server/contact-state-store"
 import { logServerEvent } from "@/lib/server/logger"
 
-const contactStateStore = getContactStateStore()
+function getStore() {
+  return getContactStateStore()
+}
 
 function normalizeIdempotencyKey(value: string | null) {
   const normalized = value?.trim()
@@ -51,18 +53,18 @@ function pruneIdempotencyRecords(records: Map<string, ContactIdempotencyRecord>,
 }
 
 async function loadIdempotencyRecords(now: number) {
-  const records = new Map<string, ContactIdempotencyRecord>(await contactStateStore.readIdempotencyRecords())
+  const records = new Map<string, ContactIdempotencyRecord>(await getStore().readIdempotencyRecords())
   const changed = pruneIdempotencyRecords(records, now)
 
   if (changed) {
-    await contactStateStore.writeIdempotencyRecords(Array.from(records.entries()))
+    await getStore().writeIdempotencyRecords(Array.from(records.entries()))
   }
 
   return records
 }
 
 async function readReplayRuntimeState(now = Date.now()) {
-  const state = await contactStateStore.readReplayRuntimeState()
+  const state = await getStore().readReplayRuntimeState()
 
   if (state.activeLock && state.activeLock.expiresAt <= now) {
     return {
@@ -80,11 +82,11 @@ function getRetryDelayMs(attempts: number) {
 }
 
 async function readReplayAuditEntries() {
-  return contactStateStore.readReplayAuditEntries()
+  return getStore().readReplayAuditEntries()
 }
 
 async function appendReplayAuditEntry(entry: ContactReplayAuditEntry) {
-  await contactStateStore.updateReplayAuditEntries((entries) => {
+  await getStore().updateReplayAuditEntries((entries) => {
     const nextEntries = [...entries, entry]
 
     if (nextEntries.length > contactPolicy.replayAuditRetention) {
@@ -105,7 +107,7 @@ export async function getIdempotencyReplay(request: Request, submission: Contact
 
   const existingRecord = idempotencyRecords.get(key)
   if (!existingRecord) {
-    const inProgress = await contactStateStore.consumeDuplicate(
+    const inProgress = await getStore().consumeDuplicate(
       `idempotency:${key}`,
       contactPolicy.idempotencyWindowMs,
     )
@@ -149,7 +151,7 @@ export async function storeIdempotencyReplay(
 
   const storedAt = Date.now()
 
-  await contactStateStore.updateIdempotencyRecords((storedRecords) => {
+  await getStore().updateIdempotencyRecords((storedRecords) => {
     const idempotencyRecords = new Map<string, ContactIdempotencyRecord>(storedRecords)
     pruneIdempotencyRecords(idempotencyRecords, storedAt)
     idempotencyRecords.set(key, {
@@ -293,7 +295,7 @@ export async function runContactOutboxReplay(input: {
   }
   let activeLock: ContactReplayLockState | null = null
 
-  await contactStateStore.updateReplayRuntimeState((state) => {
+  await getStore().updateReplayRuntimeState((state) => {
     const currentLock = state.activeLock && state.activeLock.expiresAt > now ? state.activeLock : null
 
     if (currentLock) {
@@ -343,7 +345,7 @@ export async function runContactOutboxReplay(input: {
     const replay = await processContactOutboxEntries(input.limit, `replay:${input.requestId}`)
     const completedAt = Date.now()
 
-    await contactStateStore.updateReplayRuntimeState((state) => ({
+    await getStore().updateReplayRuntimeState((state) => ({
       ...state,
       activeLock: state.activeLock?.requestId === input.requestId ? null : state.activeLock,
       lastCompletedAt: completedAt,
@@ -369,7 +371,7 @@ export async function runContactOutboxReplay(input: {
       replay,
     }
   } catch (error) {
-    await contactStateStore.updateReplayRuntimeState((state) => ({
+    await getStore().updateReplayRuntimeState((state) => ({
       ...state,
       activeLock: state.activeLock?.requestId === input.requestId ? null : state.activeLock,
     }))

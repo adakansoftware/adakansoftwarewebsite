@@ -10,14 +10,16 @@ function maskEmail(email: string) {
   return local && domain ? `${local.slice(0, 2)}***@${domain}` : "***"
 }
 
-const contactStateStore = getContactStateStore()
+function getStore() {
+  return getContactStateStore()
+}
 
 export async function readContactOutboxEntries() {
-  return contactStateStore.readOutboxEntries()
+  return getStore().readOutboxEntries()
 }
 
 export async function writeContactOutboxEntries(entries: ContactOutboxEntry[]) {
-  await contactStateStore.writeOutboxEntries(entries)
+  await getStore().writeOutboxEntries(entries)
 }
 
 export async function enqueueContactOutboxEntry(input: { submission: ContactSubmission }) {
@@ -33,9 +35,9 @@ export async function enqueueContactOutboxEntry(input: { submission: ContactSubm
     status: "pending",
   }
 
-  const entries = await contactStateStore.readOutboxEntries()
+  const entries = await getStore().readOutboxEntries()
   entries.push(entry)
-  await contactStateStore.writeOutboxEntries(entries)
+  await getStore().writeOutboxEntries(entries)
 
   return entry
 }
@@ -49,7 +51,7 @@ export async function updateContactOutboxEntry(
     >
   >,
 ) {
-  const entries = await contactStateStore.readOutboxEntries()
+  const entries = await getStore().readOutboxEntries()
   const index = entries.findIndex((entry) => entry.id === id)
 
   if (index === -1) {
@@ -63,7 +65,7 @@ export async function updateContactOutboxEntry(
   }
 
   entries[index] = nextEntry
-  await contactStateStore.writeOutboxEntries(entries)
+  await getStore().writeOutboxEntries(entries)
   return nextEntry
 }
 
@@ -75,7 +77,7 @@ export async function claimReplayableContactOutboxEntries(input: {
 }) {
   const claimedEntries: ContactOutboxEntry[] = []
 
-  await contactStateStore.updateOutboxEntries((entries) => {
+  await getStore().updateOutboxEntries((entries) => {
     const sortedEntries = [...entries].sort((left, right) => left.createdAt - right.createdAt)
     const selectedIds = new Set<string>()
 
@@ -116,18 +118,18 @@ export async function claimReplayableContactOutboxEntries(input: {
 }
 
 export async function reapContactOutboxEntries(now: number, retentionMs: number) {
-  const entries = await contactStateStore.readOutboxEntries()
+  const entries = await getStore().readOutboxEntries()
   const filteredEntries = entries.filter((entry) => now - entry.updatedAt < retentionMs)
 
   if (filteredEntries.length !== entries.length) {
-    await contactStateStore.writeOutboxEntries(filteredEntries)
+    await getStore().writeOutboxEntries(filteredEntries)
   }
 
   return filteredEntries
 }
 
 export async function getContactOutboxDiagnostics() {
-  const entries = await contactStateStore.readOutboxEntries()
+  const entries = await getStore().readOutboxEntries()
   const counts: Record<OutboxStatus, number> = {
     pending: 0,
     delivered: 0,
