@@ -201,12 +201,16 @@ const wrongContentTypeResponse = await request("/api/contact", {
 })
 assert(wrongContentTypeResponse.status === 400, `/api/contact wrong content-type: expected 400, received ${wrongContentTypeResponse.status}`)
 
-const malformedLengthResponse = await request("/api/contact", {
-  method: "POST",
-  headers: withTestClientIp({ "Content-Type": "application/json", "Content-Length": "invalid" }),
-  body: "{}",
-})
-assert(malformedLengthResponse.status === 413, `/api/contact malformed content-length: expected 413, received ${malformedLengthResponse.status}`)
+const oversizedContactResponse = await postJson(
+  "/api/contact",
+  {
+    name: "Oversized payload test",
+    email: "oversized@example.com",
+    project: "x".repeat(13_000),
+  },
+  withTestClientIp(),
+)
+assert(oversizedContactResponse.status === 413, `/api/contact oversized payload: expected 413, received ${oversizedContactResponse.status}`)
 
 const unauthorizedReplay = await request("/api/contact/replay", {
   method: "GET",

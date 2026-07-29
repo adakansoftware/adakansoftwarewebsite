@@ -200,6 +200,11 @@ export function getContentLength(request: Request) {
     return null
   }
 
-  const parsed = Number.parseInt(rawValue, 10)
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : -1
+  const normalized = rawValue.trim()
+  if (!/^\d+$/.test(normalized)) {
+    return -1
+  }
+
+  const parsed = Number(normalized)
+  return Number.isSafeInteger(parsed) ? parsed : -1
 }
