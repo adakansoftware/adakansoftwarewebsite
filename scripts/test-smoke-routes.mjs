@@ -250,7 +250,7 @@ const stateDiagnostics = await request("/api/contact/state", {
 })
 assert(stateDiagnostics.status === 200, `/api/contact/state diagnostics: expected 200, received ${stateDiagnostics.status}`)
 assert(stateDiagnostics.text.includes('"backend":"file"'), "/api/contact/state diagnostics: expected file backend")
-assert(stateDiagnostics.text.includes('"sharedStoreReady":true'), "/api/contact/state diagnostics: expected sharedStoreReady=true")
+assert(stateDiagnostics.text.includes('"sharedStoreReady":false'), "/api/contact/state diagnostics: expected local file backend")
 assert(stateDiagnostics.text.includes('"implementedBackends":["file","redis"]'), "/api/contact/state diagnostics: expected implemented backends")
 assert(stateDiagnostics.text.includes('"requestedBackendImplemented":true'), "/api/contact/state diagnostics: expected implemented backend")
 assert(stateDiagnostics.text.includes('"requestedBackendReady":true'), "/api/contact/state diagnostics: expected ready backend")

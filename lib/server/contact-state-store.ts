@@ -476,7 +476,7 @@ export function getContactStateStoreCapabilities() {
 
   return {
     backend,
-    sharedStoreReady: true,
+    sharedStoreReady: backend === "redis",
     distributedStoreConfigured: backend !== "file",
     implementedBackends: ["file", "redis"] as const,
     requestedBackendImplemented: backend === "file" || backend === "redis",
