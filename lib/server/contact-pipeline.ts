@@ -2,7 +2,7 @@ import { createHash } from "node:crypto"
 
 import type { ContactSubmission } from "@/lib/server/contact-service"
 import { contactPolicy } from "@/lib/server/contact-policy"
-import { deliverContactMessage } from "@/lib/server/contact-service"
+import { resendContactDelivery } from "@/lib/server/contact-service"
 import {
   claimReplayableContactOutboxEntries,
   enqueueContactOutboxEntry,
@@ -250,7 +250,7 @@ export async function processContactOutboxEntries(
     }
 
     try {
-      const result = await deliverContactMessage(entry.submission)
+      const result = await resendContactDelivery.deliver(entry.submission)
 
       if (!result.ok) {
         summary.failed += 1

@@ -8,13 +8,13 @@ import {
   storeIdempotencyReplay,
 } from "@/lib/server/contact-pipeline"
 import {
-  deliverContactMessage,
   getContactContentLengthLimit,
   hasSpamTrapValue,
   isContactDeliveryConfigured,
   isDuplicateSubmission,
   isRateLimited,
   parseContactPayload,
+  resendContactDelivery,
 } from "@/lib/server/contact-service"
 import {
   createRequestId,
@@ -153,7 +153,7 @@ export async function POST(request: Request) {
   const outboxEntry = await createQueuedContactMessage(submission)
 
   try {
-    const result = await deliverContactMessage(submission)
+    const result = await resendContactDelivery.deliver(submission)
 
     if (!result.ok) {
       await markContactMessageFailed(outboxEntry.id, result.failure ?? "upstream-delivery-rejected")

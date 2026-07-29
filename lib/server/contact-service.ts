@@ -7,6 +7,7 @@ import { siteConfig } from "@/lib/site-config"
 import { contactPolicy, getContactPolicySnapshot } from "@/lib/server/contact-policy"
 import { isValidContactFromDomain } from "@/lib/server/contact-runtime-config"
 import { getContactStateStore } from "@/lib/server/contact-state-store"
+import type { ContactDeliveryPort } from "@/lib/server/contact-ports"
 import { pruneExpiredBuckets, pruneExpiredEntries } from "@/lib/server/memory-store"
 
 function normalizeWhitespace(value: string) {
@@ -149,7 +150,7 @@ export function getContactServiceDiagnostics() {
   }
 }
 
-export async function deliverContactMessage(submission: ContactSubmission) {
+export async function deliverContactMessage(submission: ContactSubmission): Promise<import("@/lib/server/contact-ports").ContactDeliveryResult> {
   const resendApiKey = process.env.RESEND_API_KEY
   if (!resendApiKey || resendApiKey === "re_your_key_here") {
     return { ok: true, skipped: true, failure: null } as const
@@ -171,13 +172,17 @@ export async function deliverContactMessage(submission: ContactSubmission) {
     signal: AbortSignal.timeout(contactPolicy.deliveryTimeoutMs),
   })
 
+  if (response.ok) return { ok: true, skipped: false, failure: null }
+
   return {
-    ok: response.ok,
+    ok: false,
     skipped: false,
-    failure: response.ok
-      ? null
-      : response.status === 429 || response.status >= 500
-        ? `resend-retryable-${response.status}`
-        : `resend-rejected-${response.status}`,
-  } as const
+    failure: response.status === 429 || response.status >= 500
+      ? `resend-retryable-${response.status}`
+      : `resend-rejected-${response.status}`,
+  }
+}
+
+export const resendContactDelivery: ContactDeliveryPort = {
+  deliver: deliverContactMessage,
 }
