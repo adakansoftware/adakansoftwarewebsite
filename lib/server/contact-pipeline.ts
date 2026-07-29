@@ -288,10 +288,17 @@ export async function runContactOutboxReplay(input: {
 }) {
   const now = Date.now()
   const batchSize = input.limit ?? contactPolicy.outboxReplayBatchSize
+  // Each delivery can use the configured timeout. Keep the replay lock alive
+  // for the full worst-case batch duration so a second worker cannot claim the
+  // same queue while the first one is still delivering messages.
+  const lockWindowMs = Math.max(
+    contactPolicy.outboxReplayLockMs,
+    batchSize * contactPolicy.deliveryTimeoutMs + 30_000,
+  )
   const lock: ContactReplayLockState = {
     requestId: input.requestId,
     startedAt: now,
-    expiresAt: now + contactPolicy.outboxReplayLockMs,
+    expiresAt: now + lockWindowMs,
   }
   let activeLock: ContactReplayLockState | null = null
 

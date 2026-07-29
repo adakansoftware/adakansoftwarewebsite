@@ -35,9 +35,7 @@ export async function enqueueContactOutboxEntry(input: { submission: ContactSubm
     status: "pending",
   }
 
-  const entries = await getStore().readOutboxEntries()
-  entries.push(entry)
-  await getStore().writeOutboxEntries(entries)
+  await getStore().updateOutboxEntries((entries) => [...entries, entry])
 
   return entry
 }
@@ -51,22 +49,25 @@ export async function updateContactOutboxEntry(
     >
   >,
 ) {
-  const entries = await getStore().readOutboxEntries()
-  const index = entries.findIndex((entry) => entry.id === id)
+  let updatedEntry: ContactOutboxEntry | null = null
 
-  if (index === -1) {
-    return null
-  }
+  await getStore().updateOutboxEntries((entries) => {
+    updatedEntry = null
+    const index = entries.findIndex((entry) => entry.id === id)
+    if (index === -1) {
+      return entries
+    }
 
-  const nextEntry: ContactOutboxEntry = {
-    ...entries[index],
-    ...updates,
-    updatedAt: Date.now(),
-  }
+    updatedEntry = {
+      ...entries[index],
+      ...updates,
+      updatedAt: Date.now(),
+    }
 
-  entries[index] = nextEntry
-  await getStore().writeOutboxEntries(entries)
-  return nextEntry
+    return entries.map((entry, entryIndex) => (entryIndex === index ? updatedEntry! : entry))
+  })
+
+  return updatedEntry
 }
 
 export async function claimReplayableContactOutboxEntries(input: {
@@ -118,12 +119,12 @@ export async function claimReplayableContactOutboxEntries(input: {
 }
 
 export async function reapContactOutboxEntries(now: number, retentionMs: number) {
-  const entries = await getStore().readOutboxEntries()
-  const filteredEntries = entries.filter((entry) => now - entry.updatedAt < retentionMs)
+  let filteredEntries: ContactOutboxEntry[] = []
 
-  if (filteredEntries.length !== entries.length) {
-    await getStore().writeOutboxEntries(filteredEntries)
-  }
+  await getStore().updateOutboxEntries((entries) => {
+    filteredEntries = entries.filter((entry) => now - entry.updatedAt < retentionMs)
+    return filteredEntries
+  })
 
   return filteredEntries
 }

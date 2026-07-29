@@ -184,6 +184,27 @@ const replayedIdempotent = await postJson("/api/contact", idempotentPayload, {
 assert(replayedIdempotent.status === 200, `/api/contact idempotent replay: expected 200, received ${replayedIdempotent.status}`)
 assert(replayedIdempotent.json?.replayed === true, "/api/contact idempotent replay: expected replayed=true")
 
+const concurrentContactResponses = await Promise.all(
+  Array.from({ length: 4 }, (_, index) =>
+    postJson(
+      "/api/contact",
+      {
+        name: `Concurrent User ${index + 1}`,
+        email: `concurrent-${index + 1}@example.com`,
+        project: `This concurrent submission ${index + 1} verifies that outbox writes do not overwrite one another.`,
+      },
+      {
+        ...withTestClientIp(),
+        "Idempotency-Key": `contact-concurrency-test-${index + 1}`,
+      },
+    ),
+  ),
+)
+for (const [index, response] of concurrentContactResponses.entries()) {
+  assert(response.status === 200, `/api/contact concurrent ${index + 1}: expected 200, received ${response.status}`)
+  assert(typeof response.json?.messageId === "string", `/api/contact concurrent ${index + 1}: expected messageId`)
+}
+
 const conflictingIdempotent = await postJson(
   "/api/contact",
   {
@@ -245,6 +266,11 @@ const replayDiagnostics = await request("/api/contact/replay", {
 })
 assert(replayDiagnostics.status === 200, `/api/contact/replay diagnostics: expected 200, received ${replayDiagnostics.status}`)
 assert(replayDiagnostics.text.includes('"pipeline"'), "/api/contact/replay diagnostics: expected pipeline payload")
+const replayDiagnosticsPayload = JSON.parse(replayDiagnostics.text)
+const recentOutboxIds = replayDiagnosticsPayload.pipeline.outbox.recent.map((entry) => entry.id)
+for (const response of concurrentContactResponses) {
+  assert(recentOutboxIds.includes(response.json.messageId), "/api/contact concurrent: expected message in outbox diagnostics")
+}
 
 const stateDiagnostics = await request("/api/contact/state", {
   method: "GET",
