@@ -167,9 +167,22 @@ export async function storeIdempotencyReplay(
   return key
 }
 
-export async function createQueuedContactMessage(submission: ContactSubmission) {
+export async function createQueuedContactMessage(
+  submission: ContactSubmission,
+  initialAttempt?: { owner: string },
+) {
   const outboxEntry = await enqueueContactOutboxEntry({
     submission,
+    ...(initialAttempt
+      ? {
+          initialAttempt: {
+            owner: initialAttempt.owner,
+            // Include persistence overhead after the upstream timeout before a
+            // replay worker may reclaim the message.
+            leaseMs: contactPolicy.deliveryTimeoutMs + 30_000,
+          },
+        }
+      : {}),
   })
 
   logServerEvent("info", "contact.outbox.queued", {
@@ -205,7 +218,7 @@ export async function markContactMessageFailed(
   await updateContactOutboxEntry(messageId, {
     status: deadLettered ? "dead-letter" : "failed",
     lastError: error,
-    nextAttemptAt: deadLettered ? undefined : nextAttemptAt,
+    nextAttemptAt: deadLettered ? undefined : (nextAttemptAt ?? Date.now() + getRetryDelayMs(attempts)),
     leaseOwner: undefined,
     leaseExpiresAt: undefined,
   })

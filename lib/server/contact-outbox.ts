@@ -22,16 +22,32 @@ export async function writeContactOutboxEntries(entries: ContactOutboxEntry[]) {
   await getStore().writeOutboxEntries(entries)
 }
 
-export async function enqueueContactOutboxEntry(input: { submission: ContactSubmission }) {
+export async function enqueueContactOutboxEntry(input: {
+  submission: ContactSubmission
+  initialAttempt?: {
+    owner: string
+    leaseMs: number
+  }
+}) {
   const now = Date.now()
+  const initialAttempt = input.initialAttempt
   const entry: ContactOutboxEntry = {
     id: randomUUID(),
     email: input.submission.email,
     locale: input.submission.locale,
     submission: input.submission,
-    attempts: 0,
+    // The request path delivers immediately. Persist its lease with the entry
+    // so a concurrently-running replay worker cannot deliver it a second time.
+    attempts: initialAttempt ? 1 : 0,
     createdAt: now,
     updatedAt: now,
+    ...(initialAttempt
+      ? {
+          lastAttemptAt: now,
+          leaseOwner: initialAttempt.owner,
+          leaseExpiresAt: now + initialAttempt.leaseMs,
+        }
+      : {}),
     status: "pending",
   }
 

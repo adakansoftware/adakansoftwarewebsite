@@ -150,13 +150,20 @@ export async function POST(request: Request) {
     return jsonResponse(duplicateResponse, { requestId })
   }
 
-  const outboxEntry = await createQueuedContactMessage(submission)
+  const outboxEntry = await createQueuedContactMessage(submission, {
+    owner: `request:${requestId}`,
+  })
 
   try {
     const result = await resendContactDelivery.deliver(submission)
 
     if (!result.ok) {
-      await markContactMessageFailed(outboxEntry.id, result.failure ?? "upstream-delivery-rejected")
+      await markContactMessageFailed(
+        outboxEntry.id,
+        result.failure ?? "upstream-delivery-rejected",
+        undefined,
+        outboxEntry.attempts,
+      )
 
       logServerEvent("error", "contact.delivery.rejected", {
         requestId,
@@ -193,7 +200,7 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "unknown-error"
-    await markContactMessageFailed(outboxEntry.id, errorMessage)
+    await markContactMessageFailed(outboxEntry.id, errorMessage, undefined, outboxEntry.attempts)
 
     logServerEvent("error", "contact.delivery.failed", {
       requestId,
