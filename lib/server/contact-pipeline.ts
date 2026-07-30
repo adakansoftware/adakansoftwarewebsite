@@ -193,19 +193,29 @@ export async function createQueuedContactMessage(
   return outboxEntry
 }
 
-export async function markContactMessageDelivered(messageId: string, mode: "delivered" | "skipped") {
-  await updateContactOutboxEntry(messageId, {
+export async function markContactMessageDelivered(
+  messageId: string,
+  mode: "delivered" | "skipped",
+  expectedLeaseOwner?: string,
+) {
+  const updatedEntry = await updateContactOutboxEntry(messageId, {
     status: mode,
     lastError: undefined,
     nextAttemptAt: undefined,
     leaseOwner: undefined,
     leaseExpiresAt: undefined,
-  })
+  }, { expectedLeaseOwner })
+
+  if (!updatedEntry) {
+    return null
+  }
 
   logServerEvent("info", "contact.outbox.completed", {
     messageId,
     mode,
   })
+
+  return updatedEntry
 }
 
 export async function markContactMessageFailed(
@@ -213,20 +223,27 @@ export async function markContactMessageFailed(
   error: string,
   nextAttemptAt?: number,
   attempts = 0,
+  expectedLeaseOwner?: string,
 ) {
   const deadLettered = attempts >= contactPolicy.outboxMaxAttempts
-  await updateContactOutboxEntry(messageId, {
+  const updatedEntry = await updateContactOutboxEntry(messageId, {
     status: deadLettered ? "dead-letter" : "failed",
     lastError: error,
     nextAttemptAt: deadLettered ? undefined : (nextAttemptAt ?? Date.now() + getRetryDelayMs(attempts)),
     leaseOwner: undefined,
     leaseExpiresAt: undefined,
-  })
+  }, { expectedLeaseOwner })
+
+  if (!updatedEntry) {
+    return null
+  }
 
   logServerEvent("error", "contact.outbox.failed", {
     messageId,
     error: deadLettered ? `dead-letter:${error}` : error,
   })
+
+  return updatedEntry
 }
 
 export async function processContactOutboxEntries(
@@ -250,15 +267,21 @@ export async function processContactOutboxEntries(
   }
 
   for (const entry of replayableEntries) {
-    await updateContactOutboxEntry(entry.id, {
+    const attemptedEntry = await updateContactOutboxEntry(entry.id, {
       attempts: entry.attempts + 1,
       lastAttemptAt: Date.now(),
       lastError: undefined,
-    })
+    }, { expectedLeaseOwner: owner })
+
+    // A lease might expire while a previous worker is still unwinding. Do not
+    // let that stale worker modify a message another worker now owns.
+    if (!attemptedEntry) {
+      continue
+    }
 
     if (!entry.submission) {
       summary.failed += 1
-      await markContactMessageFailed(entry.id, "legacy-entry-missing-submission", Date.now() + getRetryDelayMs(entry.attempts + 1), entry.attempts + 1)
+      await markContactMessageFailed(entry.id, "legacy-entry-missing-submission", Date.now() + getRetryDelayMs(attemptedEntry.attempts), attemptedEntry.attempts, owner)
       continue
     }
 
@@ -267,22 +290,22 @@ export async function processContactOutboxEntries(
 
       if (!result.ok) {
         summary.failed += 1
-        await markContactMessageFailed(entry.id, result.failure ?? "upstream-delivery-rejected", Date.now() + getRetryDelayMs(entry.attempts + 1), entry.attempts + 1)
+        await markContactMessageFailed(entry.id, result.failure ?? "upstream-delivery-rejected", Date.now() + getRetryDelayMs(attemptedEntry.attempts), attemptedEntry.attempts, owner)
         continue
       }
 
       if (result.skipped) {
         summary.skipped += 1
-        await markContactMessageDelivered(entry.id, "skipped")
+        await markContactMessageDelivered(entry.id, "skipped", owner)
         continue
       }
 
       summary.delivered += 1
-      await markContactMessageDelivered(entry.id, "delivered")
+      await markContactMessageDelivered(entry.id, "delivered", owner)
     } catch (error) {
       summary.failed += 1
       const errorMessage = error instanceof Error ? error.message : "unknown-error"
-      await markContactMessageFailed(entry.id, errorMessage, Date.now() + getRetryDelayMs(entry.attempts + 1), entry.attempts + 1)
+      await markContactMessageFailed(entry.id, errorMessage, Date.now() + getRetryDelayMs(attemptedEntry.attempts), attemptedEntry.attempts, owner)
     }
   }
 

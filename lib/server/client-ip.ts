@@ -3,12 +3,17 @@ function firstForwardedAddress(value: string | null) {
 }
 
 export function getTrustedClientIp(headers: Headers, environment = process.env.NODE_ENV) {
-  // Platform-specific headers are set after the public request reaches the
-  // trusted edge. Do not accept a client-supplied X-Forwarded-For in production.
+  // On the production Vercel deployment, use only the platform-populated
+  // header. Generic forwarding headers can otherwise be supplied by a client
+  // and would let it bypass an IP-based rate limit.
+  if (environment === "production") {
+    return firstForwardedAddress(headers.get("x-vercel-forwarded-for")) || "unknown"
+  }
+
   return (
     firstForwardedAddress(headers.get("x-vercel-forwarded-for"))
     || headers.get("x-real-ip")?.trim()
-    || (environment !== "production" ? firstForwardedAddress(headers.get("x-forwarded-for")) : null)
+    || firstForwardedAddress(headers.get("x-forwarded-for"))
     || "unknown"
   )
 }

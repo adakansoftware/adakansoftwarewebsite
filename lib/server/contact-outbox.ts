@@ -64,13 +64,20 @@ export async function updateContactOutboxEntry(
       "status" | "lastError" | "attempts" | "lastAttemptAt" | "nextAttemptAt" | "leaseOwner" | "leaseExpiresAt"
     >
   >,
-) {
+  options?: {
+    expectedLeaseOwner?: string
+  },
+): Promise<ContactOutboxEntry | null> {
   let updatedEntry: ContactOutboxEntry | null = null
 
   await getStore().updateOutboxEntries((entries) => {
     updatedEntry = null
     const index = entries.findIndex((entry) => entry.id === id)
     if (index === -1) {
+      return entries
+    }
+
+    if (options?.expectedLeaseOwner && entries[index].leaseOwner !== options.expectedLeaseOwner) {
       return entries
     }
 

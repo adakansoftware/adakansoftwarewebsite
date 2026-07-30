@@ -1,5 +1,6 @@
 import { contactPolicy } from "@/lib/server/contact-policy"
 import { isContactRuntimeConfigurationValid } from "@/lib/server/contact-runtime-config"
+import { getContactStateStoreStatus } from "@/lib/server/contact-state-store"
 import {
   createQueuedContactMessage,
   getIdempotencyReplay,
@@ -68,6 +69,34 @@ export async function POST(request: Request) {
       { ok: false, error: "Contact service is unavailable" },
       { status: 503, requestId },
     )
+  }
+
+  // Production delivery relies on Redis for rate limiting, idempotency, and
+  // the outbox. Fail closed with a clear service response instead of allowing
+  // a later state-store operation to surface as an unhandled 500.
+  if (process.env.NODE_ENV === "production") {
+    try {
+      const stateStatus = await getContactStateStoreStatus()
+      if (!stateStatus.available) {
+        logServerEvent("error", "contact.state.unavailable", {
+          requestId,
+          error: stateStatus.error,
+        })
+        return jsonResponse(
+          { ok: false, error: "Contact service is unavailable" },
+          { status: 503, requestId },
+        )
+      }
+    } catch (error) {
+      logServerEvent("error", "contact.state.check-failed", {
+        requestId,
+        error: error instanceof Error ? error.message : "unknown-error",
+      })
+      return jsonResponse(
+        { ok: false, error: "Contact service is unavailable" },
+        { status: 503, requestId },
+      )
+    }
   }
 
   if (!isAllowedOrigin(request)) {
@@ -163,6 +192,7 @@ export async function POST(request: Request) {
         result.failure ?? "upstream-delivery-rejected",
         undefined,
         outboxEntry.attempts,
+        outboxEntry.leaseOwner,
       )
 
       logServerEvent("error", "contact.delivery.rejected", {
@@ -172,10 +202,36 @@ export async function POST(request: Request) {
         reason: result.failure,
       })
 
-      return jsonResponse({ ok: false, error: "Email delivery failed" }, { status: 502, requestId })
+      const queuedResponse = {
+        ok: true,
+        accepted: true,
+        deliveryConfigured: isContactDeliveryConfigured(),
+        duplicate: false,
+        skippedDelivery: false,
+        queued: true,
+        deliveryPending: true,
+        messageId: outboxEntry.id,
+      }
+
+      await storeIdempotencyReplay(request, submission, {
+        status: 202,
+        body: queuedResponse,
+      })
+
+      return jsonResponse(queuedResponse, {
+        status: 202,
+        requestId,
+        headers: {
+          "X-Contact-Message-Id": outboxEntry.id,
+        },
+      })
     }
 
-    await markContactMessageDelivered(outboxEntry.id, result.skipped ? "skipped" : "delivered")
+    await markContactMessageDelivered(
+      outboxEntry.id,
+      result.skipped ? "skipped" : "delivered",
+      outboxEntry.leaseOwner,
+    )
 
     const successResponse = {
       ok: true,
@@ -200,7 +256,13 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "unknown-error"
-    await markContactMessageFailed(outboxEntry.id, errorMessage, undefined, outboxEntry.attempts)
+    await markContactMessageFailed(
+      outboxEntry.id,
+      errorMessage,
+      undefined,
+      outboxEntry.attempts,
+      outboxEntry.leaseOwner,
+    )
 
     logServerEvent("error", "contact.delivery.failed", {
       requestId,
@@ -209,6 +271,28 @@ export async function POST(request: Request) {
       error: errorMessage,
     })
 
-    return jsonResponse({ ok: false, error: "Email service unavailable" }, { status: 502, requestId })
+    const queuedResponse = {
+      ok: true,
+      accepted: true,
+      deliveryConfigured: isContactDeliveryConfigured(),
+      duplicate: false,
+      skippedDelivery: false,
+      queued: true,
+      deliveryPending: true,
+      messageId: outboxEntry.id,
+    }
+
+    await storeIdempotencyReplay(request, submission, {
+      status: 202,
+      body: queuedResponse,
+    })
+
+    return jsonResponse(queuedResponse, {
+      status: 202,
+      requestId,
+      headers: {
+        "X-Contact-Message-Id": outboxEntry.id,
+      },
+    })
   }
 }
