@@ -78,6 +78,14 @@ const nextConfig = {
             key: "X-DNS-Prefetch-Control",
             value: "off",
           },
+          ...(isProduction
+            ? [
+                {
+                  key: "Strict-Transport-Security",
+                  value: "max-age=31536000",
+                },
+              ]
+            : []),
         ],
       },
     ]
