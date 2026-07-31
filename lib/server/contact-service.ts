@@ -5,7 +5,7 @@ import { z } from "zod"
 import type { Locale } from "@/lib/i18n"
 import { siteConfig } from "@/lib/site-config"
 import { contactPolicy, getContactPolicySnapshot } from "@/lib/server/contact-policy"
-import { isValidContactFromDomain } from "@/lib/server/contact-runtime-config"
+import { isValidContactFromDomain, isValidResendApiKey } from "@/lib/server/contact-runtime-config"
 import { getContactStateStore } from "@/lib/server/contact-state-store"
 import type { ContactDeliveryPort } from "@/lib/server/contact-ports"
 import { pruneExpiredBuckets, pruneExpiredEntries } from "@/lib/server/memory-store"
@@ -138,7 +138,7 @@ function getText(submission: ContactSubmission) {
 
 export function isContactDeliveryConfigured() {
   const resendApiKey = process.env.RESEND_API_KEY
-  return Boolean(resendApiKey?.trim() && /^re_[A-Za-z0-9_-]+$/.test(resendApiKey.trim()))
+  return isValidResendApiKey(resendApiKey)
 }
 
 export function getContactServiceDiagnostics() {

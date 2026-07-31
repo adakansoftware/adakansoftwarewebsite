@@ -131,6 +131,8 @@ assert(headHealth.status === 200, `/api/health HEAD: expected 200, received ${he
 assert(Boolean(headHealth.headers.get("x-request-id")), "/api/health HEAD: expected x-request-id header")
 
 const publicHealth = await request("/api/health")
+assert(!publicHealth.text.includes('"checks"'), "/api/health public: must not expose security checks")
+assert(!publicHealth.text.includes('"environment"'), "/api/health public: must not expose runtime environment")
 assert(!publicHealth.text.includes('"pipeline"'), "/api/health public: must not expose pipeline diagnostics")
 assert(!publicHealth.text.includes('"worker"'), "/api/health public: must not expose worker diagnostics")
 assert(!publicHealth.text.includes('"outbox"'), "/api/health public: must not expose outbox diagnostics")
