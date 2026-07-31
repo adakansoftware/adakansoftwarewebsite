@@ -10,10 +10,11 @@ const checks = [
   { path: "/contact", status: 200, htmlLang: "tr", includes: ["WhatsApp", "data-mobile-menu"] },
   { path: "/privacy", status: 200, htmlLang: "tr", includes: ["Gizlilik"] },
   { path: "/terms", status: 200, htmlLang: "tr", includes: ["Kullanım"] },
-  { path: "/en/about", status: 200, includes: ["About", "/en/services"] },
-  { path: "/en/contact", status: 200, includes: ["WhatsApp", "Start a Project"] },
-  { path: "/en/privacy", status: 200, includes: ["Privacy"] },
-  { path: "/en/terms", status: 200, includes: ["Terms"] },
+  { path: "/en/about", status: 200, htmlLang: "en", includes: ["About", "/en/services"] },
+  { path: "/en/contact", status: 200, htmlLang: "en", includes: ["WhatsApp", "Start a Project"] },
+  { path: "/en/privacy", status: 200, htmlLang: "en", includes: ["Privacy"] },
+  { path: "/en/terms", status: 200, htmlLang: "en", includes: ["Terms"] },
+  { path: "/tr/about", status: 307, locationPath: "/about" },
   { path: "/api/health", status: 200, includes: ['"ok":true', '"service":"adakansoftware-website"'] },
 ]
 
@@ -89,6 +90,13 @@ for (const check of checks) {
 
   if (check.location) {
     assert(result.location === check.location, `${check.path}: expected redirect location ${check.location}, received ${result.location}`)
+  }
+
+  if (check.locationPath) {
+    assert(
+      result.location && new URL(result.location).pathname === check.locationPath,
+      `${check.path}: expected redirect path ${check.locationPath}, received ${result.location}`,
+    )
   }
 
   if (check.htmlLang) {
