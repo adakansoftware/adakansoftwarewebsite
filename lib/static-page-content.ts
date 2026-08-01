@@ -3,7 +3,6 @@ import { siteConfig } from "@/lib/site-config"
 
 export const blogPageContent = {
   tr: {
-    eyebrow: "Blog",
     title: "Dijital büyüme üzerine",
     gradientText: "kısa notlar",
     description: "Tasarım, marka ve frontend geliştirme tarafında iş hedeflerine bağlanan pratik notlar.",
@@ -19,7 +18,6 @@ export const blogPageContent = {
     ],
   },
   en: {
-    eyebrow: "Blog",
     title: "Short notes",
     gradientText: "on digital growth",
     description: "Practical notes on design, brand, and frontend development tied to business goals.",
@@ -39,7 +37,6 @@ export const blogPageContent = {
 } as const satisfies Record<
   Locale,
   {
-    eyebrow: string
     title: string
     gradientText: string
     description: string
@@ -56,7 +53,6 @@ export const blogPageContent = {
 
 export const careersPageContent = {
   tr: {
-    eyebrow: "Kariyer",
     title: "İyi iş üretmeyi seven",
     gradientText: "insanlarla çalışırız",
     description:
@@ -70,7 +66,6 @@ export const careersPageContent = {
       "Kısa bir tanıtım, seçilmiş işleriniz ve hangi rolde değer katmak istediğiniz yeterli.",
   },
   en: {
-    eyebrow: "Careers",
     title: "We work with people",
     gradientText: "who care about craft",
     description:
@@ -86,7 +81,6 @@ export const careersPageContent = {
 } as const satisfies Record<
   Locale,
   {
-    eyebrow: string
     title: string
     gradientText: string
     description: string
@@ -102,7 +96,6 @@ export const careersPageContent = {
 export const legalPageContent = {
   privacy: {
     tr: {
-      eyebrow: "Gizlilik",
       title: "Veri kullanımında",
       gradientText: "şeffaf yaklaşım",
       description: "Bu sayfa, web sitesi üzerinden paylaşılan iletişim bilgilerinin nasıl ele alındığını özetler.",
@@ -115,7 +108,6 @@ export const legalPageContent = {
       ],
     },
     en: {
-      eyebrow: "Privacy",
       title: "A transparent",
       gradientText: "data approach",
       description: "This page summarizes how contact information shared through the website is handled.",
@@ -130,7 +122,6 @@ export const legalPageContent = {
   },
   terms: {
     tr: {
-      eyebrow: "Kullanım Şartları",
       title: "Web sitesini",
       gradientText: "doğru kullanım",
       description: "Bu sayfa, Adakan Software web sitesinin genel kullanım şartlarını özetler.",
@@ -143,7 +134,6 @@ export const legalPageContent = {
       ],
     },
     en: {
-      eyebrow: "Terms",
       title: "Using the website",
       gradientText: "properly",
       description: "This page summarizes the general terms for using the Adakan Software website.",

@@ -24,7 +24,7 @@ export function JsonLd({ locale }: { locale: Locale }) {
     serviceType: ["Web Design", "Brand Identity", "UI/UX Design", "Frontend Development", "Logo Design"],
     priceRange: "$$",
     sameAs: [
-      "https://www.linkedin.com/company/adakansoftware",
+      "https://www.linkedin.com/company/adakan-software/",
       "https://twitter.com/adakansoftware",
       "https://github.com/adakansoftware",
       "https://www.instagram.com/adakansoftware",

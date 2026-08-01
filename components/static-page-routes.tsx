@@ -9,7 +9,6 @@ import { siteConfig } from "@/lib/site-config"
 
 export function BlogPageContent({ locale }: { locale: Locale }) {
   const copy = blogPageContent[locale]
-  const label = locale === "tr" ? "E-bülten" : "Newsletter"
   const bodyText =
     locale === "tr"
       ? "Tasarım, marka ve frontend geliştirme üzerine ara sıra pratik notlar paylaşıyoruz. Haberdar olmak için e-posta bırak."
@@ -23,8 +22,7 @@ export function BlogPageContent({ locale }: { locale: Locale }) {
       <section className="relative pb-32">
         <div className="section-shell max-w-2xl">
           <div className="rounded-2xl border border-border/50 bg-card/25 p-8 backdrop-blur-md md:p-10">
-            <span className="text-xs font-medium tracking-widest text-accent uppercase">{label}</span>
-            <h2 className="mt-4 text-2xl font-bold">{bodyText}</h2>
+            <h2 className="text-2xl font-bold">{bodyText}</h2>
             <a
               href={createMailtoHref(siteConfig.email, subject)}
               className="group mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent/90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
@@ -98,8 +96,7 @@ export function CareersPageContent({ locale }: { locale: Locale }) {
           </div>
 
           <div className="rounded-2xl border border-border/50 bg-card/25 p-8 backdrop-blur-md">
-            <p className="text-sm font-medium tracking-widest text-accent uppercase">{locale === "tr" ? "Açık Pozisyonlar" : "Open Roles"}</p>
-            <h2 className="mt-3 text-2xl font-bold">{locale === "tr" ? "Şu an aktif ilan yok" : "No active listings right now"}</h2>
+            <h2 className="text-2xl font-bold">{locale === "tr" ? "Şu an aktif ilan yok" : "No active listings right now"}</h2>
             <p className="mt-3 max-w-2xl text-muted-foreground">
               {locale === "tr"
                 ? "Fakat güçlü bir portfolyoyla ulaşabilirsin. Tasarım, frontend ve marka stratejisi alanlarındaki çalışmaları her zaman görmek isteriz. Başvurular değerlendirilir, sana dönüş yaparız."

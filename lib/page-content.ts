@@ -6,7 +6,6 @@ import { getContactOptions } from "@/lib/shell-content"
 import { siteConfig } from "@/lib/site-config"
 
 type HeaderContent = {
-  eyebrow: string
   title: string
   gradientText?: string
   description: string
@@ -87,7 +86,6 @@ type ApproachContent = {
 const aboutPageContent: Record<Locale, AboutContent> = {
   tr: {
     header: {
-      eyebrow: "Hakkımızda",
       title: "Tasarım ve yazılımı",
       gradientText: "aynı masada topluyoruz",
       description:
@@ -112,7 +110,6 @@ const aboutPageContent: Record<Locale, AboutContent> = {
   },
   en: {
     header: {
-      eyebrow: "About",
       title: "We bring design",
       gradientText: "and software together",
       description:
@@ -142,7 +139,6 @@ const aboutPageContent: Record<Locale, AboutContent> = {
 const approachPageContent: Record<Locale, ApproachContent> = {
   tr: {
     header: {
-      eyebrow: "Yaklaşımımız",
       title: "Önce strateji,",
       gradientText: "sonra zanaat",
       description:
@@ -153,7 +149,6 @@ const approachPageContent: Record<Locale, ApproachContent> = {
   },
   en: {
     header: {
-      eyebrow: "Approach",
       title: "Strategy first,",
       gradientText: "craft second",
       description:
@@ -169,7 +164,6 @@ const approachPageContent: Record<Locale, ApproachContent> = {
 const servicesPageContent: Record<Locale, ServicesContent> = {
   tr: {
     header: {
-      eyebrow: "Hizmetler",
       title: "Markanın ihtiyacına göre",
       gradientText: "net çözümler",
       description:
@@ -207,7 +201,6 @@ const servicesPageContent: Record<Locale, ServicesContent> = {
   },
   en: {
     header: {
-      eyebrow: "Services",
       title: "Clear solutions",
       gradientText: "for every need",
       description:
@@ -250,7 +243,6 @@ const servicesPageContent: Record<Locale, ServicesContent> = {
 const projectsPageContent: Record<Locale, ProjectsContent> = {
   tr: {
     header: {
-      eyebrow: "Projeler",
       title: "Seçilmiş işler,",
       gradientText: "ölçülebilir etki",
       description:
@@ -267,7 +259,6 @@ const projectsPageContent: Record<Locale, ProjectsContent> = {
   },
   en: {
     header: {
-      eyebrow: "Projects",
       title: "Selected work,",
       gradientText: "measurable impact",
       description:
@@ -287,7 +278,6 @@ const projectsPageContent: Record<Locale, ProjectsContent> = {
 const contactPageContent: Record<Locale, ContactContent> = {
   tr: {
     header: {
-      eyebrow: "İletişim",
       title: "Projeni",
       gradientText: "birlikte netleştirelim",
       description:
@@ -308,7 +298,6 @@ const contactPageContent: Record<Locale, ContactContent> = {
   },
   en: {
     header: {
-      eyebrow: "Contact",
       title: "Let's clarify",
       gradientText: "your project",
       description:
@@ -331,7 +320,6 @@ const contactPageContent: Record<Locale, ContactContent> = {
 const logoPageContent: Record<Locale, LogoContent> = {
   tr: {
     header: {
-      eyebrow: "Logo Tasarımı",
       title: "Markanı tek bakışta",
       gradientText: "tanınır hale getir",
       description:
@@ -361,7 +349,6 @@ const logoPageContent: Record<Locale, LogoContent> = {
   },
   en: {
     header: {
-      eyebrow: "Logo Design",
       title: "Make your brand",
       gradientText: "recognizable at a glance",
       description:
@@ -394,7 +381,6 @@ const logoPageContent: Record<Locale, LogoContent> = {
 const testimonialsPageContent: Record<Locale, TestimonialsContent> = {
   tr: {
     header: {
-      eyebrow: "Yorumlar",
       title: "İş ortaklarımızdan",
       gradientText: "gerçek geri bildirimler",
       description:
@@ -405,7 +391,6 @@ const testimonialsPageContent: Record<Locale, TestimonialsContent> = {
   },
   en: {
     header: {
-      eyebrow: "Testimonials",
       title: "Real feedback",
       gradientText: "from partners",
       description:

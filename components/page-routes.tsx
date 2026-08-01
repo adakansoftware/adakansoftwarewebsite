@@ -78,10 +78,7 @@ export function ServicesPageContent({ locale }: { locale: Locale }) {
           </div>
 
           <div className="mt-6 rounded-2xl border border-border/50 bg-card/25 p-8 backdrop-blur-md">
-            <p className="text-sm font-medium uppercase tracking-widest text-accent">
-              {locale === "tr" ? "Nasıl Çalışırız" : "How We Work"}
-            </p>
-            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {(locale === "tr"
                 ? [
                     {
@@ -138,10 +135,7 @@ export function ServicesPageContent({ locale }: { locale: Locale }) {
           </div>
 
           <div className="mt-6 rounded-2xl border border-border/50 bg-card/25 p-8 backdrop-blur-md">
-            <p className="text-sm font-medium uppercase tracking-widest text-accent">
-              {locale === "tr" ? "Yatırım" : "Investment"}
-            </p>
-            <p className="mt-3 max-w-2xl text-muted-foreground">
+            <p className="max-w-2xl text-muted-foreground">
               {locale === "tr"
                 ? "Proje kapsamı ve karmaşıklığına göre değişir. Aşağıdaki aralıklar başlangıç noktası olarak kullanılabilir; kesin teklif kapsam görüşmesinin ardından sunulur."
                 : "Varies by scope and complexity. The ranges below are a starting point; exact pricing follows a scope call."}
@@ -189,8 +183,7 @@ export function ProjectsPageContent({ locale }: { locale: Locale }) {
 
         <div className="section-shell mt-20">
           <div className="mb-8 max-w-2xl">
-            <p className="text-sm font-medium tracking-widest text-accent uppercase">{locale === "tr" ? "Demo Örnekler" : "Demo Examples"}</p>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight md:text-5xl">
+            <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
               {locale === "tr" ? "Canlı akışları hızlıca incele" : "Explore live flows quickly"}
             </h2>
             <p className="mt-4 text-muted-foreground">
@@ -252,8 +245,7 @@ export function ProjectsPageContent({ locale }: { locale: Locale }) {
         <div className="section-shell mt-20">
           <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <p className="text-sm font-medium tracking-widest text-accent uppercase">{locale === "tr" ? "Logo Çalışmaları" : "Logo Works"}</p>
-              <h2 className="mt-4 text-3xl font-bold tracking-tight md:text-5xl">
+              <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
                 {locale === "tr" ? "Marka işaretleri ve kimlik denemeleri" : "Brand marks and identity studies"}
               </h2>
               <p className="mt-4 text-muted-foreground">
@@ -323,8 +315,7 @@ export function LogoPageContent({ locale }: { locale: Locale }) {
           <div className="mt-12 overflow-hidden rounded-3xl border border-border/50 bg-background/40 p-8 premium-border md:p-10">
             <div className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-center">
               <div>
-                <p className="text-sm font-medium tracking-widest text-accent uppercase">{locale === "tr" ? "Logo sistemi" : "Logo system"}</p>
-                <h2 className="mt-4 text-3xl font-bold tracking-tight md:text-5xl">
+                <h2 className="text-3xl font-bold tracking-tight md:text-5xl">
                   {locale === "tr" ? "Tek logo değil, kullanılabilir marka seti" : "Not just one logo, a usable brand kit"}
                 </h2>
                 <p className="mt-5 max-w-2xl leading-relaxed text-muted-foreground">
@@ -388,7 +379,6 @@ export function ContactPageContent({ locale }: { locale: Locale }) {
             </div>
 
             <div className="mt-8 border-t border-border/30 pt-6">
-              <p className="mb-3 text-xs font-medium uppercase tracking-widest text-muted-foreground/60">{locale === "tr" ? "Kapsam" : "Scope"}</p>
               <div className="flex flex-wrap gap-2">
                 {content.tags.map((item) => (
                   <span key={item} className="rounded-full border border-border/40 bg-background/35 px-3 py-1.5 text-xs text-muted-foreground">

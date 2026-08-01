@@ -11,7 +11,6 @@ import { withLocale, type Locale } from "@/lib/i18n"
 
 type PageHeaderProps = {
   locale?: Locale
-  eyebrow: string
   title: string
   gradientText?: string
   description: string
@@ -23,7 +22,6 @@ type PageHeaderProps = {
 
 export function PageHeader({
   locale = "tr",
-  eyebrow,
   title,
   gradientText,
   description,
@@ -46,7 +44,6 @@ export function PageHeader({
           animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
           transition={{ duration: prefersReducedMotion ? 0 : 0.75, ease: [0.22, 1, 0.36, 1] }}
         >
-          <span className="eyebrow mb-6 block">{eyebrow}</span>
           <h1 className="text-5xl font-bold tracking-tight md:text-7xl lg:text-8xl">
             {title}
             {gradientText ? (

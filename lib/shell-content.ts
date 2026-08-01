@@ -101,7 +101,7 @@ export const footerContent = {
 export const socialLinks = [
   { label: "GitHub", href: "https://github.com/adakansoftware" },
   { label: "X", href: "https://x.com/adakansoftware" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/company/adakansoftware" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/adakan-software/" },
   { label: "Instagram", href: "https://www.instagram.com/adakansoftware" },
 ] as const
 
