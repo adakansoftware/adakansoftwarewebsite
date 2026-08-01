@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Inter, Space_Grotesk } from "next/font/google"
+import { Inter, Sora, Space_Grotesk } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 
 import { AnimatedBackground } from "@/components/animated-background"
@@ -21,6 +21,12 @@ const inter = Inter({
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-display",
+  display: "swap",
+})
+
+const sora = Sora({
+  subsets: ["latin"],
+  variable: "--font-hero-accent",
   display: "swap",
 })
 
@@ -88,7 +94,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className="bg-background">
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${sora.variable} font-sans antialiased`}>
         <ClientShell />
         <JsonLd locale={locale} />
         <a

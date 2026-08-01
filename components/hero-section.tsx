@@ -25,7 +25,7 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
   const prefersReducedMotion = useReducedMotion()
   const headlineStyles = [
     "text-[clamp(2.75rem,9vw,7rem)] font-light text-foreground/55",
-    "text-[clamp(4rem,12vw,9rem)] font-bold text-accent font-aquire tracking-normal",
+    "text-[clamp(4rem,12vw,9rem)] font-bold text-accent font-hero-accent tracking-tight",
     "text-[clamp(3.25rem,10vw,8rem)] font-medium text-foreground",
   ]
 

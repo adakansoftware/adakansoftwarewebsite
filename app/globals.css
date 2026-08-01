@@ -269,6 +269,10 @@
     font-family: "Aquire", var(--font-display), system-ui, sans-serif;
   }
 
+  .font-hero-accent {
+    font-family: var(--font-hero-accent), var(--font-display), system-ui, sans-serif;
+  }
+
   /* Animated gradient border */
   .gradient-border {
     position: relative;
