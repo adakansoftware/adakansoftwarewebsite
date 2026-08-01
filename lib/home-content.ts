@@ -10,16 +10,6 @@ export const heroContent = {
     secondary: "Projeleri Gör",
     scroll: "Kaydır",
     proofPoints: ["Strateji", "Web tasarım", "Marka kimliği", "Ürün arayüzü"],
-    signals: [
-      { value: "48 saat", label: "ilk kapsam dönüşü" },
-      { value: "2-6 hafta", label: "net teslim planı" },
-      { value: "TR/EN", label: "yayına hazır içerik" },
-    ],
-    operationalSignals: {
-      eyebrow: "Canlı teslim ritmi",
-      status: "Aktif sprint",
-      items: ["Kapsam netleşir", "Arayüz sistemi kurulur", "Yayın hazırlığı tamamlanır"],
-    },
   },
   en: {
     badge: "Now booking new projects for June 2026",
@@ -30,16 +20,6 @@ export const heroContent = {
     secondary: "View Projects",
     scroll: "Scroll",
     proofPoints: ["Strategy", "Web design", "Brand identity", "Product UI"],
-    signals: [
-      { value: "48 hrs", label: "first scope response" },
-      { value: "2-6 weeks", label: "clear delivery plan" },
-      { value: "TR/EN", label: "launch-ready content" },
-    ],
-    operationalSignals: {
-      eyebrow: "Live delivery rhythm",
-      status: "Active sprint",
-      items: ["Scope is clarified", "Interface system is shaped", "Launch readiness is completed"],
-    },
   },
 } satisfies Record<
   Locale,
@@ -51,8 +31,6 @@ export const heroContent = {
     secondary: string
     scroll: string
     proofPoints: string[]
-    signals: Array<{ value: string; label: string }>
-    operationalSignals: { eyebrow: string; status: string; items: string[] }
   }
 >
 

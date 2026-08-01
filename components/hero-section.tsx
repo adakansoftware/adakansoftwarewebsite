@@ -78,7 +78,7 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
               </div>
             </motion.div>
 
-            <div className="grid gap-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.72fr)] lg:items-end">
+            <div className="grid gap-8">
               <div>
                 <div className="mb-8 text-left">
                   {copy.lines.map((line, index) => (
@@ -145,54 +145,6 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
                   ))}
                 </motion.div>
               </div>
-
-              <motion.aside
-                {...animationProps}
-                transition={{ ...animationTransition, delay: 0.52 }}
-                className="metric-card"
-              >
-                <div className="mb-5 flex items-center justify-between">
-                  <span className="text-xs font-medium tracking-[0.24em] text-accent uppercase">
-                    {copy.operationalSignals.eyebrow}
-                  </span>
-                  <span className="rounded-full border border-accent/20 bg-accent/10 px-2.5 py-1 text-[0.7rem] font-medium text-accent">
-                    {copy.operationalSignals.status}
-                  </span>
-                </div>
-
-                <div className="grid gap-3">
-                  {copy.operationalSignals.items.map((item) => (
-                    <div key={item} className="rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-sm text-foreground/82">
-                      {item}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="my-6 h-px bg-gradient-to-r from-transparent via-white/12 to-transparent" />
-
-                <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-                  {copy.signals.map((signal) => (
-                    <div key={signal.label} className="rounded-2xl border border-white/8 bg-background/40 px-4 py-4">
-                      <p className="text-xl font-semibold tracking-tight text-foreground">{signal.value}</p>
-                      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{signal.label}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 flex items-center gap-2">
-                  <motion.span
-                    className="h-1.5 flex-1 rounded-full bg-accent"
-                    animate={prefersReducedMotion ? {} : { opacity: [1, 0.45, 1] }}
-                    transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-                  />
-                  <motion.span
-                    className="h-1.5 flex-1 rounded-full bg-accent/70"
-                    animate={prefersReducedMotion ? {} : { opacity: [1, 0.45, 1] }}
-                    transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
-                  />
-                  <span className="h-1.5 flex-1 rounded-full bg-foreground/20" />
-                </div>
-              </motion.aside>
             </div>
           </div>
 
