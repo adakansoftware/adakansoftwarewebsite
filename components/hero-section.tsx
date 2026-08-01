@@ -12,15 +12,6 @@ import { withLocale, type Locale } from "@/lib/i18n"
 
 export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
   const copy = heroContent[locale]
-  const now = new Date()
-  const monthNames = {
-    tr: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
-    en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-  } as const
-  const dynamicBadge =
-    locale === "tr"
-      ? `${monthNames.tr[now.getMonth()]} ${now.getFullYear()} için yeni proje görüşmeleri açık`
-      : `Now booking new projects for ${monthNames.en[now.getMonth()]} ${now.getFullYear()}`
   const containerRef = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion()
   const headlineStyles = [
@@ -64,20 +55,6 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
 
         <motion.div style={{ y, opacity }} className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-6">
           <div className="section-frame px-5 py-6 sm:px-7 sm:py-8 lg:px-10 lg:py-10">
-            <motion.div
-              {...animationProps}
-              transition={{ ...animationTransition, delay: 0.15 }}
-              className="mb-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
-            >
-              <div className="inline-flex max-w-max items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 backdrop-blur-sm">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-                </span>
-                <span className="min-w-0 text-xs tracking-wide text-muted-foreground sm:text-sm">{dynamicBadge}</span>
-              </div>
-            </motion.div>
-
             <div className="grid gap-8">
               <div>
                 <div className="mb-8 text-left">

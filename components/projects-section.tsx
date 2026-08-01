@@ -39,15 +39,6 @@ export function ProjectsSection({ locale = "tr" }: { locale?: Locale }) {
         <div className="section-frame px-5 py-8 sm:px-7 lg:px-10 lg:py-10">
           <div ref={headingRef} className="mb-12 flex flex-col gap-8 lg:mb-16 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
-              <motion.span
-                initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
-                animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-                transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="section-kicker mb-6"
-              >
-                {sectionCopy.eyebrow}
-              </motion.span>
-
               <motion.h2
                 initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
                 animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}

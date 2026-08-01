@@ -22,19 +22,11 @@ export function LogoWorksSection({ locale = "tr" }: { locale?: Locale }) {
       <div className="section-shell">
         <div ref={headingRef} className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <motion.p
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
-              animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="text-sm font-medium tracking-widest text-accent uppercase"
-            >
-              {locale === "tr" ? "Logo Çalışmaları" : "Logo Works"}
-            </motion.p>
             <motion.h2
               initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
               animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
               transition={{ duration: prefersReducedMotion ? 0 : 0.65, delay: prefersReducedMotion ? 0 : 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="mt-4 text-4xl font-bold tracking-tight md:text-6xl"
+              className="text-4xl font-bold tracking-tight md:text-6xl"
             >
               {locale === "tr" ? "Marka işaretini" : "Shape the mark"}
               <br />

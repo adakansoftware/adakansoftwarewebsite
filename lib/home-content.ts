@@ -2,7 +2,6 @@ import type { Locale } from "@/lib/i18n"
 
 export const heroContent = {
   tr: {
-    badge: "Haziran 2026 için yeni proje görüşmeleri açık",
     lines: ["Markanı", "dijitalde", "büyüt"] as [string, string, string],
     description:
       "Web siteleri, marka kimlikleri ve kullanıcı deneyimleri tasarlıyoruz. Her ekran; güven, hız ve satış için birlikte çalışır.",
@@ -12,7 +11,6 @@ export const heroContent = {
     proofPoints: ["Strateji", "Web tasarım", "Marka kimliği", "Ürün arayüzü"],
   },
   en: {
-    badge: "Now booking new projects for June 2026",
     lines: ["Grow", "digital", "brands"] as [string, string, string],
     description:
       "We design websites, brand identities, and user experiences. Every screen works together for trust, speed, and conversion.",
@@ -24,7 +22,6 @@ export const heroContent = {
 } satisfies Record<
   Locale,
   {
-    badge: string
     lines: [string, string, string]
     description: string
     primary: string
@@ -74,7 +71,6 @@ export const ctaContent = {
 
 export const testimonialsContent = {
   tr: {
-    eyebrow: "Müşteri Yorumları",
     title: "İş ortaklarımızdan",
     gradient: "net geri bildirimler",
     prev: "Önceki yorum",
@@ -112,7 +108,6 @@ export const testimonialsContent = {
     ],
   },
   en: {
-    eyebrow: "Testimonials",
     title: "Clear feedback",
     gradient: "from partners",
     prev: "Previous testimonial",
@@ -152,7 +147,6 @@ export const testimonialsContent = {
 } satisfies Record<
   Locale,
   {
-    eyebrow: string
     title: string
     gradient: string
     prev: string
@@ -164,40 +158,35 @@ export const testimonialsContent = {
 
 export const servicesSectionContent = {
   tr: {
-    eyebrow: "Hizmetlerimiz",
     title: "Net hedef,",
     gradient: "ölçülebilir etki",
     description:
       "Güzel görünen işler yapmanın ötesine geçiyoruz: konumlandırma, deneyim ve teknik uygulama aynı hedefe bağlanıyor.",
   },
   en: {
-    eyebrow: "Services",
     title: "Clear goals,",
     gradient: "measurable impact",
     description:
       "We go beyond good-looking work: positioning, experience, and technical execution all connect to the same business goal.",
   },
-} satisfies Record<Locale, { eyebrow: string; title: string; gradient: string; description: string }>
+} satisfies Record<Locale, { title: string; gradient: string; description: string }>
 
 export const projectsSectionContent = {
   tr: {
-    eyebrow: "Seçilmiş Projeler",
     title: "Görünür sonuç",
     gradient: "üreten işler",
     all: "Tüm Projeleri Gör",
   },
   en: {
-    eyebrow: "Selected Projects",
     title: "Work that creates",
     gradient: "visible results",
     all: "View All Projects",
   },
-} satisfies Record<Locale, { eyebrow: string; title: string; gradient: string; all: string }>
+} satisfies Record<Locale, { title: string; gradient: string; all: string }>
 
 export const philosophySectionContent = {
   tr: {
     background: "YAKLAŞIM",
-    eyebrow: "Yaklaşımımız",
     title: "Harika tasarım",
     mutedTitle: "sessizce güven verir.",
     description:
@@ -225,7 +214,6 @@ export const philosophySectionContent = {
   },
   en: {
     background: "APPROACH",
-    eyebrow: "Our Approach",
     title: "Great design",
     mutedTitle: "quietly builds trust.",
     description:
@@ -255,7 +243,6 @@ export const philosophySectionContent = {
   Locale,
   {
     background: string
-    eyebrow: string
     title: string
     mutedTitle: string
     description: string

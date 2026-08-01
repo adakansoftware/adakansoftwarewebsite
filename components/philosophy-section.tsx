@@ -29,15 +29,6 @@ export function PhilosophySection({ locale = "tr" }: { locale?: Locale }) {
 
       <motion.div style={{ y: contentY }} className="container relative z-10 mx-auto px-6">
         <div ref={headingRef} className="mb-14 max-w-4xl md:mb-24">
-          <motion.span
-            initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
-            animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-            transition={{ duration: prefersReducedMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-6 block text-sm font-medium tracking-widest text-accent uppercase"
-          >
-            {sectionCopy.eyebrow}
-          </motion.span>
-
           <motion.h2
             initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
             animate={prefersReducedMotion || isHeadingInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
