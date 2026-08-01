@@ -18,12 +18,13 @@ type ContactPolicy = {
 
 function readPositiveInteger(name: string, fallback: number) {
   const rawValue = process.env[name]
-  if (!rawValue) {
+  const normalizedValue = rawValue?.trim()
+  if (!normalizedValue || !/^\d+$/.test(normalizedValue)) {
     return fallback
   }
 
-  const parsed = Number.parseInt(rawValue, 10)
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
+  const parsed = Number(normalizedValue)
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback
 }
 
 export const contactPolicy: ContactPolicy = {

@@ -473,14 +473,17 @@ export function getContactStateStore(): ContactStateStore {
 export function getContactStateStoreCapabilities() {
   const backend = getConfiguredContactStateBackend()
   const redisUrlConfigured = Boolean(process.env.REDIS_URL?.trim())
+  const requestedBackendImplemented = backend === "file" || backend === "redis"
+  const requestedBackendReady =
+    backend === "file" || (backend === "redis" && redisUrlConfigured)
 
   return {
     backend,
-    sharedStoreReady: backend === "redis",
-    distributedStoreConfigured: backend !== "file",
+    sharedStoreReady: backend === "redis" && redisUrlConfigured,
+    distributedStoreConfigured: backend === "redis" && redisUrlConfigured,
     implementedBackends: ["file", "redis"] as const,
-    requestedBackendImplemented: backend === "file" || backend === "redis",
-    requestedBackendReady: backend !== "redis" || redisUrlConfigured,
+    requestedBackendImplemented,
+    requestedBackendReady,
     redisUrlConfigured,
   }
 }

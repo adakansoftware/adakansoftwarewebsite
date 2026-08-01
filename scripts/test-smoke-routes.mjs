@@ -1,4 +1,4 @@
-/* global console, fetch, process */
+/* global console, fetch, process, URL */
 
 import { createHmac, randomUUID } from "node:crypto"
 
