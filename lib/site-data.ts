@@ -1,6 +1,5 @@
 import type { Locale } from "@/lib/i18n"
 import { withLocale } from "@/lib/i18n"
-import { imageConfigDefault } from "next/dist/shared/lib/image-config";
 
 export const servicesByLocale = {
   tr: [
@@ -69,8 +68,8 @@ export const projectsByLocale = {
       coverImage: "/projects/sallihogullari-hafriyat-cover.png",
     },
     {
-      title: "Kinik Sistem",
-      href: "/projects#kinik-sistem",
+      title: "Nova Finans",
+      href: "/projects#nova-finans",
       category: "Fintech web deneyimi",
       year: "2025",
       description: "Güven veren kurumsal dil, sade ürün anlatımı ve başvuru odaklı landing page sistemi.",
@@ -200,7 +199,7 @@ export const demoExamplesByLocale = {
 export const logoWorksByLocale = {
   tr: [
     {
-      title: "Salihogulları Hafriyat",
+      title: "Salihoğulları Hafriyat",
       category: "Minimal wordmark",
       description: "Teknoloji ve danışmanlık markaları için keskin, sade ve dijitalde güçlü duran logotype çalışması.",
       initials: "AX",
@@ -208,19 +207,19 @@ export const logoWorksByLocale = {
       color: "#0066ff",
     },
     {
-      title: "Luma Clinic",
-      category: "Sağlık kimliği",
+      title: "Adakan Hafriyat",
+      category: "İnşaat ve hafriyat firması logosu",
       description: "Güven, sakinlik ve premium bakım hissini taşıyan yumuşak sembol ve tipografi sistemi.",
       initials: "LC",
-      logoImage: "/projects/luma-klinik-logo.png",
+      logoImage: "/projects/adakan-hafriyat-insaat-logo.png",
       color: "#14b8a6",
     },
     {
-      title: "Orion Build",
+      title: "Adakan software",
       category: "Endüstriyel marka",
       description: "İnşaat ve saha operasyonları için güçlü, okunaklı ve kurumsal uygulamalara hazır logo seti.",
       initials: "OB",
-      logoImage: "/projects/orion-build-logo.png",
+      logoImage: "/projects/adakan-software-logo.png",
       color: "#f59e0b",
     },
     {
@@ -242,19 +241,19 @@ export const logoWorksByLocale = {
       color: "#0066ff",
     },
     {
-      title: "Luma Clinic",
-      category: "Healthcare identity",
+      title: "Adakan Hafriyat",
+      category: "Construction identity",
       description: "A soft symbol and typography system built around trust, calmness, and premium care.",
       initials: "LC",
-      logoImage: "/projects/luma-klinik-logo.png",
+      logoImage: "/projects/adakan-hafriyat-insaat-logo.png",
       color: "#14b8a6",
     },
     {
-      title: "Orion Build",
+      title: "Adakan software",
       category: "Industrial brand",
       description: "A strong, readable logo set ready for corporate use across construction and field operations.",
       initials: "OB",
-      logoImage: "/projects/orion-build-logo.png",
+      logoImage: "/projects/adakan-software-logo.png",
       color: "#f59e0b",
     },
     {
@@ -268,14 +267,7 @@ export const logoWorksByLocale = {
   ],
 } satisfies Record<
   Locale,
-  Array<{
-    title: string
-    category: string
-    description: string
-    initials: string
-    logoImage?: string
-    color: string
-  }>
+  Array<{ title: string; category: string; description: string; initials: string; logoImage?: string; color: string }>
 >
 
 function localizeHref(href: string, locale: Locale) {
