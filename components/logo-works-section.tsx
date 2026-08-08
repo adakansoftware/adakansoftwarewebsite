@@ -75,7 +75,9 @@ function LogoWorkCard({ work, index, locale }: { work: LogoWork; index: number; 
     alt={`${work.title} logo`}
     width={320}
     height={180}
-    className="h-auto max-h-[72%] w-[82%] object-contain transition-transform duration-300 group-hover:scale-105"
+    className={`h-auto max-h-[72%] w-[82%] object-contain transition-transform duration-300 group-hover:scale-105 ${
+      work.title === "Salihoğulları Hafriyat" ? "-translate-y-3" : ""
+    }`}
   />
 ) : (
   <span

@@ -38,7 +38,9 @@ export function LogoShowcase({ locale }: { locale: Locale }) {
                       alt={`${work.title} logo`}
                       width={320}
                       height={180}
-                      className="h-auto max-h-full w-full object-contain"
+                      className={`h-auto max-h-full w-full object-contain ${
+                        work.title === "Salihoğulları Hafriyat" ? "-translate-y-4 scale-[1.04]" : ""
+                      }`}
                     />
                   ) : (
                     <span className="font-aquire text-5xl" style={{ color: work.color }}>
