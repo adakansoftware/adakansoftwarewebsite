@@ -24,7 +24,7 @@ import {
   getTestimonialsPageContent,
 } from "@/lib/page-content"
 import { getDemoExamples, getServices } from "@/lib/site-data"
-import { getManagedLogoWorks, getManagedProjects } from "@/lib/supabase/content"
+import { getManagedLogoWorks, getManagedProjects } from "@/lib/content"
 
 export function AboutPageContent({ locale }: { locale: Locale }) {
   const content = getAboutPageContent(locale)

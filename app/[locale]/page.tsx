@@ -8,7 +8,7 @@ import { ServicesSection } from "@/components/services-section"
 import { TestimonialsSection } from "@/components/testimonials-section"
 import { createRouteMetadata } from "@/lib/metadata"
 import { getPrefixedLocaleStaticParams, getPrefixedRouteLocale } from "@/lib/route-locale"
-import { getManagedLogoWorks, getManagedProjects } from "@/lib/supabase/content"
+import { getManagedLogoWorks, getManagedProjects } from "@/lib/content"
 
 export const revalidate = 60
 

@@ -20,3 +20,6 @@ create table if not exists logo_works (
   published boolean not null default false, archived boolean not null default false,
   sort_order integer not null default 0, created_at timestamptz not null default now(), updated_at timestamptz not null default now()
 );
+
+create index if not exists projects_published_sort_order_idx on projects (published, archived, sort_order);
+create index if not exists logo_works_published_sort_order_idx on logo_works (published, archived, sort_order);
