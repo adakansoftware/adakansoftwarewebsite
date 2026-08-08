@@ -1,6 +1,5 @@
-import { createClient } from "@supabase/supabase-js"
-
 import type { Locale } from "@/lib/i18n"
+import { getNeonSql } from "@/lib/neon"
 import { getLogoWorks, getProjects } from "@/lib/site-data"
 
 type ProjectRow = {
@@ -30,18 +29,11 @@ type LogoWorkRow = {
   logo_image: string | null
 }
 
-function getPublicClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-  return url && key ? createClient(url, key, { auth: { persistSession: false } }) : null
-}
-
 export async function getManagedProjects(locale: Locale) {
-  const client = getPublicClient()
-  if (!client) return getProjects(locale)
-
-  const { data, error } = await client.from("projects").select("*").eq("published", true).eq("archived", false).order("sort_order")
-  if (error || !data?.length) return getProjects(locale)
+  if (!process.env.DATABASE_URL) return getProjects(locale)
+  let data: ProjectRow[]
+  try { data = await getNeonSql().query('select * from projects where published = true and archived = false order by sort_order') as ProjectRow[] } catch { return getProjects(locale) }
+  if (!data.length) return getProjects(locale)
 
   return (data as ProjectRow[]).map((row) => ({
     title: locale === "tr" ? row.title_tr : row.title_en,
@@ -55,11 +47,10 @@ export async function getManagedProjects(locale: Locale) {
 }
 
 export async function getManagedLogoWorks(locale: Locale) {
-  const client = getPublicClient()
-  if (!client) return getLogoWorks(locale)
-
-  const { data, error } = await client.from("logo_works").select("*").eq("published", true).eq("archived", false).order("sort_order")
-  if (error || !data?.length) return getLogoWorks(locale)
+  if (!process.env.DATABASE_URL) return getLogoWorks(locale)
+  let data: LogoWorkRow[]
+  try { data = await getNeonSql().query('select * from logo_works where published = true and archived = false order by sort_order') as LogoWorkRow[] } catch { return getLogoWorks(locale) }
+  if (!data.length) return getLogoWorks(locale)
 
   return (data as LogoWorkRow[]).map((row) => ({
     title: locale === "tr" ? row.title_tr : row.title_en,

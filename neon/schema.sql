@@ -1,0 +1,22 @@
+create extension if not exists "pgcrypto";
+
+create table if not exists projects (
+  id uuid primary key default gen_random_uuid(),
+  title_tr text not null, title_en text not null,
+  category_tr text not null, category_en text not null,
+  description_tr text not null, description_en text not null,
+  year text not null, href text not null, color text not null default '#0066ff',
+  cover_image text, published boolean not null default false,
+  archived boolean not null default false, sort_order integer not null default 0,
+  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+
+create table if not exists logo_works (
+  id uuid primary key default gen_random_uuid(),
+  title_tr text not null, title_en text not null,
+  category_tr text not null, category_en text not null,
+  description_tr text not null, description_en text not null,
+  initials text not null, color text not null default '#0066ff', logo_image text,
+  published boolean not null default false, archived boolean not null default false,
+  sort_order integer not null default 0, created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
