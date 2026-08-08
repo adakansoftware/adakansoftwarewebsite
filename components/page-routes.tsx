@@ -273,9 +273,21 @@ export function ProjectsPageContent({ locale }: { locale: Locale }) {
                 >
                   <div className="absolute inset-0 grid-pattern opacity-15" />
                   <div className="absolute inset-6 flex items-center justify-center rounded-2xl border border-white/10 bg-background/35 backdrop-blur-md">
-                    <span className="font-aquire text-[clamp(2.8rem,8vw,4.8rem)] leading-none transition-transform duration-300 group-hover:scale-105" style={{ color: work.color }}>
-                      {work.initials}
-                    </span>
+                    {work.logoImage ? (
+                      <Image
+                        src={work.logoImage}
+                        alt={`${work.title} logo`}
+                        width={320}
+                        height={180}
+                        className={`h-auto max-h-[72%] w-[82%] object-contain transition-transform duration-300 group-hover:scale-105 ${
+                          work.title === "Salihoğulları Hafriyat" ? "-translate-y-3" : ""
+                        }`}
+                      />
+                    ) : (
+                      <span className="font-aquire text-[clamp(2.8rem,8vw,4.8rem)] leading-none transition-transform duration-300 group-hover:scale-105" style={{ color: work.color }}>
+                        {work.initials}
+                      </span>
+                    )}
                   </div>
                   <div className="absolute right-4 bottom-4 h-2 w-16 rounded-full transition-transform duration-300 group-hover:scale-x-110" style={{ backgroundColor: work.color }} />
                 </div>

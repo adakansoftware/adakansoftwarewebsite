@@ -66,7 +66,6 @@ export const projectsByLocale = {
       description: "Adana merkezli hafriyat ve iş makinesi hizmetleri için saha güveni, hizmet kapsamı ve teklif akışını netleştiren kurumsal web deneyimi.",
       color: "#f59e0b",
       coverImage: "/projects/sallihogullari-hafriyat-cover.png",
-      logoImage: "/projects/salihogullari-hafriyat-logo.png",
     },
     {
       title: "Nova Finans",
@@ -110,7 +109,6 @@ export const projectsByLocale = {
       description: "A corporate web experience for an Adana-based excavation and machinery company, clarifying field trust, service scope, and quote flow.",
       color: "#f59e0b",
       coverImage: "/projects/sallihogullari-hafriyat-cover.png",
-      logoImage: "/projects/salihogullari-hafriyat-logo.png",
     },
     {
       title: "Nova Finance",
@@ -145,7 +143,7 @@ export const projectsByLocale = {
       color: "#22c55e",
     },
   ],
-} satisfies Record<Locale, Array<{ title: string; href: string; category: string; year: string; description: string; color: string; coverImage?: string; logoImage?: string }>>
+} satisfies Record<Locale, Array<{ title: string; href: string; category: string; year: string; description: string; color: string; coverImage?: string }>>
 
 export const demoExamplesByLocale = {
   tr: [
