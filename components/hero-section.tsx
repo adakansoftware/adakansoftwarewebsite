@@ -15,7 +15,7 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const prefersReducedMotion = useReducedMotion()
   const headlineStyles = [
-    "text-[clamp(2.75rem,9vw,7rem)] font-light text-foreground/55",
+    "text-[clamp(2.75rem,9vw,7rem)] font-light text-foreground/68",
     "text-[clamp(4rem,12vw,9rem)] font-bold text-accent font-hero-accent tracking-tight",
     "text-[clamp(3.25rem,10vw,8rem)] font-medium text-foreground",
   ]
@@ -77,14 +77,14 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
                 <motion.div
                   {...animationProps}
                   transition={{ ...animationTransition, delay: 0.42 }}
-                  className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto]"
+                  className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_auto]"
                 >
-                  <p className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg md:text-xl">
+                  <p className="max-w-2xl text-base leading-relaxed text-foreground/72 sm:text-lg md:text-xl">
                     {copy.description}
                   </p>
 
-                  <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center lg:flex-col lg:items-stretch">
-                    <MagneticButton strength={0.3} className="w-full sm:w-auto lg:w-full">
+                  <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center 2xl:flex-col 2xl:items-stretch">
+                    <MagneticButton strength={0.3} className="w-full sm:w-auto 2xl:w-full">
                       <Button
                         asChild
                         size="lg"
@@ -97,12 +97,12 @@ export function HeroSection({ locale = "tr" }: { locale?: Locale }) {
                       </Button>
                     </MagneticButton>
 
-                    <MagneticButton strength={0.3} className="w-full sm:w-auto lg:w-full">
+                    <MagneticButton strength={0.3} className="w-full sm:w-auto 2xl:w-full">
                       <Button
                         asChild
                         size="lg"
                         variant="ghost"
-                        className="w-full rounded-full border border-white/10 bg-white/5 px-8 py-7 text-base font-medium text-muted-foreground hover:bg-white/8 hover:text-foreground"
+                        className="w-full rounded-full border border-white/14 bg-white/6 px-8 py-7 text-base font-medium text-foreground/78 hover:bg-white/8 hover:text-foreground"
                       >
                         <Link href={withLocale("/projects", locale)}>{copy.secondary}</Link>
                       </Button>

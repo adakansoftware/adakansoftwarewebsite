@@ -6,6 +6,7 @@ import { AboutCards } from "@/components/about-cards"
 import { ContactForm } from "@/components/contact-form"
 import { CTASection } from "@/components/cta-section"
 import { LogoServiceCards } from "@/components/logo-service-cards"
+import { LogoShowcase } from "@/components/logo-showcase"
 import { PageHeader } from "@/components/page-header"
 import { PhilosophySection } from "@/components/philosophy-section"
 import { ProjectListingCards } from "@/components/project-listing-cards"
@@ -333,6 +334,7 @@ export function LogoPageContent({ locale }: { locale: Locale }) {
             </div>
           </div>
         </div>
+        <LogoShowcase locale={locale} />
       </section>
       <CTASection locale={locale} />
     </>

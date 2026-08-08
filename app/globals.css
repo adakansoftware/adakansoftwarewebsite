@@ -133,6 +133,13 @@
   h4 {
     font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
   }
+  h1,
+  h2 {
+    text-wrap: balance;
+  }
+  [id] {
+    scroll-margin-top: 8rem;
+  }
   a:focus-visible,
   button:focus-visible,
   summary:focus-visible,
@@ -180,7 +187,7 @@
   display: flex;
 }
 
-@media (min-width: 90rem) {
+@media (min-width: 72rem) {
   .desktop-nav-shell {
     display: flex;
   }
