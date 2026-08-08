@@ -134,6 +134,17 @@ function ProjectCard({
                 priority={false}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/92 via-background/35 to-background/14" />
+              {project.logoImage ? (
+                <div className="absolute top-1/2 left-1/2 w-[42%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-white/95 p-2 shadow-2xl shadow-black/30">
+                  <Image
+                    src={project.logoImage}
+                    alt={`${project.title} logo`}
+                    width={320}
+                    height={180}
+                    className="h-auto w-full object-contain"
+                  />
+                </div>
+              ) : null}
             </>
           ) : null}
 

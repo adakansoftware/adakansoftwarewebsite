@@ -62,6 +62,17 @@ function ProjectListingCard({ project, index, locale }: { project: Project; inde
               className="object-cover opacity-80 transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/25 to-background/15" />
+            {project.logoImage ? (
+              <div className="absolute top-1/2 left-1/2 w-[42%] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-white/95 p-2 shadow-2xl shadow-black/30">
+                <Image
+                  src={project.logoImage}
+                  alt={`${project.title} logo`}
+                  width={320}
+                  height={180}
+                  className="h-auto w-full object-contain"
+                />
+              </div>
+            ) : null}
             <div className="absolute inset-0 grid-pattern opacity-10" />
           </>
         ) : (
