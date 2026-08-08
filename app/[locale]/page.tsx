@@ -9,6 +9,8 @@ import { createRouteMetadata } from "@/lib/metadata"
 import { getPrefixedLocaleStaticParams, getPrefixedRouteLocale } from "@/lib/route-locale"
 import { getManagedLogoWorks, getManagedProjects } from "@/lib/supabase/content"
 
+export const revalidate = 60
+
 export function generateStaticParams() {
   return getPrefixedLocaleStaticParams()
 }

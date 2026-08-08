@@ -9,6 +9,7 @@ import { createRouteMetadata } from "@/lib/metadata"
 import { getManagedLogoWorks, getManagedProjects } from "@/lib/supabase/content"
 
 export const metadata = createRouteMetadata("home", "tr", "/")
+export const revalidate = 60
 
 export default async function HomePage() {
   const [logoWorks, projects] = await Promise.all([getManagedLogoWorks("tr"), getManagedProjects("tr")])
