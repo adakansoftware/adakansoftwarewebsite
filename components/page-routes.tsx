@@ -23,7 +23,8 @@ import {
   getServicesPageContent,
   getTestimonialsPageContent,
 } from "@/lib/page-content"
-import { getDemoExamples, getLogoWorks, getProjects, getServices } from "@/lib/site-data"
+import { getDemoExamples, getServices } from "@/lib/site-data"
+import { getManagedLogoWorks, getManagedProjects } from "@/lib/supabase/content"
 
 export function AboutPageContent({ locale }: { locale: Locale }) {
   const content = getAboutPageContent(locale)
@@ -168,11 +169,11 @@ export function ServicesPageContent({ locale }: { locale: Locale }) {
   )
 }
 
-export function ProjectsPageContent({ locale }: { locale: Locale }) {
+export async function ProjectsPageContent({ locale }: { locale: Locale }) {
   const content = getProjectsPageContent(locale)
-  const projects = getProjects(locale)
+  const projects = await getManagedProjects(locale)
   const demoExamples = getDemoExamples(locale)
-  const logoWorks = getLogoWorks(locale)
+  const logoWorks = await getManagedLogoWorks(locale)
 
   return (
     <>
@@ -315,8 +316,9 @@ export function ProjectsPageContent({ locale }: { locale: Locale }) {
   )
 }
 
-export function LogoPageContent({ locale }: { locale: Locale }) {
+export async function LogoPageContent({ locale }: { locale: Locale }) {
   const content = getLogoPageContent(locale)
+  const logoWorks = await getManagedLogoWorks(locale)
 
   return (
     <>
@@ -346,7 +348,7 @@ export function LogoPageContent({ locale }: { locale: Locale }) {
             </div>
           </div>
         </div>
-        <LogoShowcase locale={locale} />
+        <LogoShowcase locale={locale} works={logoWorks} />
       </section>
       <CTASection locale={locale} />
     </>

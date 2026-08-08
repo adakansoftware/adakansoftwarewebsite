@@ -10,10 +10,10 @@ import { projectsSectionContent } from "@/lib/home-content"
 import { withLocale, type Locale } from "@/lib/i18n"
 import { getProjects } from "@/lib/site-data"
 
-type Project = ReturnType<typeof getProjects>[number]
+type Project = { title: string; href: string; category: string; year: string; description: string; color: string; coverImage?: string }
 
-export function ProjectsSection({ locale = "tr" }: { locale?: Locale }) {
-  const projects = getProjects(locale)
+export function ProjectsSection({ locale = "tr", projects: managedProjects }: { locale?: Locale; projects?: Project[] }) {
+  const projects = managedProjects ?? getProjects(locale)
   const sectionCopy = projectsSectionContent[locale]
   const containerRef = useRef<HTMLDivElement>(null)
   const headingRef = useRef<HTMLDivElement>(null)

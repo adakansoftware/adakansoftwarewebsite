@@ -9,10 +9,10 @@ import { ArrowUpRight } from "lucide-react"
 import { withLocale, type Locale } from "@/lib/i18n"
 import { getLogoWorks } from "@/lib/site-data"
 
-type LogoWork = ReturnType<typeof getLogoWorks>[number]
+type LogoWork = { title: string; category: string; description: string; initials: string; logoImage?: string; color: string }
 
-export function LogoWorksSection({ locale = "tr" }: { locale?: Locale }) {
-  const logoWorks = getLogoWorks(locale).slice(0, 3)
+export function LogoWorksSection({ locale = "tr", works: managedWorks }: { locale?: Locale; works?: LogoWork[] }) {
+  const logoWorks = (managedWorks ?? getLogoWorks(locale)).slice(0, 3)
   const headingRef = useRef<HTMLDivElement>(null)
   const isHeadingInView = useInView(headingRef, { once: true, margin: "-60px" })
   const prefersReducedMotion = useReducedMotion()

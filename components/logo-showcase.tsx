@@ -3,8 +3,10 @@ import Image from "next/image"
 import { getLogoWorks } from "@/lib/site-data"
 import type { Locale } from "@/lib/i18n"
 
-export function LogoShowcase({ locale }: { locale: Locale }) {
-  const works = getLogoWorks(locale).slice(0, 3)
+type LogoWork = { title: string; category: string; description: string; initials: string; logoImage?: string; color: string }
+
+export function LogoShowcase({ locale, works: managedWorks }: { locale: Locale; works?: LogoWork[] }) {
+  const works = (managedWorks ?? getLogoWorks(locale)).slice(0, 3)
 
   return (
     <section className="section-shell py-12 md:py-16">

@@ -7,9 +7,8 @@ import { motion, useInView, useReducedMotion } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
 
 import type { Locale } from "@/lib/i18n"
-import { getProjects } from "@/lib/site-data"
 
-type Project = ReturnType<typeof getProjects>[number]
+type Project = { title: string; href: string; category: string; year: string; description: string; color: string; coverImage?: string }
 
 export function ProjectListingCards({ projects, locale }: { projects: Project[]; locale: Locale }) {
   return (
