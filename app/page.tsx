@@ -2,6 +2,7 @@ import { CTASection } from "@/components/cta-section"
 import { HeroSection } from "@/components/hero-section"
 import { LogoWorksSection } from "@/components/logo-works-section"
 import { PhilosophySection } from "@/components/philosophy-section"
+import { PricingSection } from "@/components/pricing-section"
 import { ProjectsSection } from "@/components/projects-section"
 import { ServicesSection } from "@/components/services-section"
 import { TestimonialsSection } from "@/components/testimonials-section"
@@ -17,6 +18,7 @@ export default async function HomePage() {
     <>
       <HeroSection locale="tr" />
       <ServicesSection locale="tr" />
+      <PricingSection locale="tr" />
       <PhilosophySection locale="tr" />
       <LogoWorksSection locale="tr" works={logoWorks} />
       <ProjectsSection locale="tr" projects={projects} />
