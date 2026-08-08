@@ -40,7 +40,7 @@ export async function getManagedProjects(locale: Locale) {
   const client = getPublicClient()
   if (!client) return getProjects(locale)
 
-  const { data, error } = await client.from("projects").select("*").eq("published", true).order("sort_order")
+  const { data, error } = await client.from("projects").select("*").eq("published", true).eq("archived", false).order("sort_order")
   if (error || !data?.length) return getProjects(locale)
 
   return (data as ProjectRow[]).map((row) => ({
@@ -58,7 +58,7 @@ export async function getManagedLogoWorks(locale: Locale) {
   const client = getPublicClient()
   if (!client) return getLogoWorks(locale)
 
-  const { data, error } = await client.from("logo_works").select("*").eq("published", true).order("sort_order")
+  const { data, error } = await client.from("logo_works").select("*").eq("published", true).eq("archived", false).order("sort_order")
   if (error || !data?.length) return getLogoWorks(locale)
 
   return (data as LogoWorkRow[]).map((row) => ({

@@ -12,6 +12,7 @@ create table if not exists public.projects (
   href text not null,
   color text not null default '#0066ff',
   cover_image text,
+  archived boolean not null default false,
   published boolean not null default false,
   sort_order integer not null default 0,
   created_at timestamptz not null default now(),
@@ -29,6 +30,7 @@ create table if not exists public.logo_works (
   initials text not null,
   color text not null default '#0066ff',
   logo_image text,
+  archived boolean not null default false,
   published boolean not null default false,
   sort_order integer not null default 0,
   created_at timestamptz not null default now(),
@@ -48,3 +50,6 @@ create policy "portfolio assets are public" on storage.objects for select using 
 create policy "signed-in users upload portfolio assets" on storage.objects for insert to authenticated with check (bucket_id = 'portfolio-assets');
 create policy "signed-in users update portfolio assets" on storage.objects for update to authenticated using (bucket_id = 'portfolio-assets');
 create policy "signed-in users delete portfolio assets" on storage.objects for delete to authenticated using (bucket_id = 'portfolio-assets');
+
+alter table public.projects add column if not exists archived boolean not null default false;
+alter table public.logo_works add column if not exists archived boolean not null default false;
