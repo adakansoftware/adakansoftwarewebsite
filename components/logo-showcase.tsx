@@ -38,8 +38,8 @@ export function LogoShowcase({ locale }: { locale: Locale }) {
                       alt={`${work.title} logo`}
                       width={320}
                       height={180}
-                      className={`h-auto max-h-full w-full object-contain ${
-                        work.title === "Salihoğulları Hafriyat" ? "-translate-y-4 scale-[1.04]" : ""
+                      className={`h-auto max-h-[72%] w-[82%] object-contain ${
+                        work.title === "Salihoğulları Hafriyat" ? "-translate-y-3" : ""
                       }`}
                     />
                   ) : (
