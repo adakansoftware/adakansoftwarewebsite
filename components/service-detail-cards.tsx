@@ -32,8 +32,7 @@ function ServiceDetailCard({ service, index }: { service: ServiceDetail; index: 
     >
       <div className="mb-8 flex items-start justify-between gap-6">
         <div>
-          <span className="text-sm text-primary">/ {service.id}</span>
-          <h2 className="mt-3 text-3xl font-bold transition-colors duration-300 group-hover:text-primary">{service.title}</h2>
+          <h2 className="text-3xl font-bold transition-colors duration-300 group-hover:text-primary">{service.title}</h2>
         </div>
         <ArrowUpRight className="h-5 w-5 text-primary transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
       </div>
