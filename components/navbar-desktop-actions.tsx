@@ -41,7 +41,7 @@ export function NavbarDesktopActions({
               aria-label={whatsAppLabel}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-accent/25 bg-accent/5 text-accent backdrop-blur-md transition-all duration-300 hover:border-accent/60 hover:bg-accent hover:text-accent-foreground hover:shadow-[0_0_28px_color-mix(in_oklab,var(--accent)_30%,transparent)]"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-accent/25 bg-accent/5 text-accent backdrop-blur-md transition-[background-color,border-color,color,box-shadow] duration-300 hover:border-accent/60 hover:bg-accent hover:text-accent-foreground hover:shadow-[0_0_28px_color-mix(in_oklab,var(--accent)_30%,transparent)]"
             >
               <MessageCircle className="h-4 w-4" />
             </a>

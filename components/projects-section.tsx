@@ -140,7 +140,7 @@ function ProjectCard({
           {!project.coverImage ? (
             <>
               <div
-                className="absolute inset-0 grid-pattern opacity-20 transition-all duration-500 group-hover:opacity-40"
+                className="absolute inset-0 grid-pattern opacity-20 transition-[opacity,background-color,filter] duration-500 group-hover:opacity-40"
                 style={isHovered ? { backgroundColor: `${project.color}12`, filter: "saturate(1.2)" } : undefined}
               />
 
@@ -161,7 +161,7 @@ function ProjectCard({
             </>
           ) : (
             <div
-              className="absolute inset-0 grid-pattern opacity-10 transition-all duration-500 group-hover:opacity-20"
+              className="absolute inset-0 grid-pattern opacity-10 transition-[opacity,background-color,filter] duration-500 group-hover:opacity-20"
               style={isHovered ? { backgroundColor: `${project.color}10`, filter: "saturate(1.1)" } : undefined}
             />
           )}
@@ -190,7 +190,7 @@ function ProjectCard({
                   </span>
                 )}
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-full bg-foreground/10 opacity-100 backdrop-blur-md transition-all duration-300 md:opacity-0 ${
+                  className={`flex h-10 w-10 items-center justify-center rounded-full bg-foreground/10 opacity-100 backdrop-blur-md transition-[opacity,transform] duration-300 md:opacity-0 ${
                     isHovered ? "md:scale-100 md:opacity-100" : "md:scale-75"
                   }`}
                 >
