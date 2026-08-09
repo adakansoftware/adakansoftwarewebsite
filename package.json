@@ -8,6 +8,7 @@
     "start": "next start --hostname 0.0.0.0",
     "lint": "eslint .",
     "audit:production": "npm audit --omit=dev --audit-level=high",
+    "test:admin-security": "node --experimental-strip-types --test lib/admin-content.test.mjs lib/admin-session.test.mjs lib/server/admin-login-rate-limit.test.mjs lib/content-source-status.test.mjs",
     "test:smoke": "node scripts/run-smoke-routes.mjs",
     "ops:contact:worker": "node scripts/contact-replay-worker.mjs"
   },

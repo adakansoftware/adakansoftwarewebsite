@@ -66,12 +66,26 @@ export function parseContentPayload(kind: ContentKind, value: unknown): ParseRes
   }
 
   if (kind === "projects") {
-    if (typeof payload.year !== "string" || !payload.year.trim() || typeof payload.href !== "string" || !payload.href.trim()) return { ok: false, message: "Proje yılı ve bağlantısı zorunludur." }
-    return { ok: true, data: { ...common, year: payload.year.trim(), href: payload.href.trim() } }
+    const href = parseProjectHref(payload.href)
+    if (typeof payload.year !== "string" || !payload.year.trim() || !href) return { ok: false, message: "Proje yılı ve bağlantısı zorunludur." }
+    return { ok: true, data: { ...common, year: payload.year.trim(), href } }
   }
 
   if (typeof payload.initials !== "string" || !payload.initials.trim()) return { ok: false, message: "Logo inisiyali zorunludur." }
   return { ok: true, data: { ...common, initials: payload.initials.trim() } }
+}
+
+export function parseProjectHref(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined
+  const href = value.trim()
+  if (!href) return undefined
+  if (href.startsWith("/") && !href.startsWith("//") && !href.includes("\\")) return href
+
+  try {
+    return new URL(href).protocol === "https:" ? href : undefined
+  } catch {
+    return undefined
+  }
 }
 
 function parseImageUrl(value: unknown): string | null | undefined {

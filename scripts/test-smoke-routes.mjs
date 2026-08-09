@@ -130,6 +130,12 @@ assert(optionsState.headers.get("allow") === "GET, OPTIONS", `/api/contact/state
 const getContact = await request("/api/contact")
 assert(getContact.status === 405, `/api/contact GET: expected 405, received ${getContact.status}`)
 
+const unauthenticatedAdminSession = await request("/api/admin/session")
+assert(unauthenticatedAdminSession.status === 401, `/api/admin/session: expected 401 without cookie, received ${unauthenticatedAdminSession.status}`)
+
+const unauthenticatedAdminContent = await request("/api/admin/content?type=projects")
+assert(unauthenticatedAdminContent.status === 401, `/api/admin/content: expected 401 without cookie, received ${unauthenticatedAdminContent.status}`)
+
 const optionsHealth = await request("/api/health", { method: "OPTIONS" })
 assert(optionsHealth.status === 204, `/api/health OPTIONS: expected 204, received ${optionsHealth.status}`)
 assert(optionsHealth.headers.get("allow") === "GET, HEAD, OPTIONS", `/api/health OPTIONS: expected Allow header`)

@@ -1,20 +1,26 @@
-import { createHmac, timingSafeEqual } from "node:crypto"
 import { cookies } from "next/headers"
 
-const cookieName = "adakan_admin"
+import { createAdminSession, verifyAdminSession } from "@/lib/admin-session"
 
-function signature(value: string) { return createHmac("sha256", process.env.ADMIN_SESSION_SECRET ?? "").update(value).digest("hex") }
+const cookieName = "adakan_admin"
+export const adminSessionMaxAgeSeconds = 8 * 60 * 60
 
 export async function isAdmin() {
   const value = (await cookies()).get(cookieName)?.value
   if (!value) return false
-  const [encodedEmail, token] = value.split(".")
-  if (!encodedEmail || !token) return false
-  let email: string
-  try { email = Buffer.from(encodedEmail, "base64url").toString("utf8") } catch { return false }
-  const expected = signature(email)
-  return email === process.env.ADMIN_EMAIL && token.length === expected.length && timingSafeEqual(Buffer.from(token), Buffer.from(expected))
+  return verifyAdminSession(
+    value,
+    process.env.ADMIN_EMAIL,
+    process.env.ADMIN_SESSION_SECRET ?? "",
+    Date.now(),
+  )
 }
 
-export function adminCookie() { const email = process.env.ADMIN_EMAIL ?? ""; return `${Buffer.from(email).toString("base64url")}.${signature(email)}` }
+export function adminCookie() {
+  return createAdminSession(
+    process.env.ADMIN_EMAIL ?? "",
+    process.env.ADMIN_SESSION_SECRET ?? "",
+    Date.now() + adminSessionMaxAgeSeconds * 1000,
+  )
+}
 export { cookieName }

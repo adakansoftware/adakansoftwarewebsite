@@ -4,6 +4,7 @@ import { contactPolicy } from "@/lib/server/contact-policy"
 import { getContactRuntimeConfigurationIssues } from "@/lib/server/contact-runtime-config"
 import { getProxyRateLimitDiagnostics } from "@/lib/server/proxy-rate-limit"
 import { getContactStateStore, getContactStateStoreStatus } from "@/lib/server/contact-state-store"
+import { getManagedContentSourceStatus } from "@/lib/content-source-status"
 import {
   createRequestId,
   emptyResponse,
@@ -108,6 +109,7 @@ export async function GET(request: Request) {
               queueHealthy: !hasQueueAlerts,
             },
             diagnostics,
+            managedContent: getManagedContentSourceStatus(),
             contactConfigurationIssues,
             pipeline,
             state: {
