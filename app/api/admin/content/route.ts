@@ -2,7 +2,9 @@ import { NextResponse } from "next/server"
 
 import { isAdmin } from "@/lib/admin-auth"
 import { isUuid, parseContentKind, parseContentPayload, type ContentKind, type ContentPayload } from "@/lib/admin-content"
+import { getAdminContentRequestError } from "@/lib/admin-content-request"
 import { getNeonSql } from "@/lib/neon"
+import { isAllowedOrigin } from "@/lib/server/http"
 
 export async function GET(request: Request) {
   const denied = await requireAdmin()
@@ -22,6 +24,8 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const denied = await requireAdmin()
   if (denied) return denied
+  const requestError = getAdminContentRequestError(request, isAllowedOrigin)
+  if (requestError) return NextResponse.json({ ok: false }, { status: requestError })
 
   const body = await readBody(request)
   if (!body) return badRequest("Geçersiz istek gövdesi.")
@@ -41,6 +45,8 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
   const denied = await requireAdmin()
   if (denied) return denied
+  const requestError = getAdminContentRequestError(request, isAllowedOrigin)
+  if (requestError) return NextResponse.json({ ok: false }, { status: requestError })
 
   const body = await readBody(request)
   if (!body) return badRequest("Geçersiz istek gövdesi.")
@@ -61,6 +67,8 @@ export async function PATCH(request: Request) {
 export async function DELETE(request: Request) {
   const denied = await requireAdmin()
   if (denied) return denied
+  const requestError = getAdminContentRequestError(request, isAllowedOrigin)
+  if (requestError) return NextResponse.json({ ok: false }, { status: requestError })
 
   const body = await readBody(request)
   if (!body) return badRequest("Geçersiz istek gövdesi.")
