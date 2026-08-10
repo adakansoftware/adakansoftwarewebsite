@@ -110,6 +110,7 @@ export type ContactStateStore = {
   ): Promise<void>
   consumeAdminNonce(nonce: string, expiresAt: number): Promise<boolean>
   consumeRateLimit(key: string, windowMs: number, maxRequests: number): Promise<boolean>
+  isRateLimited(key: string, windowMs: number, maxRequests: number): Promise<boolean>
   clearRateLimit(key: string): Promise<void>
   consumeDuplicate(key: string, windowMs: number): Promise<boolean>
 }
@@ -348,6 +349,12 @@ const fileContactStateStore: ContactStateStore = {
     })
     return limited
   },
+  async isRateLimited(key, windowMs, maxRequests) {
+    const entries = await readJsonFile<Record<string, number[]>>(RATE_LIMIT_FILE_PATH, {})
+    const now = Date.now()
+    const recent = (entries[key] ?? []).filter((timestamp) => now - timestamp < windowMs)
+    return recent.length >= maxRequests
+  },
   async clearRateLimit(key) {
     await updateJsonFile<Record<string, number[]>>(RATE_LIMIT_FILE_PATH, {}, (entries) => {
       const { [key]: _removed, ...remaining } = entries
@@ -455,6 +462,11 @@ const redisContactStateStore: ContactStateStore = {
     const count = await client.incr(redisKey)
     if (count === 1) await client.pExpire(redisKey, windowMs)
     return count > maxRequests
+  },
+  async isRateLimited(key, _windowMs, maxRequests) {
+    const client = await getRedisClient()
+    const count = Number.parseInt(await client.get(getRedisKey(`rate-limit:${key}`)) ?? "0", 10)
+    return Number.isFinite(count) && count >= maxRequests
   },
   async clearRateLimit(key) {
     const client = await getRedisClient()

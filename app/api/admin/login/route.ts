@@ -4,11 +4,16 @@ import { getTrustedClientIp } from "@/lib/server/client-ip"
 import {
   clearAdminLoginFailures,
   recordAdminLoginFailure,
+  shouldRejectAdminLogin,
 } from "@/lib/server/admin-login-rate-limit"
 
 export async function POST(request: Request) {
   const clientIp = getTrustedClientIp(request.headers)
   const now = Date.now()
+
+  if (await shouldRejectAdminLogin(clientIp, now)) {
+    return NextResponse.json({ ok: false }, { status: 429, headers: { "Cache-Control": "no-store" } })
+  }
 
   let credentials: { email?: string; password?: string }
   try {

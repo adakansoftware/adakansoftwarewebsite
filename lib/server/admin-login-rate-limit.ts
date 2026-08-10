@@ -23,8 +23,14 @@ function recentFailures(ip: string, now: number) {
 }
 
 export async function isAdminLoginRateLimited(ip: string, now: number) {
-  if (process.env.NODE_ENV === "production") return false
+  if (process.env.NODE_ENV === "production") {
+    return (await getSharedStateStore()).isRateLimited(`admin-login:${ip}`, WINDOW_MS, MAX_FAILURES)
+  }
   return recentFailures(ip, now).length >= MAX_FAILURES
+}
+
+export async function shouldRejectAdminLogin(ip: string, now: number) {
+  return isAdminLoginRateLimited(ip, now)
 }
 
 export async function recordAdminLoginFailure(ip: string, now: number) {
