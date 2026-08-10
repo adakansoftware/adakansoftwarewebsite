@@ -16,7 +16,7 @@ export function verifyAdminSession(
   secret: string,
   now: number,
 ) {
-  if (!email) return false
+  if (!email?.trim() || !secret.trim()) return false
   const [encodedEmail, expiresAtValue, token] = value.split(".")
   if (!encodedEmail || !expiresAtValue || !token || value.split(".").length !== 3) return false
 

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { adminCookie, adminSessionMaxAgeSeconds, cookieName } from "@/lib/admin-auth"
+import { adminCookie, adminSessionMaxAgeSeconds, cookieName, hasAdminSessionConfiguration } from "@/lib/admin-auth"
 import { getTrustedClientIp } from "@/lib/server/client-ip"
 import {
   clearAdminLoginFailures,
@@ -13,6 +13,10 @@ export async function POST(request: Request) {
 
   if (await shouldRejectAdminLogin(clientIp, now)) {
     return NextResponse.json({ ok: false }, { status: 429, headers: { "Cache-Control": "no-store" } })
+  }
+
+  if (!hasAdminSessionConfiguration()) {
+    return NextResponse.json({ ok: false }, { status: 503, headers: { "Cache-Control": "no-store" } })
   }
 
   let credentials: { email?: string; password?: string }
