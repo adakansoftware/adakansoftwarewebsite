@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { adminCookie, adminSessionMaxAgeSeconds, cookieName, hasAdminSessionConfiguration } from "@/lib/admin-auth"
+import { getAdminSessionMutationRequestError } from "@/lib/admin-session-request"
 import { getTrustedClientIp } from "@/lib/server/client-ip"
+import { isAllowedOrigin } from "@/lib/server/http"
 import {
   clearAdminLoginFailures,
   recordAdminLoginFailure,
@@ -8,6 +10,11 @@ import {
 } from "@/lib/server/admin-login-rate-limit"
 
 export async function POST(request: Request) {
+  const requestError = getAdminSessionMutationRequestError(request, isAllowedOrigin)
+  if (requestError) {
+    return NextResponse.json({ ok: false }, { status: requestError, headers: { "Cache-Control": "no-store" } })
+  }
+
   const clientIp = getTrustedClientIp(request.headers)
   const now = Date.now()
 

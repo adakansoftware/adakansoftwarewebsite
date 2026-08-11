@@ -94,7 +94,7 @@ for (const check of checks) {
 
   if (check.locationPath) {
     assert(
-      result.location && new URL(result.location).pathname === check.locationPath,
+      result.location && new URL(result.location, baseUrl).pathname === check.locationPath,
       `${check.path}: expected redirect path ${check.locationPath}, received ${result.location}`,
     )
   }
