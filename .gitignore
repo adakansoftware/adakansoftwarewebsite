@@ -15,6 +15,7 @@ node_modules
 tsconfig.tsbuildinfo
 .DS_Store
 .data/
+.worktrees/
 dev-server.log
 prod-server.log
 prod-server*.log
