@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og"
 import { type NextRequest } from "next/server"
 
-export const runtime = "edge"
+export const runtime = "nodejs"
 
 const pageData: Record<string, { subtitle: string; accent: string }> = {
   services: { subtitle: "Web Design | Brand Identity | UI/UX | Frontend", accent: "#0066ff" },
