@@ -111,6 +111,14 @@ for (const check of checks) {
   }
 }
 
+const ogImage = await request("/og?page=services")
+assert(ogImage.status === 200, `/og: expected 200, received ${ogImage.status}`)
+assert(ogImage.headers.get("content-type")?.startsWith("image/png"), "/og: expected PNG response")
+assert(
+  ogImage.headers.get("cache-control") === "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800",
+  "/og: expected shared cache policy",
+)
+
 const optionsContact = await request("/api/contact", { method: "OPTIONS" })
 assert(optionsContact.status === 204, `/api/contact OPTIONS: expected 204, received ${optionsContact.status}`)
 assert(optionsContact.headers.get("allow") === "POST, OPTIONS", `/api/contact OPTIONS: expected Allow header`)
