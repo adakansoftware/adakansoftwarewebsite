@@ -180,12 +180,15 @@ export async function POST(request: Request) {
     return jsonResponse(duplicateResponse, { requestId })
   }
 
-  void recordContactRequest(submission).catch((error) => {
+  try {
+    await recordContactRequest(submission)
+  } catch (error) {
     logServerEvent("error", "contact.request-record.failed", {
       requestId,
       error: error instanceof Error ? error.message : "unknown-error",
     })
-  })
+    return jsonResponse({ ok: false, error: "Contact service is unavailable" }, { status: 503, requestId })
+  }
 
   const outboxEntry = await createQueuedContactMessage(submission, {
     owner: `request:${requestId}`,
