@@ -144,6 +144,9 @@ assert(unauthenticatedAdminSession.status === 401, `/api/admin/session: expected
 const unauthenticatedAdminContent = await request("/api/admin/content?type=projects")
 assert(unauthenticatedAdminContent.status === 401, `/api/admin/content: expected 401 without cookie, received ${unauthenticatedAdminContent.status}`)
 
+const unauthenticatedContactRequests = await request("/api/admin/contact-requests")
+assert(unauthenticatedContactRequests.status === 401, `/api/admin/contact-requests: expected 401 without cookie, received ${unauthenticatedContactRequests.status}`)
+
 const optionsHealth = await request("/api/health", { method: "OPTIONS" })
 assert(optionsHealth.status === 204, `/api/health OPTIONS: expected 204, received ${optionsHealth.status}`)
 assert(optionsHealth.headers.get("allow") === "GET, HEAD, OPTIONS", `/api/health OPTIONS: expected Allow header`)

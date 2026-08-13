@@ -23,3 +23,18 @@ create table if not exists logo_works (
 
 create index if not exists projects_published_sort_order_idx on projects (published, archived, sort_order);
 create index if not exists logo_works_published_sort_order_idx on logo_works (published, archived, sort_order);
+
+create table if not exists contact_requests (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  email text not null,
+  phone text,
+  project text not null,
+  locale text not null check (locale in ('tr', 'en')),
+  status text not null default 'new' check (status in ('new', 'in_progress', 'completed')),
+  admin_note text not null default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists contact_requests_status_created_at_idx on contact_requests (status, created_at desc);

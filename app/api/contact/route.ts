@@ -26,6 +26,7 @@ import {
   jsonResponse,
 } from "@/lib/server/http"
 import { logServerEvent } from "@/lib/server/logger"
+import { recordContactRequest } from "@/lib/contact-request-store"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -178,6 +179,13 @@ export async function POST(request: Request) {
 
     return jsonResponse(duplicateResponse, { requestId })
   }
+
+  void recordContactRequest(submission).catch((error) => {
+    logServerEvent("error", "contact.request-record.failed", {
+      requestId,
+      error: error instanceof Error ? error.message : "unknown-error",
+    })
+  })
 
   const outboxEntry = await createQueuedContactMessage(submission, {
     owner: `request:${requestId}`,
