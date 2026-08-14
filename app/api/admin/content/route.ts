@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache"
 import { NextResponse } from "next/server"
 
 import { isAdmin } from "@/lib/admin-auth"
@@ -5,6 +6,7 @@ import { isUuid, parseContentKind, parseContentPayload, type ContentKind, type C
 import { getAdminContentRequestError } from "@/lib/admin-content-request"
 import { getNeonSql } from "@/lib/neon"
 import { isAllowedOrigin } from "@/lib/server/http"
+import { getContentRevalidationPaths } from "@/lib/content-revalidation"
 
 export async function GET(request: Request) {
   const denied = await requireAdmin()
@@ -36,6 +38,7 @@ export async function POST(request: Request) {
 
   try {
     const rows = await getNeonSql().query(insertQuery(kind), valuesFor(kind, parsed.data))
+    revalidateContent(kind)
     return NextResponse.json(rows[0], { status: 201 })
   } catch {
     return serverError()
@@ -58,6 +61,7 @@ export async function PATCH(request: Request) {
   try {
     const rows = await getNeonSql().query(updateQuery(kind), [...valuesFor(kind, parsed.data), body.id])
     if (!rows[0]) return NextResponse.json({ ok: false, message: "Kayıt bulunamadı." }, { status: 404 })
+    revalidateContent(kind)
     return NextResponse.json(rows[0])
   } catch {
     return serverError()
@@ -78,6 +82,7 @@ export async function DELETE(request: Request) {
   try {
     const rows = await getNeonSql().query(`delete from ${tableFor(kind)} where id = $1 returning id`, [body.id])
     if (!rows[0]) return NextResponse.json({ ok: false, message: "Kayıt bulunamadı." }, { status: 404 })
+    revalidateContent(kind)
     return NextResponse.json({ ok: true })
   } catch {
     return serverError()
@@ -126,4 +131,8 @@ function badRequest(message: string) {
 
 function serverError() {
   return NextResponse.json({ ok: false, message: "İşlem şu anda tamamlanamadı." }, { status: 500 })
+}
+
+function revalidateContent(kind: ContentKind) {
+  for (const path of getContentRevalidationPaths(kind)) revalidatePath(path)
 }
