@@ -8,6 +8,63 @@ const contactRequestUpdateSchema = z.object({
 
 export type ContactRequestStatus = z.infer<typeof contactRequestUpdateSchema>["status"]
 
+export type AdminContactRequest = {
+  id: string
+  name: string
+  email: string
+  phone: string | null
+  project: string
+  locale: "tr" | "en"
+  status: ContactRequestStatus
+  adminNote: string
+  createdAt: string | null
+}
+
+const contactStatuses = new Set<ContactRequestStatus>(["new", "in_progress", "completed"])
+
+function getStringValue(row: Record<string, unknown>, key: string) {
+  const value = row[key]
+  return typeof value === "string" ? value : null
+}
+
+function getTimestampValue(value: unknown) {
+  if (value instanceof Date) return value.toISOString()
+  if (typeof value === "string") {
+    const parsed = new Date(value)
+    return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString()
+  }
+  return null
+}
+
+export function toContactRequest(row: unknown): AdminContactRequest | null {
+  if (!row || typeof row !== "object") return null
+
+  const values = row as Record<string, unknown>
+  const id = getStringValue(values, "id")
+  const name = getStringValue(values, "name")
+  const email = getStringValue(values, "email")
+  const project = getStringValue(values, "project")
+  const locale = getStringValue(values, "locale")
+  const status = getStringValue(values, "status")
+
+  if (!id || !name || !email || project === null || (locale !== "tr" && locale !== "en") || !status || !contactStatuses.has(status as ContactRequestStatus)) return null
+
+  const phone = getStringValue(values, "phone")
+  const adminNote = getStringValue(values, "admin_note")
+
+  return {
+    id,
+    name,
+    email,
+    phone,
+    project,
+    locale,
+    status: status as ContactRequestStatus,
+    adminNote: adminNote ?? "",
+    createdAt: getTimestampValue(values.created_at),
+  }
+}
+
 export function parseContactRequestUpdate(payload: unknown) {
   const result = contactRequestUpdateSchema.safeParse(payload)
   return result.success

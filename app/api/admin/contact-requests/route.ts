@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-import { parseContactRequestUpdate } from "@/lib/admin-contact"
+import { parseContactRequestUpdate, toContactRequest } from "@/lib/admin-contact"
 import { isAdmin } from "@/lib/admin-auth"
 import { getAdminContentRequestError } from "@/lib/admin-content-request"
 import { getNeonSql } from "@/lib/neon"
@@ -11,7 +11,7 @@ export async function GET() {
 
   try {
     const rows = await getNeonSql().query("select * from contact_requests order by created_at desc limit 200")
-    return NextResponse.json(rows)
+    return NextResponse.json(rows.map(toContactRequest).filter((row): row is NonNullable<typeof row> => row !== null))
   } catch {
     return NextResponse.json({ ok: false, message: "İletişim talepleri yüklenemedi." }, { status: 500 })
   }
