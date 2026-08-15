@@ -65,6 +65,15 @@ export function toContactRequest(row: unknown): AdminContactRequest | null {
   }
 }
 
+export function filterContactRequests(requests: AdminContactRequest[], query: string) {
+  const normalizedQuery = query.trim().toLocaleLowerCase()
+  if (!normalizedQuery) return requests
+
+  return requests.filter((request) =>
+    `${request.name} ${request.email} ${request.project}`.toLocaleLowerCase().includes(normalizedQuery),
+  )
+}
+
 export function parseContactRequestUpdate(payload: unknown) {
   const result = contactRequestUpdateSchema.safeParse(payload)
   return result.success
