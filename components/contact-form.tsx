@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { getContactDeliveryState, type ContactDeliveryState } from "@/lib/contact-submission-feedback"
 import type { Locale } from "@/lib/i18n"
 
 const formSchema = z.object({
@@ -32,6 +33,7 @@ const copy = {
     submit: "Gönder",
     sending: "Gönderiliyor...",
     success: "Mesajın ulaştı, en kısa sürede dönüş yapacağız.",
+    deliveryPending: "Talebin alındı. E-posta teslimatı sırada; en kısa sürede dönüş yapacağız.",
     error: "Mesaj gönderilemedi. Lütfen tekrar dene veya e-posta ile ulaş.",
     namePlaceholder: "Adın Soyadın",
     emailPlaceholder: "email@ornek.com",
@@ -52,6 +54,7 @@ const copy = {
     submit: "Send",
     sending: "Sending...",
     success: "Message received. We will get back to you shortly.",
+    deliveryPending: "Your request was received. Email delivery is queued and we will get back to you shortly.",
     error: "Message could not be sent. Please try again or contact us by email.",
     namePlaceholder: "Your Name",
     emailPlaceholder: "email@example.com",
@@ -74,6 +77,7 @@ const copy = {
     submit: string
     sending: string
     success: string
+    deliveryPending: string
     error: string
     namePlaceholder: string
     emailPlaceholder: string
@@ -87,7 +91,7 @@ const copy = {
 export function ContactForm({ locale }: { locale: Locale }) {
   const t = copy[locale]
   const formId = useId()
-  const [submitted, setSubmitted] = useState(false)
+  const [deliveryState, setDeliveryState] = useState<ContactDeliveryState | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const prefersReducedMotion = useReducedMotion()
@@ -115,12 +119,13 @@ export function ContactForm({ locale }: { locale: Locale }) {
         body: JSON.stringify({ ...data, locale }),
       })
 
-      if (!response.ok) {
+      const result = getContactDeliveryState(await response.json())
+      if (!response.ok || !result) {
         throw new Error(response.status === 429 ? "rate-limited" : "contact-request-failed")
       }
 
       reset({ name: "", email: "", phone: "", project: "", website: "" })
-      setSubmitted(true)
+      setDeliveryState(result)
     } catch (error) {
       setSubmitError(
         error instanceof Error && error.message === "rate-limited"
@@ -134,7 +139,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
 
   return (
     <AnimatePresence mode="wait">
-      {submitted ? (
+      {deliveryState ? (
         <motion.div
           key="success"
           initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
@@ -143,7 +148,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
           className="flex flex-col items-center gap-4 py-12 text-center"
         >
           <CheckCircle className="h-12 w-12 text-accent" />
-          <p className="text-lg text-foreground">{t.success}</p>
+          <p aria-live="polite" className="text-lg text-foreground">{deliveryState === "pending" ? t.deliveryPending : t.success}</p>
         </motion.div>
       ) : (
         <motion.form
