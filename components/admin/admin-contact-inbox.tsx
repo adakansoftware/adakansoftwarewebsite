@@ -3,16 +3,12 @@
 import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import { filterContactRequests, type AdminContactRequest, type ContactRequestStatus } from "@/lib/admin-contact"
+import { contactRequestStatusLabel, filterContactRequests, type AdminContactRequest, type ContactRequestStatus } from "@/lib/admin-contact"
 
 type Status = ContactRequestStatus
 type ContactRequest = AdminContactRequest
 
-const statusLabels: Record<Status, string> = {
-  new: "Yeni",
-  in_progress: "İnceleniyor",
-  completed: "Tamamlandı",
-}
+const statusClasses: Record<Status, string> = { new: "bg-blue-500/10 text-blue-700 dark:text-blue-300", in_progress: "bg-amber-500/10 text-amber-700 dark:text-amber-300", completed: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" }
 
 export function AdminContactInbox() {
   const [requests, setRequests] = useState<ContactRequest[]>([])
@@ -22,16 +18,20 @@ export function AdminContactInbox() {
   const [message, setMessage] = useState("")
   const [busy, setBusy] = useState(false)
   const [query, setQuery] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const load = async () => {
+    setIsLoading(true)
+    setLoadError(null)
     try {
       const response = await fetch("/api/admin/contact-requests", { cache: "no-store" })
       const data = await response.json() as ContactRequest[] | { message?: string }
       if (!response.ok || !Array.isArray(data)) throw new Error("İletişim talepleri yüklenemedi.")
       setRequests(data)
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "İletişim talepleri yüklenemedi.")
-    }
+      setLoadError(error instanceof Error ? error.message : "İletişim talepleri yüklenemedi.")
+    } finally { setIsLoading(false) }
   }
 
   useEffect(() => { void load() }, [])
@@ -80,11 +80,14 @@ export function AdminContactInbox() {
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.1fr]">
         <div className="space-y-3">
           <label className="sr-only" htmlFor="contact-request-search">İletişim taleplerinde ara</label><input id="contact-request-search" className="h-10 w-full rounded-md border border-border/60 bg-background/50 px-3 text-sm" placeholder="Talep ara…" value={query} onChange={(event) => setQuery(event.target.value)} />
-          {visibleRequests.map((request) => <button key={request.id} onClick={() => open(request)} className="block w-full rounded-xl border border-border/50 bg-card/25 p-4 text-left transition-colors hover:border-primary/40"><div className="flex items-center justify-between gap-3"><p className="font-semibold">{request.name}</p><span className="text-xs text-muted-foreground">{statusLabels[request.status]}</span></div><p className="mt-1 text-sm text-muted-foreground">{request.email}</p><p className="mt-2 line-clamp-2 text-sm">{request.project}</p></button>)}
-          {!visibleRequests.length && <p className="rounded-xl border border-dashed border-border/60 p-5 text-sm text-muted-foreground">Henüz iletişim talebi yok.</p>}
+          <p className="sr-only" aria-live="polite">{isLoading ? "İletişim talepleri yükleniyor" : `${visibleRequests.length} iletişim talebi gösteriliyor`}</p>
+          {isLoading && <p className="rounded-xl border border-dashed border-border/60 p-5 text-sm text-muted-foreground">İletişim talepleri yükleniyor…</p>}
+          {loadError && <div className="rounded-xl border border-destructive/40 p-5 text-sm text-destructive"><p>{loadError}</p><Button className="mt-3" size="sm" variant="outline" onClick={() => void load()}>Yeniden dene</Button></div>}
+          {!isLoading && !loadError && visibleRequests.map((request) => <button key={request.id} onClick={() => open(request)} className="block w-full rounded-xl border border-border/50 bg-card/25 p-4 text-left transition-colors hover:border-primary/40"><div className="flex items-center justify-between gap-3"><p className="font-semibold">{request.name}</p><span className={`rounded-full px-2 py-1 text-xs font-medium ${statusClasses[request.status]}`}>{contactRequestStatusLabel(request.status)}</span></div><p className="mt-1 text-sm text-muted-foreground">{request.email}</p><p className="mt-2 line-clamp-2 text-sm">{request.project}</p></button>)}
+          {!isLoading && !loadError && !visibleRequests.length && <p className="rounded-xl border border-dashed border-border/60 p-5 text-sm text-muted-foreground">{requests.length ? "Aramanla eşleşen iletişim talebi yok." : "Henüz iletişim talebi yok."}</p>}
         </div>
         <div className="rounded-2xl border border-border/50 bg-card/25 p-5 sm:p-7">
-          {selected ? <><p className="text-sm text-muted-foreground">{selected.email}{selected.phone ? ` · ${selected.phone}` : ""}</p><h3 className="mt-2 text-xl font-bold">{selected.name}</h3><p className="mt-5 whitespace-pre-wrap text-sm leading-relaxed">{selected.project}</p><label className="mt-6 block text-sm font-medium">Durum<select className="mt-2 h-10 w-full rounded-md border border-border/60 bg-background/50 px-3" value={status} onChange={(event) => setStatus(event.target.value as Status)}>{Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label><label className="mt-4 block text-sm font-medium">Özel not<textarea className="mt-2 min-h-24 w-full rounded-md border border-border/60 bg-background/50 p-3" value={note} onChange={(event) => setNote(event.target.value)} /></label>{message && <p className="mt-4 text-sm text-muted-foreground">{message}</p>}<Button className="mt-5" onClick={() => void save()} disabled={busy}>{busy ? "Kaydediliyor" : "Talebi güncelle"}</Button></> : <p className="text-sm text-muted-foreground">Ayrıntıları görmek için bir talep seçin.</p>}
+          {selected ? <><p className="text-sm text-muted-foreground">{selected.email}{selected.phone ? ` · ${selected.phone}` : ""}</p><h3 className="mt-2 text-xl font-bold">{selected.name}</h3><p className="mt-5 whitespace-pre-wrap text-sm leading-relaxed">{selected.project}</p><label className="mt-6 block text-sm font-medium">Durum<select className="mt-2 h-10 w-full rounded-md border border-border/60 bg-background/50 px-3" value={status} onChange={(event) => setStatus(event.target.value as Status)}>{(["new", "in_progress", "completed"] as const).map((value) => <option key={value} value={value}>{contactRequestStatusLabel(value)}</option>)}</select></label><label className="mt-4 block text-sm font-medium">Özel not<textarea className="mt-2 min-h-24 w-full rounded-md border border-border/60 bg-background/50 p-3" value={note} onChange={(event) => setNote(event.target.value)} /></label>{message && <p className="mt-4 text-sm text-muted-foreground">{message}</p>}<Button className="mt-5" onClick={() => void save()} disabled={busy}>{busy ? "Kaydediliyor" : "Talebi güncelle"}</Button></> : <p className="text-sm text-muted-foreground">Ayrıntıları görmek için bir talep seçin.</p>}
         </div>
       </div>
     </section>

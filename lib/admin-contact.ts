@@ -22,6 +22,16 @@ export type AdminContactRequest = {
 
 const contactStatuses = new Set<ContactRequestStatus>(["new", "in_progress", "completed"])
 
+const contactStatusLabels: Record<ContactRequestStatus, string> = {
+  new: "Yeni",
+  in_progress: "İnceleniyor",
+  completed: "Tamamlandı",
+}
+
+export function contactRequestStatusLabel(status: ContactRequestStatus) {
+  return contactStatusLabels[status]
+}
+
 function getStringValue(row: Record<string, unknown>, key: string) {
   const value = row[key]
   return typeof value === "string" ? value : null
