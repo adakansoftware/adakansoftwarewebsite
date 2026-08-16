@@ -88,6 +88,13 @@ export function filterContactRequestsByStatus(requests: AdminContactRequest[], s
   return status === "all" ? requests : requests.filter((request) => request.status === status)
 }
 
+export function formatContactRequestDate(value: string | null) {
+  if (!value) return null
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return null
+  return new Intl.DateTimeFormat("tr-TR", { dateStyle: "short", timeStyle: "short", timeZone: "Europe/Istanbul" }).format(date)
+}
+
 export function parseContactRequestUpdate(payload: unknown) {
   const result = contactRequestUpdateSchema.safeParse(payload)
   return result.success

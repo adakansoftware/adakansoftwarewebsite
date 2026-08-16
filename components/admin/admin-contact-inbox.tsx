@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import { contactRequestStatusLabel, filterContactRequests, filterContactRequestsByStatus, type AdminContactRequest, type ContactRequestStatus } from "@/lib/admin-contact"
+import { contactRequestStatusLabel, filterContactRequests, filterContactRequestsByStatus, formatContactRequestDate, type AdminContactRequest, type ContactRequestStatus } from "@/lib/admin-contact"
 
 type Status = ContactRequestStatus
 type ContactRequest = AdminContactRequest
@@ -84,7 +84,7 @@ export function AdminContactInbox() {
           <p className="sr-only" aria-live="polite">{isLoading ? "İletişim talepleri yükleniyor" : `${visibleRequests.length} iletişim talebi gösteriliyor`}</p>
           {isLoading && <p className="rounded-xl border border-dashed border-border/60 p-5 text-sm text-muted-foreground">İletişim talepleri yükleniyor…</p>}
           {loadError && <div className="rounded-xl border border-destructive/40 p-5 text-sm text-destructive"><p>{loadError}</p><Button className="mt-3" size="sm" variant="outline" onClick={() => void load()}>Yeniden dene</Button></div>}
-          {!isLoading && !loadError && visibleRequests.map((request) => <button key={request.id} onClick={() => open(request)} className="block w-full rounded-xl border border-border/50 bg-card/25 p-4 text-left transition-colors hover:border-primary/40"><div className="flex items-center justify-between gap-3"><p className="font-semibold">{request.name}</p><span className={`rounded-full px-2 py-1 text-xs font-medium ${statusClasses[request.status]}`}>{contactRequestStatusLabel(request.status)}</span></div><p className="mt-1 text-sm text-muted-foreground">{request.email}</p><p className="mt-2 line-clamp-2 text-sm">{request.project}</p></button>)}
+          {!isLoading && !loadError && visibleRequests.map((request) => <button key={request.id} onClick={() => open(request)} className="block w-full rounded-xl border border-border/50 bg-card/25 p-4 text-left transition-colors hover:border-primary/40"><div className="flex items-center justify-between gap-3"><p className="font-semibold">{request.name}</p><span className={`rounded-full px-2 py-1 text-xs font-medium ${statusClasses[request.status]}`}>{contactRequestStatusLabel(request.status)}</span></div><p className="mt-1 text-sm text-muted-foreground">{request.email}{formatContactRequestDate(request.createdAt) ? ` · ${formatContactRequestDate(request.createdAt)}` : ""}</p><p className="mt-2 line-clamp-2 text-sm">{request.project}</p></button>)}
           {!isLoading && !loadError && !visibleRequests.length && <p className="rounded-xl border border-dashed border-border/60 p-5 text-sm text-muted-foreground">{requests.length ? "Aramanla eşleşen iletişim talebi yok." : "Henüz iletişim talebi yok."}</p>}
         </div>
         <div className="rounded-2xl border border-border/50 bg-card/25 p-5 sm:p-7">
