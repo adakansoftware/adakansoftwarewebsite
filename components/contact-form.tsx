@@ -225,6 +225,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
             <Textarea
               id="contact-project"
               rows={5}
+              maxLength={4000}
               placeholder={t.projectPlaceholder}
               aria-invalid={errors.project ? "true" : "false"}
               aria-describedby={errors.project ? `${formId}-project-error` : undefined}
