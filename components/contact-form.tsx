@@ -196,6 +196,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
               <Input
                 id="contact-email"
                 type="email"
+                maxLength={120}
                 placeholder={t.emailPlaceholder}
                 autoComplete="email"
                 aria-invalid={errors.email ? "true" : "false"}
