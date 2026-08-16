@@ -88,6 +88,10 @@ export function filterContactRequestsByStatus(requests: AdminContactRequest[], s
   return status === "all" ? requests : requests.filter((request) => request.status === status)
 }
 
+export function hasActiveContactFilters(query: string, status: ContactRequestStatus | "all") {
+  return Boolean(query.trim()) || status !== "all"
+}
+
 export function formatContactRequestDate(value: string | null) {
   if (!value) return null
   const date = new Date(value)
