@@ -177,6 +177,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
               <Label htmlFor="contact-name">{t.name}</Label>
               <Input
                 id="contact-name"
+                maxLength={80}
                 placeholder={t.namePlaceholder}
                 autoComplete="name"
                 aria-invalid={errors.name ? "true" : "false"}
