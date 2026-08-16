@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import { contactRequestStatusLabel, filterContactRequests, filterContactRequestsByStatus, formatContactRequestDate, type AdminContactRequest, type ContactRequestStatus } from "@/lib/admin-contact"
+import { contactRequestStatusLabel, filterContactRequests, filterContactRequestsByStatus, formatContactRequestDate, replaceContactRequest, type AdminContactRequest, type ContactRequestStatus } from "@/lib/admin-contact"
 
 type Status = ContactRequestStatus
 type ContactRequest = AdminContactRequest
@@ -60,9 +60,11 @@ export function AdminContactInbox() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: selected.id, status, adminNote: note }),
       })
+      const updated = await response.json() as ContactRequest
       if (!response.ok) throw new Error("İletişim talebi güncellenemedi.")
+      setRequests((current) => replaceContactRequest(current, updated))
+      setSelected(updated)
       setMessage("Kaydedildi.")
-      await load()
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "İletişim talebi güncellenemedi.")
     } finally {

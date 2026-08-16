@@ -95,6 +95,10 @@ export function formatContactRequestDate(value: string | null) {
   return new Intl.DateTimeFormat("tr-TR", { dateStyle: "short", timeStyle: "short", timeZone: "Europe/Istanbul" }).format(date)
 }
 
+export function replaceContactRequest(requests: AdminContactRequest[], updatedRequest: AdminContactRequest) {
+  return requests.map((request) => request.id === updatedRequest.id ? updatedRequest : request)
+}
+
 export function parseContactRequestUpdate(payload: unknown) {
   const result = contactRequestUpdateSchema.safeParse(payload)
   return result.success
