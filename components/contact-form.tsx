@@ -157,6 +157,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
       ) : (
         <motion.form
           key="form"
+          aria-busy={isSubmitting}
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: prefersReducedMotion ? 0 : 0.3 }}
