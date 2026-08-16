@@ -99,6 +99,13 @@ export function replaceContactRequest(requests: AdminContactRequest[], updatedRe
   return requests.map((request) => request.id === updatedRequest.id ? updatedRequest : request)
 }
 
+export function contactRequestContactHref(kind: "email" | "phone", value: string | null) {
+  if (!value) return null
+  if (kind === "email") return `mailto:${value}`
+  const phone = value.replace(/[^\d+]/g, "")
+  return phone ? `tel:${phone}` : null
+}
+
 export function parseContactRequestUpdate(payload: unknown) {
   const result = contactRequestUpdateSchema.safeParse(payload)
   return result.success
