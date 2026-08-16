@@ -215,6 +215,8 @@ export function ContactForm({ locale }: { locale: Locale }) {
               <Input
                 id="contact-phone"
                 type="tel"
+                inputMode="tel"
+                maxLength={40}
                 placeholder={t.phonePlaceholder}
                 autoComplete="tel"
                 {...register("phone")}
