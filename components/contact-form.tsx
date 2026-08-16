@@ -34,6 +34,7 @@ const copy = {
     sending: "Gönderiliyor...",
     success: "Mesajın ulaştı, en kısa sürede dönüş yapacağız.",
     deliveryPending: "Talebin alındı. E-posta teslimatı sırada; en kısa sürede dönüş yapacağız.",
+    sendAnother: "Yeni talep gönder",
     error: "Mesaj gönderilemedi. Lütfen tekrar dene veya e-posta ile ulaş.",
     namePlaceholder: "Adın Soyadın",
     emailPlaceholder: "email@ornek.com",
@@ -55,6 +56,7 @@ const copy = {
     sending: "Sending...",
     success: "Message received. We will get back to you shortly.",
     deliveryPending: "Your request was received. Email delivery is queued and we will get back to you shortly.",
+    sendAnother: "Send another request",
     error: "Message could not be sent. Please try again or contact us by email.",
     namePlaceholder: "Your Name",
     emailPlaceholder: "email@example.com",
@@ -78,6 +80,7 @@ const copy = {
     sending: string
     success: string
     deliveryPending: string
+    sendAnother: string
     error: string
     namePlaceholder: string
     emailPlaceholder: string
@@ -149,6 +152,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
         >
           <CheckCircle className="h-12 w-12 text-accent" />
           <p aria-live="polite" className="text-lg text-foreground">{deliveryState === "pending" ? t.deliveryPending : t.success}</p>
+          <Button variant="outline" onClick={() => setDeliveryState(null)}>{t.sendAnother}</Button>
         </motion.div>
       ) : (
         <motion.form
