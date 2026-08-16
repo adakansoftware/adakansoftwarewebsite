@@ -151,7 +151,7 @@ export function ContactForm({ locale }: { locale: Locale }) {
           className="flex flex-col items-center gap-4 py-12 text-center"
         >
           <CheckCircle className="h-12 w-12 text-accent" />
-          <p aria-live="polite" className="text-lg text-foreground">{deliveryState === "pending" ? t.deliveryPending : t.success}</p>
+          <p role="status" aria-live="polite" className="text-lg text-foreground">{deliveryState === "pending" ? t.deliveryPending : t.success}</p>
           <Button variant="outline" onClick={() => setDeliveryState(null)}>{t.sendAnother}</Button>
         </motion.div>
       ) : (
