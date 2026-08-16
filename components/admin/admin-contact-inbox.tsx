@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
-import { contactRequestStatusLabel, filterContactRequests, type AdminContactRequest, type ContactRequestStatus } from "@/lib/admin-contact"
+import { contactRequestStatusLabel, filterContactRequests, filterContactRequestsByStatus, type AdminContactRequest, type ContactRequestStatus } from "@/lib/admin-contact"
 
 type Status = ContactRequestStatus
 type ContactRequest = AdminContactRequest
@@ -18,6 +18,7 @@ export function AdminContactInbox() {
   const [message, setMessage] = useState("")
   const [busy, setBusy] = useState(false)
   const [query, setQuery] = useState("")
+  const [statusFilter, setStatusFilter] = useState<Status | "all">("all")
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
 
@@ -69,7 +70,7 @@ export function AdminContactInbox() {
     }
   }
 
-  const visibleRequests = useMemo(() => filterContactRequests(requests, query), [requests, query])
+  const visibleRequests = useMemo(() => filterContactRequestsByStatus(filterContactRequests(requests, query), statusFilter), [requests, query, statusFilter])
 
   return (
     <section className="mt-12 border-t border-border/50 pt-10">
@@ -79,7 +80,7 @@ export function AdminContactInbox() {
       </div>
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.1fr]">
         <div className="space-y-3">
-          <label className="sr-only" htmlFor="contact-request-search">İletişim taleplerinde ara</label><input id="contact-request-search" className="h-10 w-full rounded-md border border-border/60 bg-background/50 px-3 text-sm" placeholder="Talep ara…" value={query} onChange={(event) => setQuery(event.target.value)} />
+          <div className="flex gap-2"><label className="sr-only" htmlFor="contact-request-search">İletişim taleplerinde ara</label><input id="contact-request-search" className="h-10 min-w-0 flex-1 rounded-md border border-border/60 bg-background/50 px-3 text-sm" placeholder="Talep ara…" value={query} onChange={(event) => setQuery(event.target.value)} /><label className="sr-only" htmlFor="contact-request-status-filter">Talep durumu</label><select id="contact-request-status-filter" className="h-10 rounded-md border border-border/60 bg-background/50 px-3 text-sm" value={statusFilter} onChange={(event) => setStatusFilter(event.target.value as Status | "all")}><option value="all">Tümü</option>{(["new", "in_progress", "completed"] as const).map((value) => <option key={value} value={value}>{contactRequestStatusLabel(value)}</option>)}</select></div>
           <p className="sr-only" aria-live="polite">{isLoading ? "İletişim talepleri yükleniyor" : `${visibleRequests.length} iletişim talebi gösteriliyor`}</p>
           {isLoading && <p className="rounded-xl border border-dashed border-border/60 p-5 text-sm text-muted-foreground">İletişim talepleri yükleniyor…</p>}
           {loadError && <div className="rounded-xl border border-destructive/40 p-5 text-sm text-destructive"><p>{loadError}</p><Button className="mt-3" size="sm" variant="outline" onClick={() => void load()}>Yeniden dene</Button></div>}

@@ -84,6 +84,10 @@ export function filterContactRequests(requests: AdminContactRequest[], query: st
   )
 }
 
+export function filterContactRequestsByStatus(requests: AdminContactRequest[], status: ContactRequestStatus | "all") {
+  return status === "all" ? requests : requests.filter((request) => request.status === status)
+}
+
 export function parseContactRequestUpdate(payload: unknown) {
   const result = contactRequestUpdateSchema.safeParse(payload)
   return result.success
