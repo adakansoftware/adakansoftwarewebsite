@@ -119,6 +119,13 @@ assert(
   "/og: expected shared cache policy",
 )
 
+const optimizedProjectImage = await request("/projects/optimized/sallihogullari-hafriyat-cover.avif")
+assert(optimizedProjectImage.status === 200, "/optimized project image: expected 200")
+assert(
+  optimizedProjectImage.headers.get("cache-control") === "public, max-age=31536000, immutable",
+  "/optimized project image: expected immutable cache policy",
+)
+
 const optionsContact = await request("/api/contact", { method: "OPTIONS" })
 assert(optionsContact.status === 204, `/api/contact OPTIONS: expected 204, received ${optionsContact.status}`)
 assert(optionsContact.headers.get("allow") === "POST, OPTIONS", `/api/contact OPTIONS: expected Allow header`)

@@ -14,6 +14,7 @@ import { ServiceDetailCards } from "@/components/service-detail-cards"
 import { TestimonialsSection } from "@/components/testimonials-section"
 import { getWhatsAppHref } from "@/lib/contact-links"
 import type { Locale } from "@/lib/i18n"
+import { getOptimizedLogoImage, getOptimizedProjectImage } from "@/lib/project-image-assets"
 import {
   getAboutPageContent,
   getApproachPageContent,
@@ -214,7 +215,7 @@ export async function ProjectsPageContent({ locale }: { locale: Locale }) {
                     {demo.coverImage ? (
                       <>
                         <Image
-                          src={demo.coverImage}
+                          src={getOptimizedProjectImage(demo.coverImage)}
                           alt={`${demo.title} kapak görseli`}
                           fill
                           sizes="(min-width: 768px) 33vw, 100vw"
@@ -276,7 +277,7 @@ export async function ProjectsPageContent({ locale }: { locale: Locale }) {
                   <div className="absolute inset-6 flex items-center justify-center rounded-2xl border border-white/10 bg-background/35 backdrop-blur-md">
                     {work.logoImage ? (
                       <Image
-                        src={work.logoImage}
+                        src={getOptimizedLogoImage(work.logoImage)}
                         alt={`${work.title} logo`}
                         width={320}
                         height={180}

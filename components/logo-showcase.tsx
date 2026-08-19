@@ -2,6 +2,7 @@ import Image from "next/image"
 
 import { getLogoWorks } from "@/lib/site-data"
 import type { Locale } from "@/lib/i18n"
+import { getOptimizedLogoImage } from "@/lib/project-image-assets"
 
 type LogoWork = { title: string; category: string; description: string; initials: string; logoImage?: string; color: string }
 
@@ -36,7 +37,7 @@ export function LogoShowcase({ locale, works: managedWorks }: { locale: Locale; 
                 <div className="absolute inset-5 grid place-items-center rounded-xl border border-white/10 bg-background/45 p-5 backdrop-blur-md">
                   {work.logoImage ? (
                     <Image
-                      src={work.logoImage}
+                      src={getOptimizedLogoImage(work.logoImage)}
                       alt={`${work.title} logo`}
                       width={320}
                       height={180}

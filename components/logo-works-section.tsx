@@ -7,6 +7,7 @@ import { motion, useInView, useReducedMotion } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
 
 import { withLocale, type Locale } from "@/lib/i18n"
+import { getOptimizedLogoImage } from "@/lib/project-image-assets"
 import { getLogoWorks } from "@/lib/site-data"
 
 type LogoWork = { title: string; category: string; description: string; initials: string; logoImage?: string; color: string }
@@ -71,7 +72,7 @@ function LogoWorkCard({ work, index, locale }: { work: LogoWork; index: number; 
           <div className="absolute inset-6 flex items-center justify-center rounded-2xl border border-white/10 bg-background/35 backdrop-blur-md">
             { work.logoImage ? (
   <Image
-    src={work.logoImage}
+    src={getOptimizedLogoImage(work.logoImage)}
     alt={`${work.title} logo`}
     width={320}
     height={180}
