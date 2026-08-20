@@ -2,14 +2,14 @@
 
 import { useRef } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { motion, useInView, useReducedMotion } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
 
 import { withLocale, type Locale } from "@/lib/i18n"
 import { getLogoWorks } from "@/lib/site-data"
+import { PortfolioLogoCard, type PortfolioLogoWork } from "@/components/portfolio-logo-card"
 
-type LogoWork = { title: string; category: string; description: string; initials: string; logoImage?: string; color: string }
+type LogoWork = PortfolioLogoWork
 
 export function LogoWorksSection({ locale = "tr", works: managedWorks }: { locale?: Locale; works?: LogoWork[] }) {
   const logoWorks = (managedWorks ?? getLogoWorks(locale)).slice(0, 3)
@@ -62,38 +62,7 @@ function LogoWorkCard({ work, index, locale }: { work: LogoWork; index: number; 
       animate={prefersReducedMotion || isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
       transition={{ duration: prefersReducedMotion ? 0 : 0.55, delay: prefersReducedMotion ? 0 : index * 0.1, ease: [0.22, 1, 0.36, 1] }}
     >
-      <Link href={withLocale("/logo", locale)} className="group block overflow-hidden rounded-2xl border border-border/50 bg-card/25 p-5 transition-colors hover:border-accent/45 premium-border">
-        <div
-          className="relative mb-5 aspect-[4/3] overflow-hidden rounded-xl border border-white/10"
-          style={{ background: `linear-gradient(135deg, ${work.color}24, transparent 52%, ${work.color}14)` }}
-        >
-          <div className="absolute inset-0 grid-pattern opacity-15" />
-          <div className="absolute inset-6 flex items-center justify-center rounded-2xl border border-white/10 bg-background/35 backdrop-blur-md">
-            { work.logoImage ? (
-  <Image
-    src={work.logoImage}
-    alt={`${work.title} logo`}
-    width={320}
-    height={180}
-    className={`h-auto max-h-[72%] w-[82%] object-contain transition-transform duration-300 group-hover:scale-105 ${
-      work.title === "Salihoğulları Hafriyat" ? "-translate-y-3" : ""
-    }`}
-  />
-) : (
-  <span
-    className="font-aquire text-[clamp(3rem,9vw,5rem)] leading-none transition-transform duration-300 group-hover:scale-105"
-    style={{ color: work.color }}
-  >
-    {work.initials}
-  </span>
-)}
-          </div>
-          <div className="absolute right-4 bottom-4 h-2 w-16 rounded-full transition-transform duration-300 group-hover:scale-x-110" style={{ backgroundColor: work.color }} />
-        </div>
-        <p className="text-xs font-medium tracking-widest text-accent uppercase">{work.category}</p>
-        <h3 className="mt-3 text-xl font-bold">{work.title}</h3>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{work.description}</p>
-      </Link>
+      <PortfolioLogoCard work={work} href={withLocale("/logo", locale)} />
     </motion.div>
   )
 }
