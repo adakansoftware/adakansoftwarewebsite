@@ -7,6 +7,7 @@ import { motion, useInView, useReducedMotion } from "framer-motion"
 import { ArrowUpRight } from "lucide-react"
 
 import type { Locale } from "@/lib/i18n"
+import { getOptimizedProjectImage } from "@/lib/project-image-assets"
 
 type Project = { title: string; href: string; category: string; year: string; description: string; color: string; coverImage?: string }
 
@@ -54,7 +55,7 @@ function ProjectListingCard({ project, index, locale }: { project: Project; inde
         {project.coverImage ? (
           <>
             <Image
-              src={project.coverImage}
+              src={getOptimizedProjectImage(project.coverImage)}
               alt={`${project.title} kapak görseli`}
               fill
               sizes="(min-width: 768px) 50vw, 100vw"

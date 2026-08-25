@@ -1,6 +1,8 @@
 import Image from "next/image"
 import Link from "next/link"
 
+import { getOptimizedLogoImage } from "@/lib/project-image-assets"
+
 export type PortfolioLogoWork = {
   title: string
   category: string
@@ -21,7 +23,7 @@ export function PortfolioLogoCard({ work, href }: { work: PortfolioLogoWork; hre
         <div className="absolute inset-6 flex items-center justify-center rounded-2xl border border-white/10 bg-background/35 backdrop-blur-md">
           {work.logoImage ? (
             <Image
-              src={work.logoImage}
+              src={getOptimizedLogoImage(work.logoImage)}
               alt={`${work.title} logo`}
               width={320}
               height={180}

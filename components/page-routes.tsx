@@ -15,6 +15,7 @@ import { ServiceDetailCards } from "@/components/service-detail-cards"
 import { TestimonialsSection } from "@/components/testimonials-section"
 import { getWhatsAppHref } from "@/lib/contact-links"
 import type { Locale } from "@/lib/i18n"
+import { getOptimizedProjectImage } from "@/lib/project-image-assets"
 import {
   getAboutPageContent,
   getApproachPageContent,
@@ -215,7 +216,7 @@ export async function ProjectsPageContent({ locale }: { locale: Locale }) {
                     {demo.coverImage ? (
                       <>
                         <Image
-                          src={demo.coverImage}
+                          src={getOptimizedProjectImage(demo.coverImage)}
                           alt={`${demo.title} kapak görseli`}
                           fill
                           sizes="(min-width: 768px) 33vw, 100vw"

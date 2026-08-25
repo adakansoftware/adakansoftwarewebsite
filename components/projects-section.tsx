@@ -8,6 +8,7 @@ import { ArrowUpRight } from "lucide-react"
 
 import { projectsSectionContent } from "@/lib/home-content"
 import { withLocale, type Locale } from "@/lib/i18n"
+import { getOptimizedProjectImage } from "@/lib/project-image-assets"
 import { getProjects } from "@/lib/site-data"
 
 type Project = { title: string; href: string; category: string; year: string; description: string; color: string; coverImage?: string }
@@ -126,7 +127,7 @@ function ProjectCard({
           {project.coverImage ? (
             <>
               <Image
-                src={project.coverImage}
+                src={getOptimizedProjectImage(project.coverImage)}
                 alt={`${project.title} kapak görseli`}
                 fill
                 sizes="(min-width: 768px) 50vw, 100vw"
