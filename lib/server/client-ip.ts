@@ -1,5 +1,6 @@
 function firstForwardedAddress(value: string | null) {
-  return value?.split(",")[0]?.trim() || null
+  const address = value?.split(",")[0]?.trim()
+  return address?.match(/^\d{1,3}(?:\.\d{1,3}){3}:\d+$/)?.[0]?.replace(/:\d+$/, "") || address || null
 }
 
 export function getTrustedClientIp(headers: Headers, environment = process.env.NODE_ENV) {
