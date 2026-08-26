@@ -9,6 +9,7 @@ export type RouteMetadataKey =
   | "contact"
   | "logo"
   | "privacy"
+  | "pricing"
   | "projects"
   | "services"
   | "terms"
@@ -105,6 +106,18 @@ export const routeMetadataContent: Record<RouteMetadataKey, Record<Locale, Metad
     en: {
       title: "Privacy",
       description: "Information about Adakan Software privacy practices, data use, and communication processes.",
+    },
+  },
+  pricing: {
+    tr: {
+      title: "Fiyatlandırma",
+      description: "Web tasarım, marka kimliği ve dijital ürün projeleri için başlangıç fiyat aralıkları.",
+      keywords: ["web tasarım fiyatları", "marka kimliği fiyatları", "dijital ürün fiyatlandırma"],
+    },
+    en: {
+      title: "Pricing",
+      description: "Starting price ranges for web, brand identity, and digital product projects.",
+      keywords: ["web design pricing", "brand identity pricing", "digital product pricing"],
     },
   },
   projects: {
