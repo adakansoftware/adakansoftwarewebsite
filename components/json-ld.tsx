@@ -10,6 +10,12 @@ export function JsonLd({ locale }: { locale: Locale }) {
     url: siteConfig.url,
     email: siteConfig.email,
     logo: `${siteConfig.url}/adakan-logo.png`,
+    contactPoint: {
+      "@type": "ContactPoint",
+      email: siteConfig.email,
+      contactType: "customer service",
+      availableLanguage: ["Turkish", "English"],
+    },
     image: `${siteConfig.url}/og`,
     description:
       locale === "tr"

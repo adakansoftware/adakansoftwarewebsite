@@ -39,6 +39,7 @@ export function createPageMetadata({
       languages: {
         "tr-TR": path,
         "en-US": path === "/" ? "/en" : `/en${path}`,
+        "x-default": path,
       },
     },
     openGraph: {
