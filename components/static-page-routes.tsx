@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react"
 
 import { CTASection } from "@/components/cta-section"
 import { PageHeader } from "@/components/page-header"
+import { PageJsonLd } from "@/components/page-json-ld"
 import { createMailtoHref } from "@/lib/contact-links"
 import type { Locale } from "@/lib/i18n"
 import { careersPageContent, blogPageContent, legalPageContent } from "@/lib/static-page-content"
@@ -18,6 +19,7 @@ export function BlogPageContent({ locale }: { locale: Locale }) {
 
   return (
     <>
+      <PageJsonLd locale={locale} path="/blog" />
       <PageHeader locale={locale} {...copy} />
       <section className="relative pb-32">
         <div className="section-shell max-w-2xl">
@@ -80,6 +82,7 @@ export function CareersPageContent({ locale }: { locale: Locale }) {
 
   return (
     <>
+      <PageJsonLd locale={locale} path="/careers" />
       <PageHeader locale={locale} {...copy} />
       <section className="relative pb-32">
         <div className="section-shell space-y-6">
@@ -128,6 +131,7 @@ export function LegalPageContent({
 
   return (
     <>
+      <PageJsonLd locale={locale} path={`/${type}`} />
       <PageHeader locale={locale} {...copy} />
       <section className="relative pb-32">
         <div className="section-shell max-w-3xl space-y-6 text-muted-foreground">

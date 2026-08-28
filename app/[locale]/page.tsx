@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/hero-section"
 import { LogoWorksSection } from "@/components/logo-works-section"
 import { PhilosophySection } from "@/components/philosophy-section"
 import { PricingSection } from "@/components/pricing-section"
+import { PageJsonLd } from "@/components/page-json-ld"
 import { ProjectsSection } from "@/components/projects-section"
 import { ServicesSection } from "@/components/services-section"
 import { TestimonialsSection } from "@/components/testimonials-section"
@@ -35,6 +36,7 @@ export default async function LocalizedHomePage({
 
   return (
     <>
+      <PageJsonLd locale={locale} path="/" />
       <HeroSection locale={locale} />
       <ServicesSection locale={locale} />
       <PricingSection locale={locale} />

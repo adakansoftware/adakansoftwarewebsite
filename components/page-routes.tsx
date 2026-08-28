@@ -9,6 +9,7 @@ import { LogoServiceCards } from "@/components/logo-service-cards"
 import { LogoShowcase } from "@/components/logo-showcase"
 import { PortfolioLogoCard } from "@/components/portfolio-logo-card"
 import { PageHeader } from "@/components/page-header"
+import { PageJsonLd } from "@/components/page-json-ld"
 import { PhilosophySection } from "@/components/philosophy-section"
 import { ProjectListingCards } from "@/components/project-listing-cards"
 import { ServiceDetailCards } from "@/components/service-detail-cards"
@@ -33,6 +34,7 @@ export function AboutPageContent({ locale }: { locale: Locale }) {
 
   return (
     <>
+      <PageJsonLd locale={locale} path="/about" />
       <PageHeader locale={locale} {...content.header} />
       <section className="relative pb-32">
         <AboutCards cards={content.cards} />
@@ -48,6 +50,7 @@ export function ApproachPageContent({ locale }: { locale: Locale }) {
 
   return (
     <>
+      <PageJsonLd locale={locale} path="/approach" />
       <PageHeader locale={locale} {...content.header} />
       <PhilosophySection locale={locale} />
       <CTASection locale={locale} />
@@ -61,6 +64,7 @@ export function ServicesPageContent({ locale }: { locale: Locale }) {
 
   return (
     <>
+      <PageJsonLd locale={locale} path="/services" />
       <PageHeader locale={locale} {...content.header} />
       <section className="relative pb-32">
         <div className="section-shell">
@@ -179,6 +183,7 @@ export async function ProjectsPageContent({ locale }: { locale: Locale }) {
 
   return (
     <>
+      <PageJsonLd locale={locale} path="/projects" />
       <PageHeader locale={locale} {...content.header} />
       <section className="relative pb-32">
         <div className="section-shell">
@@ -296,6 +301,7 @@ export async function LogoPageContent({ locale }: { locale: Locale }) {
 
   return (
     <>
+      <PageJsonLd locale={locale} path="/logo" />
       <PageHeader locale={locale} {...content.header} />
       <section className="relative pb-32">
         <div className="section-shell">
@@ -334,6 +340,7 @@ export function ContactPageContent({ locale }: { locale: Locale }) {
 
   return (
     <>
+      <PageJsonLd locale={locale} path="/contact" />
       <PageHeader locale={locale} {...content.header} />
       <section className="relative pb-32">
         <div className="section-shell grid gap-8 lg:grid-cols-3">
@@ -406,6 +413,7 @@ export function TestimonialsPageContent({ locale }: { locale: Locale }) {
 
   return (
     <>
+      <PageJsonLd locale={locale} path="/testimonials" />
       <PageHeader locale={locale} {...content.header} />
       <TestimonialsSection locale={locale} />
       <CTASection locale={locale} />
