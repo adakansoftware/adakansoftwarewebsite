@@ -11,7 +11,7 @@ type PageContent = {
 }
 
 export function createWebPageSchema({
-  route,
+  route: _route,
   locale,
   url,
   content,
