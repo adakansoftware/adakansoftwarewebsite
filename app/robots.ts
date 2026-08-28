@@ -1,15 +1,8 @@
 import type { MetadataRoute } from "next"
 
+import { buildRobotsPolicy } from "@/lib/public-routes"
 import { siteConfig } from "@/lib/site-config"
 
 export default function robots(): MetadataRoute.Robots {
-  return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      disallow: ["/api/", "/admin/"],
-    },
-    sitemap: `${siteConfig.url}/sitemap.xml`,
-    host: siteConfig.url,
-  }
+  return buildRobotsPolicy(siteConfig.url)
 }

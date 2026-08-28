@@ -38,3 +38,57 @@ export function getPublicUrl(route: PublicRoute, locale: Locale, baseUrl: string
 export function getPublicRouteByPath(path: string): PublicRoute | undefined {
   return publicRoutes.find((route) => route.path === path)
 }
+
+export function buildSitemapEntries(routes: readonly PublicRoute[], baseUrl: string) {
+  return routes.flatMap((route) => {
+    const alternates = {
+      languages: {
+        "tr-TR": getPublicUrl(route, "tr", baseUrl),
+        "en-US": getPublicUrl(route, "en", baseUrl),
+        "x-default": getPublicUrl(route, "tr", baseUrl),
+      },
+    }
+
+    return [
+      {
+        url: getPublicUrl(route, "tr", baseUrl),
+        alternates,
+        changeFrequency: route.changeFrequency,
+        priority: route.priority,
+      },
+      {
+        url: getPublicUrl(route, "en", baseUrl),
+        alternates,
+        changeFrequency: route.changeFrequency,
+        priority: Math.max(route.priority - 0.05, 0),
+      },
+    ]
+  })
+}
+
+export function buildRobotsPolicy(baseUrl: string) {
+  return {
+    rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/admin/"] },
+    sitemap: `${baseUrl}/sitemap.xml`,
+    host: baseUrl,
+  }
+}
+
+export function buildLlmsText({
+  name,
+  location,
+  baseUrl,
+  routes,
+}: {
+  name: string
+  location: string
+  baseUrl: string
+  routes: readonly PublicRoute[]
+}) {
+  const links = routes
+    .filter((route) => route.llms)
+    .map((route) => `- [${route.path === "/" ? name : route.path.slice(1)}](${getPublicUrl(route, "tr", baseUrl)})`)
+    .join("\n")
+
+  return `# ${name}\n\n${location}. Design, brand identity, and web development studio.\n\n## Canonical public pages\n${links}\n\nEnglish equivalents are available under /en.\n`
+}
