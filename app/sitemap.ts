@@ -1,36 +1,21 @@
 import type { MetadataRoute } from "next"
 
+import { getPublicUrl, publicRoutes } from "@/lib/public-routes"
 import { siteConfig } from "@/lib/site-config"
 
-const routes = [
-  "",
-  "/about",
-  "/approach",
-  "/blog",
-  "/careers",
-  "/contact",
-  "/logo",
-  "/privacy",
-  "/pricing",
-  "/projects",
-  "/services",
-  "/terms",
-  "/testimonials",
-]
-
 export default function sitemap(): MetadataRoute.Sitemap {
-  return routes.flatMap((route) => [
+  return publicRoutes.flatMap((route) => [
     {
-      url: `${siteConfig.url}${route}`,
-      alternates: { languages: { "tr-TR": `${siteConfig.url}${route}`, "en-US": `${siteConfig.url}/en${route}`, "x-default": `${siteConfig.url}${route}` } },
-      changeFrequency: route === "" ? "weekly" : "monthly",
-      priority: route === "" ? 1 : 0.8,
+      url: getPublicUrl(route, "tr", siteConfig.url),
+      alternates: { languages: { "tr-TR": getPublicUrl(route, "tr", siteConfig.url), "en-US": getPublicUrl(route, "en", siteConfig.url), "x-default": getPublicUrl(route, "tr", siteConfig.url) } },
+      changeFrequency: route.changeFrequency,
+      priority: route.priority,
     },
     {
-      url: `${siteConfig.url}/en${route}`,
-      alternates: { languages: { "tr-TR": `${siteConfig.url}${route}`, "en-US": `${siteConfig.url}/en${route}`, "x-default": `${siteConfig.url}${route}` } },
-      changeFrequency: route === "" ? "weekly" : "monthly",
-      priority: route === "" ? 0.95 : 0.75,
+      url: getPublicUrl(route, "en", siteConfig.url),
+      alternates: { languages: { "tr-TR": getPublicUrl(route, "tr", siteConfig.url), "en-US": getPublicUrl(route, "en", siteConfig.url), "x-default": getPublicUrl(route, "tr", siteConfig.url) } },
+      changeFrequency: route.changeFrequency,
+      priority: Math.max(route.priority - 0.05, 0),
     },
   ])
 }
