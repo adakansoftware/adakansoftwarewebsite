@@ -113,6 +113,30 @@ for (const check of checks) {
 
 const servicesSeoPage = await request("/services")
 assert(!servicesSeoPage.text.includes('"@type":"BreadcrumbList"'), "/services: must not publish invisible breadcrumb structured data")
+assert(servicesSeoPage.text.includes('rel="canonical" href="https://adakansoftware.com/services"'), "/services: must publish its production canonical URL")
+assert(servicesSeoPage.text.includes('hrefLang="en-US" href="https://adakansoftware.com/en/services"'), "/services: must publish its English hreflang alternate")
+assert(servicesSeoPage.text.includes('"@type":"WebPage"'), "/services: must publish WebPage structured data")
+assert(servicesSeoPage.text.includes('"@type":"Service"'), "/services: must publish Service structured data")
+
+const englishServicesSeoPage = await request("/en/services")
+assert(englishServicesSeoPage.text.includes('rel="canonical" href="https://adakansoftware.com/en/services"'), "/en/services: must publish its production canonical URL")
+assert(englishServicesSeoPage.text.includes('"inLanguage":"en-US"'), "/en/services: must publish English structured data")
+
+const robots = await request("/robots.txt")
+assert(robots.status === 200, `/robots.txt: expected 200, received ${robots.status}`)
+assert(robots.text.includes("Disallow: /api/"), "/robots.txt: must block API crawling")
+assert(robots.text.includes("Disallow: /admin/"), "/robots.txt: must block admin crawling")
+assert(robots.text.includes("Sitemap: https://adakansoftware.com/sitemap.xml"), "/robots.txt: must declare the production sitemap")
+
+const sitemap = await request("/sitemap.xml")
+assert(sitemap.status === 200, `/sitemap.xml: expected 200, received ${sitemap.status}`)
+assert(sitemap.text.includes("https://adakansoftware.com/services"), "/sitemap.xml: must include Turkish services URL")
+assert(sitemap.text.includes("https://adakansoftware.com/en/services"), "/sitemap.xml: must include English services URL")
+
+const llms = await request("/llms.txt")
+assert(llms.status === 200, `/llms.txt: expected 200, received ${llms.status}`)
+assert(llms.text.includes("## Canonical public pages"), "/llms.txt: must identify canonical public pages")
+assert(llms.text.includes("https://adakansoftware.com/services"), "/llms.txt: must include services URL")
 
 const ogImage = await request("/og?page=services")
 assert(ogImage.status === 200, `/og: expected 200, received ${ogImage.status}`)
