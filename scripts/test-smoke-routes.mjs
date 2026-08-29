@@ -111,6 +111,9 @@ for (const check of checks) {
   }
 }
 
+const servicesSeoPage = await request("/services")
+assert(!servicesSeoPage.text.includes('"@type":"BreadcrumbList"'), "/services: must not publish invisible breadcrumb structured data")
+
 const ogImage = await request("/og?page=services")
 assert(ogImage.status === 200, `/og: expected 200, received ${ogImage.status}`)
 assert(ogImage.headers.get("content-type")?.startsWith("image/png"), "/og: expected PNG response")

@@ -34,33 +34,6 @@ export function createWebPageSchema({
   }
 }
 
-export function createBreadcrumbSchema({
-  route,
-  locale,
-  url,
-  pageName,
-}: {
-  route: PublicRouteLike
-  locale: StructuredDataLocale
-  url: string
-  pageName: string
-}) {
-  const origin = new URL(url).origin
-  const homeUrl = locale === "tr" ? origin : `${origin}/en`
-  const homeName = locale === "tr" ? "Ana Sayfa" : "Home"
-  const items = [{ "@type": "ListItem", position: 1, name: homeName, item: homeUrl }]
-
-  if (route.path !== "/") {
-    items.push({ "@type": "ListItem", position: 2, name: pageName, item: url })
-  }
-
-  return {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: items,
-  }
-}
-
 export function createServiceSchema({ locale, url }: { locale: StructuredDataLocale; url: string }) {
   return {
     "@context": "https://schema.org",
