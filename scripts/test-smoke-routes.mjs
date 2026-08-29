@@ -115,6 +115,8 @@ const servicesSeoPage = await request("/services")
 assert(!servicesSeoPage.text.includes('"@type":"BreadcrumbList"'), "/services: must not publish invisible breadcrumb structured data")
 assert(servicesSeoPage.text.includes('rel="canonical" href="https://adakansoftware.com/services"'), "/services: must publish its production canonical URL")
 assert(servicesSeoPage.text.includes('hrefLang="en-US" href="https://adakansoftware.com/en/services"'), "/services: must publish its English hreflang alternate")
+assert(servicesSeoPage.text.includes('max-snippet:-1'), "/services: must allow unrestricted search snippets")
+assert(servicesSeoPage.text.includes('max-image-preview:large'), "/services: must allow large image previews")
 assert(servicesSeoPage.text.includes('"@type":"WebPage"'), "/services: must publish WebPage structured data")
 assert(servicesSeoPage.text.includes('"@type":"Service"'), "/services: must publish Service structured data")
 
