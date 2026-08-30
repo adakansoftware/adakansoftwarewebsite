@@ -212,6 +212,16 @@ assert(!publicHealth.text.includes('"pipeline"'), "/api/health public: must not 
 assert(!publicHealth.text.includes('"worker"'), "/api/health public: must not expose worker diagnostics")
 assert(!publicHealth.text.includes('"outbox"'), "/api/health public: must not expose outbox diagnostics")
 
+const proxyBurstHeaders = { "X-Forwarded-For": "203.0.113.77" }
+let proxyBurstResponse
+for (let index = 0; index < 31; index += 1) {
+  proxyBurstResponse = await request("/api/health", { headers: proxyBurstHeaders })
+}
+assert(proxyBurstResponse.status === 429, `/api/health burst: expected 429, received ${proxyBurstResponse.status}`)
+assert(proxyBurstResponse.headers.get("retry-after") === "10", "/api/health burst: expected Retry-After")
+assert(proxyBurstResponse.headers.get("cache-control") === "no-store", "/api/health burst: expected no-store")
+assert(proxyBurstResponse.headers.get("x-proxy-cache") === "bypass", "/api/health burst: expected proxy cache bypass")
+
 const adminHealth = await request("/api/health", {
   headers: {
     Authorization: "Bearer test-admin-key",

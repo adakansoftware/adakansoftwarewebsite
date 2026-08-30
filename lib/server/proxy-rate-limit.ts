@@ -42,5 +42,7 @@ export function getProxyRateLimitDiagnostics() {
   return {
     trackedKeys: requestTimestampsByKey.size,
     policy: getProxyRateLimitPolicy(),
+    scope: "best-effort-per-instance",
+    authoritative: false,
   }
 }
