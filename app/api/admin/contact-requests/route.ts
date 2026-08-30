@@ -1,6 +1,6 @@
 import { parseContactRequestUpdate, toContactRequest } from "@/lib/admin-contact"
 import { isAdmin } from "@/lib/admin-auth"
-import { getAdminContentRequestError } from "@/lib/admin-content-request"
+import { adminContentMaxBodyBytes, getAdminContentRequestError, readBoundedJsonObject } from "@/lib/admin-content-request"
 import { getNeonSql } from "@/lib/neon"
 import { createRequestId, isAllowedOrigin, jsonResponse, optionsResponse } from "@/lib/server/http"
 
@@ -28,12 +28,9 @@ export async function PATCH(request: Request) {
   const requestError = getAdminContentRequestError(request, isAllowedOrigin)
   if (requestError) return jsonResponse({ ok: false }, { status: requestError, requestId })
 
-  let payload: unknown
-  try {
-    payload = await request.json()
-  } catch {
-    return jsonResponse({ ok: false, message: "Geçersiz istek gövdesi." }, { status: 400, requestId })
-  }
+  const parsedBody = await readBoundedJsonObject(request, adminContentMaxBodyBytes)
+  if (!parsedBody.ok) return jsonResponse({ ok: false, message: "Geçersiz istek gövdesi." }, { status: parsedBody.status, requestId })
+  const payload = parsedBody.body
 
   const parsed = parseContactRequestUpdate(payload)
   if (!parsed.ok) return jsonResponse(parsed, { status: 400, requestId })

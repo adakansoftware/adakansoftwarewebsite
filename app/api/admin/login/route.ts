@@ -1,5 +1,5 @@
 import { adminCookie, adminSessionMaxAgeSeconds, cookieName, hasAdminSessionConfiguration } from "@/lib/admin-auth"
-import { getAdminSessionMutationRequestError } from "@/lib/admin-session-request"
+import { getAdminSessionMutationRequestError, readAdminLoginCredentials } from "@/lib/admin-session-request"
 import { getTrustedClientIp } from "@/lib/server/client-ip"
 import { createRequestId, isAllowedOrigin, jsonResponse, optionsResponse } from "@/lib/server/http"
 import {
@@ -32,12 +32,10 @@ export async function POST(request: Request) {
     return jsonResponse({ ok: false }, { status: 503, requestId })
   }
 
-  let credentials: { email?: string; password?: string }
-  try {
-    credentials = await request.json() as { email?: string; password?: string }
-  } catch {
+  const credentials = await readAdminLoginCredentials(request)
+  if (!credentials.ok) {
     await recordAdminLoginFailure(clientIp, now)
-    return jsonResponse({ ok: false }, { status: 400, requestId })
+    return jsonResponse({ ok: false }, { status: credentials.status, requestId })
   }
   const { email, password } = credentials
   if (email !== process.env.ADMIN_EMAIL || password !== process.env.ADMIN_PASSWORD) {

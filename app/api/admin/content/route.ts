@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache"
 
 import { isAdmin } from "@/lib/admin-auth"
 import { isUuid, parseContentKind, parseContentPayload, type ContentKind, type ContentPayload } from "@/lib/admin-content"
-import { getAdminContentRequestError } from "@/lib/admin-content-request"
+import { adminContentMaxBodyBytes, getAdminContentRequestError, readBoundedJsonObject } from "@/lib/admin-content-request"
 import { getContentRevalidationPaths } from "@/lib/content-revalidation"
 import { getNeonSql } from "@/lib/neon"
 import { createRequestId, isAllowedOrigin, jsonResponse, optionsResponse } from "@/lib/server/http"
@@ -36,8 +36,9 @@ export async function POST(request: Request) {
   const requestError = getAdminContentRequestError(request, isAllowedOrigin)
   if (requestError) return jsonResponse({ ok: false }, { status: requestError, requestId })
 
-  const body = await readBody(request)
-  if (!body) return badRequest("Geçersiz istek gövdesi.", requestId)
+  const parsedBody = await readBoundedJsonObject(request, adminContentMaxBodyBytes)
+  if (!parsedBody.ok) return jsonResponse({ ok: false, message: "Geçersiz istek gövdesi." }, { status: parsedBody.status, requestId })
+  const body = parsedBody.body
   const kind = parseContentKind(body.type)
   if (!kind) return badRequest("Geçersiz içerik türü.", requestId)
   const parsed = parseContentPayload(kind, body)
@@ -59,8 +60,9 @@ export async function PATCH(request: Request) {
   const requestError = getAdminContentRequestError(request, isAllowedOrigin)
   if (requestError) return jsonResponse({ ok: false }, { status: requestError, requestId })
 
-  const body = await readBody(request)
-  if (!body) return badRequest("Geçersiz istek gövdesi.", requestId)
+  const parsedBody = await readBoundedJsonObject(request, adminContentMaxBodyBytes)
+  if (!parsedBody.ok) return jsonResponse({ ok: false, message: "Geçersiz istek gövdesi." }, { status: parsedBody.status, requestId })
+  const body = parsedBody.body
   const kind = parseContentKind(body.type)
   if (!kind || !isUuid(body.id)) return badRequest("Geçersiz kayıt.", requestId)
   const parsed = parseContentPayload(kind, body)
@@ -83,8 +85,9 @@ export async function DELETE(request: Request) {
   const requestError = getAdminContentRequestError(request, isAllowedOrigin)
   if (requestError) return jsonResponse({ ok: false }, { status: requestError, requestId })
 
-  const body = await readBody(request)
-  if (!body) return badRequest("Geçersiz istek gövdesi.", requestId)
+  const parsedBody = await readBoundedJsonObject(request, adminContentMaxBodyBytes)
+  if (!parsedBody.ok) return jsonResponse({ ok: false, message: "Geçersiz istek gövdesi." }, { status: parsedBody.status, requestId })
+  const body = parsedBody.body
   const kind = parseContentKind(body.type)
   if (!kind || !isUuid(body.id)) return badRequest("Geçersiz kayıt.", requestId)
 
@@ -100,15 +103,6 @@ export async function DELETE(request: Request) {
 
 async function requireAdmin(requestId: string) {
   return (await isAdmin()) ? null : jsonResponse({ ok: false }, { status: 401, requestId })
-}
-
-async function readBody(request: Request): Promise<Record<string, unknown> | null> {
-  try {
-    const body = await request.json()
-    return body && typeof body === "object" && !Array.isArray(body) ? body as Record<string, unknown> : null
-  } catch {
-    return null
-  }
 }
 
 function tableFor(kind: ContentKind) {
