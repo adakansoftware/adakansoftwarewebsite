@@ -1,96 +1,105 @@
 import { revalidatePath } from "next/cache"
-import { NextResponse } from "next/server"
 
 import { isAdmin } from "@/lib/admin-auth"
 import { isUuid, parseContentKind, parseContentPayload, type ContentKind, type ContentPayload } from "@/lib/admin-content"
 import { getAdminContentRequestError } from "@/lib/admin-content-request"
-import { getNeonSql } from "@/lib/neon"
-import { isAllowedOrigin } from "@/lib/server/http"
 import { getContentRevalidationPaths } from "@/lib/content-revalidation"
+import { getNeonSql } from "@/lib/neon"
+import { createRequestId, isAllowedOrigin, jsonResponse, optionsResponse } from "@/lib/server/http"
+
+const ALLOW_HEADER_VALUE = "GET, POST, PATCH, DELETE, OPTIONS"
+
+export function OPTIONS(request: Request) {
+  return optionsResponse(createRequestId(request), ALLOW_HEADER_VALUE)
+}
 
 export async function GET(request: Request) {
-  const denied = await requireAdmin()
+  const requestId = createRequestId(request)
+  const denied = await requireAdmin(requestId)
   if (denied) return denied
 
   const kind = parseContentKind(new URL(request.url).searchParams.get("type"))
-  if (!kind) return badRequest("Geçersiz içerik türü.")
+  if (!kind) return badRequest("Geçersiz içerik türü.", requestId)
 
   try {
-    const data = await getNeonSql().query(`select * from ${tableFor(kind)} order by sort_order, created_at`)
-    return NextResponse.json(data)
+    const data = await getNeonSql().query("select * from " + tableFor(kind) + " order by sort_order, created_at")
+    return jsonResponse(data, { requestId })
   } catch {
-    return serverError()
+    return serverError(requestId)
   }
 }
 
 export async function POST(request: Request) {
-  const denied = await requireAdmin()
+  const requestId = createRequestId(request)
+  const denied = await requireAdmin(requestId)
   if (denied) return denied
   const requestError = getAdminContentRequestError(request, isAllowedOrigin)
-  if (requestError) return NextResponse.json({ ok: false }, { status: requestError })
+  if (requestError) return jsonResponse({ ok: false }, { status: requestError, requestId })
 
   const body = await readBody(request)
-  if (!body) return badRequest("Geçersiz istek gövdesi.")
+  if (!body) return badRequest("Geçersiz istek gövdesi.", requestId)
   const kind = parseContentKind(body.type)
-  if (!kind) return badRequest("Geçersiz içerik türü.")
+  if (!kind) return badRequest("Geçersiz içerik türü.", requestId)
   const parsed = parseContentPayload(kind, body)
-  if (!parsed.ok) return badRequest(parsed.message)
+  if (!parsed.ok) return badRequest(parsed.message, requestId)
 
   try {
     const rows = await getNeonSql().query(insertQuery(kind), valuesFor(kind, parsed.data))
     revalidateContent(kind)
-    return NextResponse.json(rows[0], { status: 201 })
+    return jsonResponse(rows[0], { status: 201, requestId })
   } catch {
-    return serverError()
+    return serverError(requestId)
   }
 }
 
 export async function PATCH(request: Request) {
-  const denied = await requireAdmin()
+  const requestId = createRequestId(request)
+  const denied = await requireAdmin(requestId)
   if (denied) return denied
   const requestError = getAdminContentRequestError(request, isAllowedOrigin)
-  if (requestError) return NextResponse.json({ ok: false }, { status: requestError })
+  if (requestError) return jsonResponse({ ok: false }, { status: requestError, requestId })
 
   const body = await readBody(request)
-  if (!body) return badRequest("Geçersiz istek gövdesi.")
+  if (!body) return badRequest("Geçersiz istek gövdesi.", requestId)
   const kind = parseContentKind(body.type)
-  if (!kind || !isUuid(body.id)) return badRequest("Geçersiz kayıt.")
+  if (!kind || !isUuid(body.id)) return badRequest("Geçersiz kayıt.", requestId)
   const parsed = parseContentPayload(kind, body)
-  if (!parsed.ok) return badRequest(parsed.message)
+  if (!parsed.ok) return badRequest(parsed.message, requestId)
 
   try {
     const rows = await getNeonSql().query(updateQuery(kind), [...valuesFor(kind, parsed.data), body.id])
-    if (!rows[0]) return NextResponse.json({ ok: false, message: "Kayıt bulunamadı." }, { status: 404 })
+    if (!rows[0]) return jsonResponse({ ok: false, message: "Kayıt bulunamadı." }, { status: 404, requestId })
     revalidateContent(kind)
-    return NextResponse.json(rows[0])
+    return jsonResponse(rows[0], { requestId })
   } catch {
-    return serverError()
+    return serverError(requestId)
   }
 }
 
 export async function DELETE(request: Request) {
-  const denied = await requireAdmin()
+  const requestId = createRequestId(request)
+  const denied = await requireAdmin(requestId)
   if (denied) return denied
   const requestError = getAdminContentRequestError(request, isAllowedOrigin)
-  if (requestError) return NextResponse.json({ ok: false }, { status: requestError })
+  if (requestError) return jsonResponse({ ok: false }, { status: requestError, requestId })
 
   const body = await readBody(request)
-  if (!body) return badRequest("Geçersiz istek gövdesi.")
+  if (!body) return badRequest("Geçersiz istek gövdesi.", requestId)
   const kind = parseContentKind(body.type)
-  if (!kind || !isUuid(body.id)) return badRequest("Geçersiz kayıt.")
+  if (!kind || !isUuid(body.id)) return badRequest("Geçersiz kayıt.", requestId)
 
   try {
-    const rows = await getNeonSql().query(`delete from ${tableFor(kind)} where id = $1 returning id`, [body.id])
-    if (!rows[0]) return NextResponse.json({ ok: false, message: "Kayıt bulunamadı." }, { status: 404 })
+    const rows = await getNeonSql().query("delete from " + tableFor(kind) + " where id = $1 returning id", [body.id])
+    if (!rows[0]) return jsonResponse({ ok: false, message: "Kayıt bulunamadı." }, { status: 404, requestId })
     revalidateContent(kind)
-    return NextResponse.json({ ok: true })
+    return jsonResponse({ ok: true }, { requestId })
   } catch {
-    return serverError()
+    return serverError(requestId)
   }
 }
 
-async function requireAdmin() {
-  return (await isAdmin()) ? null : NextResponse.json({ ok: false }, { status: 401 })
+async function requireAdmin(requestId: string) {
+  return (await isAdmin()) ? null : jsonResponse({ ok: false }, { status: 401, requestId })
 }
 
 async function readBody(request: Request): Promise<Record<string, unknown> | null> {
@@ -125,12 +134,12 @@ function updateQuery(kind: ContentKind) {
     : "update logo_works set title_tr = $1, title_en = $2, category_tr = $3, category_en = $4, description_tr = $5, description_en = $6, initials = $7, color = $8, logo_image = $9, published = $10, archived = $11, sort_order = $12, updated_at = now() where id = $13 returning *"
 }
 
-function badRequest(message: string) {
-  return NextResponse.json({ ok: false, message }, { status: 400 })
+function badRequest(message: string, requestId: string) {
+  return jsonResponse({ ok: false, message }, { status: 400, requestId })
 }
 
-function serverError() {
-  return NextResponse.json({ ok: false, message: "İşlem şu anda tamamlanamadı." }, { status: 500 })
+function serverError(requestId: string) {
+  return jsonResponse({ ok: false, message: "İşlem şu anda tamamlanamadı." }, { status: 500, requestId })
 }
 
 function revalidateContent(kind: ContentKind) {

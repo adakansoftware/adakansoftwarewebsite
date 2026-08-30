@@ -1,8 +1,14 @@
-import { NextResponse } from "next/server"
-
 import { isAdmin } from "@/lib/admin-auth"
+import { createRequestId, jsonResponse, optionsResponse } from "@/lib/server/http"
 
-export async function GET() {
-  if (!(await isAdmin())) return NextResponse.json({ ok: false }, { status: 401 })
-  return NextResponse.json({ ok: true, email: process.env.ADMIN_EMAIL })
+const ALLOW_HEADER_VALUE = "GET, OPTIONS"
+
+export function OPTIONS(request: Request) {
+  return optionsResponse(createRequestId(request), ALLOW_HEADER_VALUE)
+}
+
+export async function GET(request: Request) {
+  const requestId = createRequestId(request)
+  if (!(await isAdmin())) return jsonResponse({ ok: false }, { status: 401, requestId })
+  return jsonResponse({ ok: true, email: process.env.ADMIN_EMAIL }, { requestId })
 }

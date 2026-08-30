@@ -35,7 +35,7 @@ export function createRequestId(request: Request) {
 }
 
 export function jsonResponse(
-  body: Record<string, unknown>,
+  body: unknown,
   {
     status = 200,
     requestId,
@@ -73,6 +73,29 @@ export function emptyResponse({
       ...headers,
     },
   })
+}
+
+export function optionsResponse(requestId: string, allow: string) {
+  return emptyResponse({
+    status: 204,
+    requestId,
+    headers: {
+      Allow: allow,
+    },
+  })
+}
+
+export function methodNotAllowedResponse(requestId: string, allow: string) {
+  return jsonResponse(
+    { ok: false, error: "Method not allowed" },
+    {
+      status: 405,
+      requestId,
+      headers: {
+        Allow: allow,
+      },
+    },
+  )
 }
 
 export function getClientIp(request: Request) {

@@ -183,6 +183,20 @@ assert(unauthenticatedAdminContent.status === 401, `/api/admin/content: expected
 const unauthenticatedContactRequests = await request("/api/admin/contact-requests")
 assert(unauthenticatedContactRequests.status === 401, `/api/admin/contact-requests: expected 401 without cookie, received ${unauthenticatedContactRequests.status}`)
 
+for (const [path, allow] of [
+  ["/api/admin/login", "POST, OPTIONS"],
+  ["/api/admin/logout", "POST, OPTIONS"],
+  ["/api/admin/session", "GET, OPTIONS"],
+  ["/api/admin/content", "GET, POST, PATCH, DELETE, OPTIONS"],
+  ["/api/admin/contact-requests", "GET, PATCH, OPTIONS"],
+]) {
+  const response = await request(path, { method: "OPTIONS" })
+  assert(response.status === 204, `${path}: expected 204, received ${response.status}`)
+  assert(response.headers.get("allow") === allow, `${path}: expected Allow header`)
+  assert(response.headers.get("cache-control") === "no-store", `${path}: expected no-store`)
+  assert(Boolean(response.headers.get("x-request-id")), `${path}: expected request id`)
+}
+
 const optionsHealth = await request("/api/health", { method: "OPTIONS" })
 assert(optionsHealth.status === 204, `/api/health OPTIONS: expected 204, received ${optionsHealth.status}`)
 assert(optionsHealth.headers.get("allow") === "GET, HEAD, OPTIONS", `/api/health OPTIONS: expected Allow header`)

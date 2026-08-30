@@ -1,16 +1,21 @@
-import { NextResponse } from "next/server"
-
 import { cookieName } from "@/lib/admin-auth"
 import { getAdminSessionMutationRequestError } from "@/lib/admin-session-request"
-import { isAllowedOrigin } from "@/lib/server/http"
+import { createRequestId, isAllowedOrigin, jsonResponse, optionsResponse } from "@/lib/server/http"
+
+const ALLOW_HEADER_VALUE = "POST, OPTIONS"
+
+export function OPTIONS(request: Request) {
+  return optionsResponse(createRequestId(request), ALLOW_HEADER_VALUE)
+}
 
 export async function POST(request: Request) {
+  const requestId = createRequestId(request)
   const requestError = getAdminSessionMutationRequestError(request, isAllowedOrigin)
   if (requestError) {
-    return NextResponse.json({ ok: false }, { status: requestError, headers: { "Cache-Control": "no-store" } })
+    return jsonResponse({ ok: false }, { status: requestError, requestId })
   }
 
-  const response = NextResponse.json({ ok: true })
+  const response = jsonResponse({ ok: true }, { requestId })
   response.cookies.set(cookieName, "", { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 0 })
   return response
 }
