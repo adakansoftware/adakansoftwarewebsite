@@ -45,6 +45,6 @@ export async function POST(request: Request) {
 
   await clearAdminLoginFailures(clientIp)
   const response = jsonResponse({ ok: true, email }, { requestId })
-  response.cookies.set(cookieName, adminCookie(), { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: adminSessionMaxAgeSeconds })
+  response.cookies.set(cookieName, adminCookie(), { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production", path: "/", maxAge: adminSessionMaxAgeSeconds })
   return response
 }
