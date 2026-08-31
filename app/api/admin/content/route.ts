@@ -1,9 +1,10 @@
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 
 import { isAdmin } from "@/lib/admin-auth"
 import { isUuid, parseContentKind, parseContentPayload, type ContentKind, type ContentPayload } from "@/lib/admin-content"
 import { adminContentMaxBodyBytes, getAdminContentRequestError, readBoundedJsonObject } from "@/lib/admin-content-request"
 import { getContentRevalidationPaths } from "@/lib/content-revalidation"
+import { getManagedContentCacheTag } from "@/lib/content-cache"
 import { getNeonSql } from "@/lib/neon"
 import { createRequestId, isAllowedOrigin, jsonResponse, optionsResponse } from "@/lib/server/http"
 
@@ -138,4 +139,5 @@ function serverError(requestId: string) {
 
 function revalidateContent(kind: ContentKind) {
   for (const path of getContentRevalidationPaths(kind)) revalidatePath(path)
+  revalidateTag(getManagedContentCacheTag(kind), "max")
 }

@@ -1,4 +1,7 @@
+import { unstable_cache } from "next/cache"
+
 import type { Locale } from "@/lib/i18n"
+import { getManagedContentCacheTag } from "@/lib/content-cache"
 import { recordManagedContentSource } from "@/lib/content-source-status"
 import { getNeonSql } from "@/lib/neon"
 import { logServerEvent } from "@/lib/server/logger"
@@ -7,7 +10,7 @@ import { getLogoWorks, getProjects } from "@/lib/site-data"
 type ProjectRow = { title_tr: string; title_en: string; category_tr: string; category_en: string; description_tr: string; description_en: string; year: string; href: string; color: string; cover_image: string | null }
 type LogoWorkRow = { title_tr: string; title_en: string; category_tr: string; category_en: string; description_tr: string; description_en: string; initials: string; color: string; logo_image: string | null }
 
-export async function getManagedProjects(locale: Locale) {
+async function readManagedProjects(locale: Locale) {
   if (!process.env.DATABASE_URL) {
     recordManagedContentSource("projects", "fallback-empty")
     return getProjects(locale)
@@ -39,7 +42,7 @@ export async function getManagedProjects(locale: Locale) {
   }
 }
 
-export async function getManagedLogoWorks(locale: Locale) {
+async function readManagedLogoWorks(locale: Locale) {
   if (!process.env.DATABASE_URL) {
     recordManagedContentSource("logo_works", "fallback-empty")
     return getLogoWorks(locale)
@@ -68,4 +71,22 @@ export async function getManagedLogoWorks(locale: Locale) {
     })
     return getLogoWorks(locale)
   }
+}
+
+const getCachedManagedProjects = unstable_cache(readManagedProjects, ["managed-projects"], {
+  revalidate: 60,
+  tags: [getManagedContentCacheTag("projects")],
+})
+
+const getCachedManagedLogoWorks = unstable_cache(readManagedLogoWorks, ["managed-logo-works"], {
+  revalidate: 60,
+  tags: [getManagedContentCacheTag("logo_works")],
+})
+
+export function getManagedProjects(locale: Locale) {
+  return getCachedManagedProjects(locale)
+}
+
+export function getManagedLogoWorks(locale: Locale) {
+  return getCachedManagedLogoWorks(locale)
 }
