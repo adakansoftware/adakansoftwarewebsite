@@ -46,6 +46,26 @@ export async function HEAD(request: Request) {
 export async function GET(request: Request) {
   const requestId = createRequestId(request)
   const includeDiagnostics = await isAuthorizedAdminRequest(request)
+
+  if (!includeDiagnostics) {
+    const contactConfigurationIssues = getContactRuntimeConfigurationIssues()
+    const ready = process.env.NODE_ENV !== "production"
+      || (isContactDeliveryConfigured() && contactConfigurationIssues.length === 0)
+
+    return jsonResponse(
+      {
+        ok: ready,
+        status: ready ? "ok" : "degraded",
+        service: "adakansoftware-website",
+        timestamp: new Date().toISOString(),
+      },
+      {
+        requestId,
+        headers: { Allow: ALLOW_HEADER_VALUE },
+      },
+    )
+  }
+
   const diagnostics = getContactServiceDiagnostics()
   const contactConfigurationIssues = getContactRuntimeConfigurationIssues()
   const proxyRateLimit = includeDiagnostics ? getProxyRateLimitDiagnostics() : null
