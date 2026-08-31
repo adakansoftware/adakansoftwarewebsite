@@ -177,9 +177,8 @@ export function ServicesPageContent({ locale }: { locale: Locale }) {
 
 export async function ProjectsPageContent({ locale }: { locale: Locale }) {
   const content = getProjectsPageContent(locale)
-  const projects = await getManagedProjects(locale)
   const demoExamples = getDemoExamples(locale)
-  const logoWorks = await getManagedLogoWorks(locale)
+  const [projects, logoWorks] = await Promise.all([getManagedProjects(locale), getManagedLogoWorks(locale)])
 
   return (
     <>
