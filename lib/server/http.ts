@@ -2,11 +2,10 @@ import { createHmac, randomUUID, timingSafeEqual } from "node:crypto"
 
 import { NextResponse } from "next/server"
 
-import { siteConfig } from "@/lib/site-config"
 import { getTrustedClientIp } from "@/lib/server/client-ip"
 import { getContactStateStore } from "@/lib/server/contact-state-store"
+import { isAllowedOrigin } from "@/lib/server/origin"
 
-const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "::1"])
 const SIGNED_ADMIN_TOLERANCE_MS = 5 * 60_000
 
 function matchesSecret(candidate: string | null | undefined, secret: string | undefined) {
@@ -17,13 +16,6 @@ function matchesSecret(candidate: string | null | undefined, secret: string | un
   return candidateBuffer.length === secretBuffer.length && timingSafeEqual(candidateBuffer, secretBuffer)
 }
 
-function normalizeConfiguredOrigin(origin: string) {
-  try {
-    return new URL(origin).origin
-  } catch {
-    return null
-  }
-}
 
 export function createRequestId(request: Request) {
   const incomingId = request.headers.get("x-request-id")?.trim()
@@ -189,33 +181,7 @@ export async function isAuthorizedAdminRequest(request: Request) {
     && await consumeSignedAdminNonce(request)
 }
 
-export function isAllowedOrigin(request: Request) {
-  const originHeader = request.headers.get("origin")
-  if (!originHeader) {
-    return true
-  }
-
-  let origin: URL
-  try {
-    origin = new URL(originHeader)
-  } catch {
-    return false
-  }
-
-  const configuredOrigins = [siteConfig.url, process.env.NEXT_PUBLIC_SITE_URL]
-    .map((value) => (value ? normalizeConfiguredOrigin(value) : null))
-    .filter((value): value is string => Boolean(value))
-
-  if (configuredOrigins.includes(origin.origin)) {
-    return true
-  }
-
-  if (process.env.NODE_ENV !== "production" && LOOPBACK_HOSTS.has(origin.hostname)) {
-    return true
-  }
-
-  return false
-}
+export { isAllowedOrigin }
 
 export function getContentLength(request: Request) {
   const rawValue = request.headers.get("content-length")

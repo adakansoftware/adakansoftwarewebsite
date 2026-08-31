@@ -1,5 +1,6 @@
 import type { Locale } from "@/lib/i18n"
 import { siteConfig } from "@/lib/site-config"
+import { serializeJsonLd } from "@/lib/json-ld"
 
 export function JsonLd({ locale }: { locale: Locale }) {
   const organization = {
@@ -51,8 +52,8 @@ export function JsonLd({ locale }: { locale: Locale }) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organization) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(website) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(organization) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(website) }} />
     </>
   )
 }

@@ -3,6 +3,7 @@ import { getPublicRouteByPath, getPublicUrl } from "@/lib/public-routes"
 import { routeMetadataContent } from "@/lib/route-metadata-content"
 import { siteConfig } from "@/lib/site-config"
 import { createServiceSchema, createWebPageSchema } from "@/lib/structured-data"
+import { serializeJsonLd } from "@/lib/json-ld"
 
 export function PageJsonLd({ locale, path }: { locale: Locale; path: string }) {
   const route = getPublicRouteByPath(path)
@@ -16,5 +17,5 @@ export function PageJsonLd({ locale, path }: { locale: Locale; path: string }) {
     ...(route.metadataKey === "services" ? [createServiceSchema({ locale, url })] : []),
   ]
 
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }} />
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(schemas) }} />
 }
