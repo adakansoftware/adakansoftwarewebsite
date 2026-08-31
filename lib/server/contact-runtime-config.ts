@@ -54,10 +54,9 @@ export function getContactRuntimeConfigurationIssues(environment = process.env.N
     issues.push("RESEND_FROM_DOMAIN must be a valid domain name")
   }
 
-  const adminKeyConfigured = hasStrongSecret(process.env.CONTACT_ADMIN_KEY)
   const signingSecretConfigured = hasStrongSecret(process.env.CONTACT_ADMIN_SIGNING_SECRET)
-  if (!adminKeyConfigured && !signingSecretConfigured) {
-    issues.push(`A contact admin credential of at least ${MINIMUM_SECRET_LENGTH} characters is required in production`)
+  if (!signingSecretConfigured) {
+    issues.push(`CONTACT_ADMIN_SIGNING_SECRET of at least ${MINIMUM_SECRET_LENGTH} characters is required in production`)
   }
 
   const cronSecret = process.env.CONTACT_CRON_SECRET?.trim() || process.env.CRON_SECRET?.trim()

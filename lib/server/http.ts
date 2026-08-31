@@ -161,7 +161,7 @@ export async function isAuthorizedAdminRequest(request: Request) {
   const bearerToken = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "").trim()
   const adminKey = request.headers.get("x-contact-admin-key")?.trim()
 
-  if (matchesSecret(bearerToken, configuredKey) || matchesSecret(adminKey, configuredKey)) {
+  if (process.env.NODE_ENV !== "production" && (matchesSecret(bearerToken, configuredKey) || matchesSecret(adminKey, configuredKey))) {
     return true
   }
 

@@ -2,9 +2,10 @@
 
 ## Production contact delivery
 
-Set a verified `RESEND_API_KEY`, `RESEND_FROM_DOMAIN`, and either
-`CONTACT_ADMIN_KEY` or `CONTACT_ADMIN_SIGNING_SECRET`. Placeholder values are
-rejected in production.
+Set a verified `RESEND_API_KEY`, `RESEND_FROM_DOMAIN`, and
+`CONTACT_ADMIN_SIGNING_SECRET`. Production replay and diagnostic requests use
+timestamped, HMAC-signed, single-use nonces; `CONTACT_ADMIN_KEY` is accepted
+only outside production. Placeholder values are rejected in production.
 
 `RESEND_API_KEY` must use Resend's `re_` key format.
 
