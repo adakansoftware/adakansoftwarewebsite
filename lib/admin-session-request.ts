@@ -1,3 +1,5 @@
+import { readRequestTextWithinLimit } from "./server/request-body.ts"
+
 export function getAdminSessionMutationRequestError(
   request: Request,
   isAllowedOrigin: (request: Request) => boolean,
@@ -18,13 +20,11 @@ export async function readAdminLoginCredentials(request: Request) {
     return { ok: false as const, status: 413 as const }
   }
 
-  const rawBody = await request.text()
-  if (new TextEncoder().encode(rawBody).byteLength > adminLoginMaxBodyBytes) {
-    return { ok: false as const, status: 413 as const }
-  }
+  const bodyResult = await readRequestTextWithinLimit(request, adminLoginMaxBodyBytes)
+  if (!bodyResult.ok) return bodyResult
 
   try {
-    const body: unknown = JSON.parse(rawBody)
+    const body: unknown = JSON.parse(bodyResult.text)
     if (!body || typeof body !== "object" || Array.isArray(body)) {
       return { ok: false as const, status: 400 as const }
     }

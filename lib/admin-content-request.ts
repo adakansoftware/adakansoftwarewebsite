@@ -1,13 +1,13 @@
+import { readRequestTextWithinLimit } from "./server/request-body.ts"
+
 export const adminContentMaxBodyBytes = 32 * 1024
 
 export async function readBoundedJsonObject(request: Request, maxBytes: number) {
-  const rawBody = await request.text()
-  if (new TextEncoder().encode(rawBody).byteLength > maxBytes) {
-    return { ok: false as const, status: 413 as const }
-  }
+  const bodyResult = await readRequestTextWithinLimit(request, maxBytes)
+  if (!bodyResult.ok) return bodyResult
 
   try {
-    const body: unknown = JSON.parse(rawBody)
+    const body: unknown = JSON.parse(bodyResult.text)
     return body && typeof body === "object" && !Array.isArray(body)
       ? { ok: true as const, body: body as Record<string, unknown> }
       : { ok: false as const, status: 400 as const }
