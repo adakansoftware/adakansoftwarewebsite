@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "audit:production": "npm audit --omit=dev --audit-level=high",
     "db:apply-schema": "node --env-file=.env.local scripts/apply-neon-schema.mjs",
-    "test:admin-security": "node --experimental-strip-types --test lib/admin-contact.test.mjs lib/admin-content.test.mjs lib/admin-content-request.test.mjs lib/admin-session.test.mjs lib/admin-session-request.test.mjs lib/contact-request-store.test.mjs lib/server/admin-login-rate-limit.test.mjs lib/content-source-status.test.mjs",
+    "test:admin-security": "node --experimental-strip-types --test lib/admin-contact.test.mjs lib/admin-content.test.mjs lib/admin-content-request.test.mjs lib/admin-session.test.mjs lib/admin-session-request.test.mjs lib/contact-request-store.test.mjs lib/server/admin-login-rate-limit.test.mjs lib/server/request-body.test.mjs lib/content-source-status.test.mjs",
     "test:seo": "node --experimental-strip-types --test lib/public-routes.test.mjs lib/structured-data.test.mjs lib/seo-routes.test.mjs",
     "test:smoke": "node scripts/run-smoke-routes.mjs",
     "ops:contact:worker": "node scripts/contact-replay-worker.mjs"

@@ -29,6 +29,9 @@ jobs:
       - name: Audit production dependencies
         run: npm run audit:production
 
+      - name: Admin security tests
+        run: npm run test:admin-security
+
       - name: Build
         run: npm run build
 
