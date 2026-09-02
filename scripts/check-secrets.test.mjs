@@ -35,7 +35,7 @@ test("finds generic credential assignments with underscore and camelCase names",
   const candidates = findSecretCandidates(
     [
       `VENDOR_API_KEY=${value}`,
-      `const clientSecret = \"${value}\"`,
+      `const clientSecret = "${value}"`,
     ].join("\n"),
     "docs/plan.md",
   )
