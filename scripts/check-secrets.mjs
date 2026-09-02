@@ -30,7 +30,7 @@ export function findSecretCandidates(content, file) {
     }
 
     const assignment = line.match(quotedAssignmentPattern) ?? line.match(environmentAssignmentPattern)
-    if (assignment && !placeholderPattern.test(assignment[1])) {
+    if (assignment && !placeholderPattern.test(assignment[1]) && !assignment[1].startsWith("process.env.")) {
       candidates.push({ file, line: index + 1, kind: "credential assignment" })
     }
   }

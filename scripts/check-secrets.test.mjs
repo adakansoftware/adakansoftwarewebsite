@@ -22,6 +22,7 @@ test("does not flag placeholders or environment-variable references", () => {
   const candidates = findSecretCandidates(
     [
       "VENDOR_API_KEY=change-this-example-key",
+      "VENDOR_API_KEY=process.env.VENDOR_API_KEY",
       "const clientSecret = process.env.VENDOR_CLIENT_SECRET",
     ].join("\n"),
     ".env.example",
