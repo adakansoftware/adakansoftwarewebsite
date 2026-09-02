@@ -21,10 +21,50 @@ test("finds recognisable credential formats without returning their values", () 
 test("does not flag placeholders or environment-variable references", () => {
   const candidates = findSecretCandidates(
     [
-      "RESEND_API_KEY=re_your_production_key_here",
-      "const apiKey = process.env.OPENAI_API_KEY",
+      "VENDOR_API_KEY=change-this-example-key",
+      "const clientSecret = process.env.VENDOR_CLIENT_SECRET",
     ].join("\n"),
     ".env.example",
+  )
+
+  assert.deepEqual(candidates, [])
+})
+
+test("finds generic credential assignments with underscore and camelCase names", () => {
+  const value = ["qwertyuiop", "asdfghjklzxcvbnm"].join("")
+  const candidates = findSecretCandidates(
+    [
+      `VENDOR_API_KEY=${value}`,
+      `const clientSecret = \"${value}\"`,
+    ].join("\n"),
+    "docs/plan.md",
+  )
+
+  assert.deepEqual(candidates, [
+    { file: "docs/plan.md", line: 1, kind: "credential assignment" },
+    { file: "docs/plan.md", line: 2, kind: "credential assignment" },
+  ])
+})
+
+test("finds DSA and PGP private-key headers", () => {
+  const candidates = findSecretCandidates(
+    [
+      ["-----BEGIN ", "DSA PRIVATE KEY-----"].join(""),
+      ["-----BEGIN ", "PGP PRIVATE KEY BLOCK-----"].join(""),
+    ].join("\n"),
+    "docs/plan.md",
+  )
+
+  assert.deepEqual(candidates, [
+    { file: "docs/plan.md", line: 1, kind: "private key" },
+    { file: "docs/plan.md", line: 2, kind: "private key" },
+  ])
+})
+
+test("does not flag runtime values assigned to credential-named variables", () => {
+  const candidates = findSecretCandidates(
+    "const bearerToken = request.headers.get(\"authorization\")",
+    "lib/request.ts",
   )
 
   assert.deepEqual(candidates, [])

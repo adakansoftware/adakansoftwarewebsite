@@ -13,11 +13,13 @@ const secretPatterns = [
   { kind: "GitHub token", expression: /\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,})\b/ },
   { kind: "AWS access key", expression: /\bAKIA[0-9A-Z]{16}\b/ },
   { kind: "Google API key", expression: /\bAIza[0-9A-Za-z_-]{30,}\b/ },
-  { kind: "private key", expression: /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/ },
+  { kind: "private key", expression: /-----BEGIN (?:[A-Z0-9-]+ )?PRIVATE KEY(?: BLOCK)?-----/ },
 ]
 
-const assignmentPattern = /\b(?:api[_-]?key|secret|token|password)\b\s*[:=]\s*["']?([A-Za-z0-9_./+=-]{16,})/i
-const placeholderPattern = /^(?:change-this|your-|example|placeholder|test-|dummy|local-|worker-local-)/i
+const credentialNamePattern = "[A-Za-z][A-Za-z0-9_]*?(?:api[_-]?key|secret|token|password)[A-Za-z0-9_]*"
+const quotedAssignmentPattern = new RegExp(`(?:^|[^A-Za-z0-9])${credentialNamePattern}\\s*[:=]\\s*["']([A-Za-z0-9_./+=-]{16,})["']`, "i")
+const environmentAssignmentPattern = new RegExp(`^(?:export\\s+)?${credentialNamePattern}\\s*=\\s*([A-Za-z0-9_./+=-]{16,})\\s*$`, "i")
+const placeholderPattern = /^(?:change-this|your-|re_your_|example|placeholder|test-|dummy|local-|worker-local-)/i
 
 export function findSecretCandidates(content, file) {
   const candidates = []
@@ -27,8 +29,8 @@ export function findSecretCandidates(content, file) {
       if (expression.test(line)) candidates.push({ file, line: index + 1, kind })
     }
 
-    const assignment = line.match(assignmentPattern)
-    if (assignment && !placeholderPattern.test(assignment[1]) && !assignment[1].startsWith("process.env.")) {
+    const assignment = line.match(quotedAssignmentPattern) ?? line.match(environmentAssignmentPattern)
+    if (assignment && !placeholderPattern.test(assignment[1])) {
       candidates.push({ file, line: index + 1, kind: "credential assignment" })
     }
   }
