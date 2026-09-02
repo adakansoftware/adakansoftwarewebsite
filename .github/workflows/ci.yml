@@ -26,6 +26,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Secret scan
+        run: npm run test:secrets
+
       - name: Audit production dependencies
         run: npm run audit:production
 
