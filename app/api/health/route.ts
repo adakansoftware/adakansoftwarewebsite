@@ -4,6 +4,7 @@ import { contactPolicy } from "@/lib/server/contact-policy"
 import { getContactRuntimeConfigurationIssues } from "@/lib/server/contact-runtime-config"
 import { getProxyRateLimitDiagnostics } from "@/lib/server/proxy-rate-limit"
 import { getContactStateStore, getContactStateStoreStatus } from "@/lib/server/contact-state-store"
+import { getSafeContactStateError } from "@/lib/server/contact-state-status"
 import { getManagedContentSourceStatus } from "@/lib/content-source-status"
 import {
   createRequestId,
@@ -79,7 +80,7 @@ export async function GET(request: Request) {
       lastReplayAt: null,
       lastBatchSize: null,
       lastOutcome: null,
-      lastError: stateStatus.error,
+      lastError: getSafeContactStateError(stateStatus),
     }
   const stateCapabilities = stateStatus.capabilities
   const hasQueueAlerts = pipeline?.alerts.length ? pipeline.alerts.length > 0 : false
@@ -135,7 +136,7 @@ export async function GET(request: Request) {
             state: {
               ...stateCapabilities,
               available: stateStatus.available,
-              error: stateStatus.error,
+              error: getSafeContactStateError(stateStatus),
             },
             worker: {
               ...workerRuntime,

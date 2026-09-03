@@ -111,6 +111,14 @@ for (const check of checks) {
   }
 }
 
+if (process.env.SMOKE_EXPECT_HSTS === "1") {
+  const home = await request("/")
+  assert(
+    home.headers.get("strict-transport-security") === "max-age=63072000; includeSubDomains; preload",
+    "/: expected production HSTS with subdomain and preload protection",
+  )
+}
+
 const servicesSeoPage = await request("/services")
 assert(!servicesSeoPage.text.includes('"@type":"BreadcrumbList"'), "/services: must not publish invisible breadcrumb structured data")
 assert(servicesSeoPage.text.includes('rel="canonical" href="https://adakansoftware.com/services"'), "/services: must publish its production canonical URL")

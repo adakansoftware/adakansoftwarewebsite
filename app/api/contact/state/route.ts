@@ -1,4 +1,5 @@
 import { getContactStateStore, getContactStateStoreStatus } from "@/lib/server/contact-state-store"
+import { getSafeContactStateError } from "@/lib/server/contact-state-status"
 import { createRequestId, emptyResponse, isAuthorizedAdminRequest, jsonResponse } from "@/lib/server/http"
 
 export const runtime = "nodejs"
@@ -25,19 +26,26 @@ export async function GET(request: Request) {
     return jsonResponse({ ok: false, error: "Unauthorized" }, { status: 401, requestId })
   }
 
-  const stateStore = getContactStateStore()
   const stateStatus = await getContactStateStoreStatus()
-  const worker = stateStatus.available ? await stateStore.readWorkerRuntimeState() : null
+  if (!stateStatus.available) {
+    return jsonResponse(
+      { ok: false, error: getSafeContactStateError(stateStatus) },
+      { status: 503, requestId },
+    )
+  }
+
+  const stateStore = getContactStateStore()
+  const worker = await stateStore.readWorkerRuntimeState()
 
   return jsonResponse(
     {
       ok: true,
       backend: stateStore.backend,
       capabilities: stateStatus.capabilities,
-      available: stateStatus.available,
-      error: stateStatus.error,
+      available: true,
+      error: null,
       worker,
     },
-    { status: stateStatus.available ? 200 : 503, requestId },
+    { requestId },
   )
 }

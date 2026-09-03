@@ -7,8 +7,10 @@ import { fileURLToPath } from "node:url"
 const port = process.env.SMOKE_PORT ?? "3101"
 const baseUrl = process.env.SMOKE_BASE_URL ?? `http://127.0.0.1:${port}`
 const nextBin = fileURLToPath(new URL("../node_modules/next/dist/bin/next", import.meta.url))
+const serverMode = process.env.SMOKE_SERVER_MODE === "production" ? "start" : "dev"
+const testScript = process.env.SMOKE_TEST_SCRIPT ?? "./test-smoke-routes.mjs"
 
-const server = spawn(process.execPath, [nextBin, "dev", "--hostname", "127.0.0.1", "--port", port], {
+const server = spawn(process.execPath, [nextBin, serverMode, "--hostname", "127.0.0.1", "--port", port], {
   env: {
     ...process.env,
     CONTACT_ADMIN_KEY: process.env.CONTACT_ADMIN_KEY ?? "test-admin-key",
@@ -37,7 +39,7 @@ async function waitForServer() {
 
 try {
   await waitForServer()
-  const test = spawn(process.execPath, [fileURLToPath(new URL("./test-smoke-routes.mjs", import.meta.url))], {
+  const test = spawn(process.execPath, [fileURLToPath(new URL(testScript, import.meta.url))], {
     env: { ...process.env, SMOKE_BASE_URL: baseUrl },
     stdio: "inherit",
   })
