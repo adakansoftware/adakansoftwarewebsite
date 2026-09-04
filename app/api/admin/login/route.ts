@@ -1,4 +1,5 @@
-import { adminCookie, adminSessionMaxAgeSeconds, cookieName, hasAdminSessionConfiguration } from "@/lib/admin-auth"
+import { adminCookie, adminSessionMaxAgeSeconds, cookieName } from "@/lib/admin-auth"
+import { hasAdminLoginConfiguration } from "@/lib/admin-login-config"
 import { getAdminSessionMutationRequestError, readAdminLoginCredentials } from "@/lib/admin-session-request"
 import { getTrustedClientIp } from "@/lib/server/client-ip"
 import { createRequestId, isAllowedOrigin, jsonResponse, optionsResponse } from "@/lib/server/http"
@@ -28,7 +29,11 @@ export async function POST(request: Request) {
     return jsonResponse({ ok: false }, { status: 429, requestId })
   }
 
-  if (!hasAdminSessionConfiguration()) {
+  if (!hasAdminLoginConfiguration({
+    email: process.env.ADMIN_EMAIL,
+    password: process.env.ADMIN_PASSWORD,
+    sessionSecret: process.env.ADMIN_SESSION_SECRET,
+  })) {
     return jsonResponse({ ok: false }, { status: 503, requestId })
   }
 

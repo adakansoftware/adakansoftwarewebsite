@@ -5,6 +5,7 @@ import { NextResponse } from "next/server"
 import { getTrustedClientIp } from "@/lib/server/client-ip"
 import { getContactStateStore } from "@/lib/server/contact-state-store"
 import { isAllowedOrigin } from "@/lib/server/origin"
+import { hasMinimumSecretLength } from "@/lib/server/secret-policy"
 
 const SIGNED_ADMIN_TOLERANCE_MS = 5 * 60_000
 
@@ -137,7 +138,10 @@ function hasFreshSignedAdminTimestamp(request: Request) {
 }
 
 export function hasSignedAdminProtection() {
-  return Boolean(process.env.CONTACT_ADMIN_SIGNING_SECRET?.trim())
+  const signingSecret = process.env.CONTACT_ADMIN_SIGNING_SECRET
+  return process.env.NODE_ENV === "production"
+    ? hasMinimumSecretLength(signingSecret)
+    : Boolean(signingSecret?.trim())
 }
 
 export function hasSignedAdminNonceProtection() {
@@ -146,7 +150,7 @@ export function hasSignedAdminNonceProtection() {
 
 export function isAuthorizedCronRequest(request: Request) {
   const configuredSecret = process.env.CONTACT_CRON_SECRET?.trim() || process.env.CRON_SECRET?.trim()
-  if (!configuredSecret) {
+  if (!configuredSecret || (process.env.NODE_ENV === "production" && !hasMinimumSecretLength(configuredSecret))) {
     return false
   }
 
@@ -168,7 +172,13 @@ export async function isAuthorizedAdminRequest(request: Request) {
   const signingSecret = process.env.CONTACT_ADMIN_SIGNING_SECRET?.trim()
   const signature = request.headers.get("x-admin-signature")?.trim()
   const payload = getSignedAdminPayload(request)
-  if (!signingSecret || !signature || !payload || !hasFreshSignedAdminTimestamp(request)) {
+  if (
+    !signingSecret
+    || (process.env.NODE_ENV === "production" && !hasMinimumSecretLength(signingSecret))
+    || !signature
+    || !payload
+    || !hasFreshSignedAdminTimestamp(request)
+  ) {
     return false
   }
 
